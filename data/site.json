@@ -1,0 +1,208 @@
+{
+  "house": {
+    "name": "Red Panda Publications",
+    "tagline": "Stories that travel — from manuscript to printed book.",
+    "email": "hello@redpandapublications.com",
+    "phone": "+1 (415) 555-0148",
+    "address": "18 Rustleaf Road, Suite 4, San Francisco, CA 94110"
+  },
+  "banners": [
+    {
+      "id": "banner-home",
+      "eyebrow": "Independent literary house",
+      "title": "Stories with rust in the fur and cream on the page.",
+      "subtitle": "Red Panda Publications edits, designs, translates, and prints work for readers who still love paper — and for those who read on a screen.",
+      "ctaLabel": "Browse the list",
+      "ctaHref": "/books",
+      "image": "/banners/reading-room.png",
+      "active": true
+    },
+    {
+      "id": "banner-tools",
+      "eyebrow": "Free for authors",
+      "title": "Make a barcode, a cover, a copyright page.",
+      "subtitle": "Our author tools are free to use. Typesetting and audiobook production are on the way.",
+      "ctaLabel": "Open free tools",
+      "ctaHref": "/tools",
+      "image": "/banners/reading-room.png",
+      "active": false
+    }
+  ],
+  "books": [
+    {
+      "id": "bk-migration",
+      "slug": "the-migration-clock",
+      "title": "The Migration Clock",
+      "author": "Lina Voss",
+      "description": "A novel of homing pigeons, city rooftops, and the hour a family decides whether to stay. Reading is free in our e-book reader; PDF and print are priced separately.",
+      "cover": "/covers/migration-clock.png",
+      "isbn": "9781990001001",
+      "access": "free",
+      "readerPrice": 0,
+      "pdfPrice": 6.99,
+      "printPrice": 16.0,
+      "currency": "USD",
+      "pages": 312,
+      "language": "English",
+      "genre": "Literary fiction",
+      "epubUrl": "/epubs/the-migration-clock.epub",
+      "featured": true
+    },
+    {
+      "id": "bk-pigeon-post",
+      "slug": "pigeon-post",
+      "title": "Pigeon Post",
+      "author": "Amina Reed",
+      "description": "Letters carried across a bright, restless city. A free reader title for younger readers and anyone who still writes on paper.",
+      "cover": "/covers/pigeon-post.png",
+      "isbn": "9781990001018",
+      "access": "free",
+      "readerPrice": 0,
+      "pdfPrice": 4.99,
+      "printPrice": 12.5,
+      "currency": "USD",
+      "pages": 164,
+      "language": "English",
+      "genre": "Young readers",
+      "epubUrl": "/epubs/pigeon-post.epub",
+      "featured": true
+    },
+    {
+      "id": "bk-terracotta",
+      "slug": "terracotta-sky",
+      "title": "Terracotta Sky",
+      "author": "Noor Ellison",
+      "description": "Poems for iridescent necks, coral feet, and the hour before rain. Free to read in the house reader.",
+      "cover": "/covers/terracotta-sky.png",
+      "isbn": "9781990001025",
+      "access": "free",
+      "readerPrice": 0,
+      "pdfPrice": 5.5,
+      "printPrice": 14.0,
+      "currency": "USD",
+      "pages": 96,
+      "language": "English",
+      "genre": "Poetry",
+      "epubUrl": "/epubs/terracotta-sky.epub",
+      "featured": false
+    },
+    {
+      "id": "bk-river",
+      "slug": "river-of-paper",
+      "title": "River of Paper",
+      "author": "Haruto Bell",
+      "description": "A history of the printed page, from mill to bindery. Paid to read in our e-book reader; PDF and clothbound copies sold separately.",
+      "cover": "/covers/river-of-paper.png",
+      "isbn": "9781990001032",
+      "access": "paid",
+      "readerPrice": 9.99,
+      "pdfPrice": 12.99,
+      "printPrice": 28.0,
+      "currency": "USD",
+      "pages": 428,
+      "language": "English",
+      "genre": "Nonfiction",
+      "epubUrl": "/epubs/river-of-paper.epub",
+      "featured": true
+    },
+    {
+      "id": "bk-ink",
+      "slug": "ink-and-feather",
+      "title": "Ink & Feather",
+      "author": "S. P. Marlowe",
+      "description": "Essays on drafting, revision, and the small courage of sending work out. Reader access is paid.",
+      "cover": "/covers/ink-feather.png",
+      "isbn": "9781990001049",
+      "access": "paid",
+      "readerPrice": 7.5,
+      "pdfPrice": 9.5,
+      "printPrice": 18.0,
+      "currency": "USD",
+      "pages": 208,
+      "language": "English",
+      "genre": "Essays",
+      "epubUrl": "/epubs/ink-and-feather.epub",
+      "featured": false
+    },
+    {
+      "id": "bk-house",
+      "slug": "the-house-of-stories",
+      "title": "The House of Stories",
+      "author": "Clara Pigeon",
+      "description": "A novel set inside a publishing house that still answers the phone. Paid reader, paid PDF, paid print.",
+      "cover": "/covers/house-of-stories.png",
+      "isbn": "9781990001056",
+      "access": "paid",
+      "readerPrice": 11.0,
+      "pdfPrice": 14.0,
+      "printPrice": 24.0,
+      "currency": "USD",
+      "pages": 356,
+      "language": "English",
+      "genre": "Literary fiction",
+      "epubUrl": "/epubs/the-house-of-stories.epub",
+      "featured": true
+    }
+  ],
+  "faqs": [
+    {
+      "id": "faq-free-read",
+      "question": "If a book is free, can I download the PDF?",
+      "answer": "No. Free titles may be read in our e-book reader at no cost. Downloading a PDF is a separate paid licence. A printed copy is priced on its own."
+    },
+    {
+      "id": "faq-paid-read",
+      "question": "What does a paid title include?",
+      "answer": "Reading in our e-book reader is charged for paid titles. You can also order a PDF or a paper copy. Each format is priced separately on the book page."
+    },
+    {
+      "id": "faq-isbn",
+      "question": "Is the ISBN barcode tool really free?",
+      "answer": "Yes. Type an ISBN-10 or ISBN-13 and download EAN-13 artwork as PNG, SVG, or JPEG. We do not add a watermark."
+    },
+    {
+      "id": "faq-submit",
+      "question": "How do I publish with Red Panda?",
+      "answer": "Use Publish with us on the site. Tell us the title, whether you own the rights, and a contact number. We reply with next steps — we do not ask for the full manuscript in that first note."
+    },
+    {
+      "id": "faq-translation",
+      "question": "Do you translate?",
+      "answer": "Yes. Multilingual translation sits in our Hire us services, from manuscript through to a printed edition in the new language."
+    },
+    {
+      "id": "faq-typesetter",
+      "question": "Where is the typesetter?",
+      "answer": "The typesetter and the audiobook maker are listed as coming soon. Cover design, publisher pages, ISBN barcodes, and PDF to EPUB are available now."
+    }
+  ],
+  "blog": [
+    {
+      "id": "post-mark",
+      "slug": "the-red-panda-on-the-imprint",
+      "title": "The red panda on the imprint",
+      "excerpt": "Terracotta, cream paper, and why the house is named for a quiet climber.",
+      "body": "The mark is a red panda because the work is careful, bright, and a little stubborn. A manuscript should know the way from the author’s desk, through editing and design, onto paper a stranger can hold.\n\nThe site stays cream and terracotta because books are daylight objects.\n\nIf you are sending work, start with Publish with us. If you need a house to take a finished manuscript through print, open Hire us.",
+      "date": "2026-03-12",
+      "cover": "/stock/red-panda.png"
+    },
+    {
+      "id": "post-formats",
+      "slug": "reader-pdf-print",
+      "title": "Reader, PDF, print: three licences",
+      "excerpt": "How we price free and paid titles without mixing up the formats.",
+      "body": "A free title on our list means the e-book reader is free. It does not mean the file is free to keep, and it does not mean a paperback is free.\n\nA paid title charges for time in the reader as well. PDF download and paper copies are always separate line items, because they cost different things to produce.\n\nYou will see this clearly on every book page: Read, Download PDF, Printed edition.",
+      "date": "2026-05-02",
+      "cover": "/stock/paper.png"
+    },
+    {
+      "id": "post-epub",
+      "slug": "converting-long-pdfs",
+      "title": "Converting a 200-page PDF without flattening it",
+      "excerpt": "How our PDF to EPUB tool reconstructs paragraphs, columns, and images.",
+      "body": "A long PDF is not a stack of pictures. Our converter reads text with positions, groups lines into paragraphs, detects columns, pulls embedded images, and writes a structured EPUB 3 file.\n\nUse it from Free tools. Then open the file in our e-book reader — it remembers where you stopped.",
+      "date": "2026-06-18",
+      "cover": "/stock/library.png"
+    }
+  ]
+}
