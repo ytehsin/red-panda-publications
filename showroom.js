@@ -17,6 +17,10 @@
   let state = loadState();
 
   function loadState() {
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    return clone(DEFAULTS);
+  }
+  function loadSavedPreview() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
       if (saved && saved.config && Array.isArray(saved.books)) return saved;
@@ -591,6 +595,6 @@
   window.addEventListener('DOMContentLoaded', () => {
     normaliseLooks();
     renderAll();
-    mountPanel();
+    // The "Customise showroom" preview panel is switched off on the public site (owner, 14 Nov 2026).
   });
 })();
