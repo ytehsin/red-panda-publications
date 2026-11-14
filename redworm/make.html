@@ -1,226 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Make your book — Redworm</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = { theme: { extend: {
-      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
-      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'] } } } };
-  </script>
-  <style> html, body { -webkit-font-smoothing: antialiased; } .step[aria-disabled="true"] { opacity: .45; pointer-events: none; } </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Make your book — Redworm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FBF7F1; --card: #FFFFFF; --ink: #22201D; --soft: #6F6A62; --line: #ECE5DA;
+  --red: #B23A2E; --red-deep: #8B1E24; --red-tint: #FBEDEA; --green: #2F7D57; --green-tint: #E9F5EE;
+  --amber: #FFF1C9; --radius: 18px; --shadow: 0 1px 2px rgba(60,40,20,.05), 0 8px 24px rgba(60,40,20,.06);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink);
+  font: 16px/1.55 "Nunito Sans", "Noto Sans Devanagari", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 650; letter-spacing: -0.01em; margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+.top { display: flex; align-items: center; justify-content: space-between; max-width: 860px; margin: 0 auto; padding: 22px 24px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; }
+.brand .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px var(--red-tint); }
+.top a.back { color: var(--soft); text-decoration: none; font-size: 15px; }
+main { max-width: 860px; margin: 0 auto; padding: 8px 24px 80px; }
+.hero { padding: 26px 0 30px; }
+.hero h1 { font-size: clamp(34px, 5vw, 48px); line-height: 1.08; }
+.hero h1 em { font-style: normal; color: var(--red); }
+.hero p { color: var(--soft); font-size: 18px; max-width: 600px; margin: 14px 0 0; }
+.rail { display: flex; gap: 8px; flex-wrap: wrap; margin: 22px 0 0; padding: 0; list-style: none; }
+.rail li { display: flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); font-size: 14px; font-weight: 700; color: var(--soft); }
+.rail li .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); font-size: 12px; }
+.rail li.done { color: var(--green); border-color: #CDE7D7; background: var(--green-tint); }
+.rail li.done .n { background: var(--green); color: #fff; }
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); padding: 26px; margin: 18px 0; transition: opacity .2s; }
+.card.locked { opacity: .5; pointer-events: none; }
+.card > header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.card > header .badge { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--red-tint); color: var(--red-deep); font-weight: 800; flex: none; }
+.card.complete > header .badge { background: var(--green); color: #fff; }
+.card > header h2 { font-size: 22px; }
+.card > header p { margin: 2px 0 0; color: var(--soft); font-size: 15px; }
+.drop { display: block; border: 2px dashed #DCCFBD; border-radius: 16px; padding: 38px 20px; text-align: center; cursor: pointer; background: #FFFCF7; transition: .15s; }
+.drop:hover, .drop.over { border-color: var(--red); background: var(--red-tint); }
+.drop strong { display: block; font-size: 18px; }
+.drop span { color: var(--soft); font-size: 15px; }
+.muted { color: var(--soft); }
+.small { font-size: 14px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } .card { padding: 20px; } }
+label.field { display: block; }
+label.field > span { display: block; font-size: 13px; font-weight: 700; color: var(--soft); margin-bottom: 5px; }
+input[type=text], input[type=number], textarea { width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid #E2D9CC; background: #FFFDF9; outline: none; }
+input:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-tint); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-size: 14px; font-weight: 700; }
+.seg { display: inline-flex; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-weight: 700; color: var(--soft); }
+.seg button.on { background: var(--ink); color: #fff; }
+details { border-radius: 12px; }
+details > summary { cursor: pointer; color: var(--soft); font-size: 15px; font-weight: 700; list-style: none; }
+details > summary::before { content: "›"; display: inline-block; margin-right: 6px; transition: transform .15s; }
+details[open] > summary::before { transform: rotate(90deg); }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; border-radius: 12px; padding: 12px 20px; font-weight: 800; background: var(--ink); color: #fff; text-decoration: none; transition: .15s; }
+.btn:hover { transform: translateY(-1px); }
+.btn.red { background: var(--red); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid #DCCFBD; }
+.btn:disabled { opacity: .4; cursor: default; transform: none; }
+.note { padding: 12px 14px; border-radius: 12px; background: var(--amber); font-size: 15px; }
+.note.green { background: var(--green-tint); }
+.err { color: var(--red-deep); font-weight: 700; }
+.proof-item { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; }
+.proof-item .where { font-size: 13px; color: var(--soft); }
+.proof-item mark { background: #FFE3A3; border-radius: 4px; padding: 0 2px; }
+.proof-item .tag { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--red-deep); background: var(--red-tint); padding: 2px 7px; border-radius: 6px; margin-right: 6px; }
+.choice { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.choice button { border: 1px solid #DCCFBD; background: #fff; border-radius: 10px; padding: 7px 12px; cursor: pointer; font-weight: 700; font-size: 14px; }
+.choice button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.cover-wrap { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+@media (max-width: 640px) { .cover-wrap { grid-template-columns: 1fr; } }
+.preview { width: 220px; aspect-ratio: 2 / 3.1; border-radius: 6px 12px 12px 6px; background: linear-gradient(135deg,#F3ECE1,#EBE2D4); box-shadow: inset 6px 0 10px -6px rgba(0,0,0,.25), 0 14px 30px rgba(60,40,20,.18); overflow: hidden; display: grid; place-items: center; text-align: center; color: var(--soft); font-size: 14px; padding: 0; }
+.preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile { border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 10px; text-align: left; cursor: pointer; }
+.tile b { display: block; font-size: 15px; }
+.tile span { font-size: 12.5px; color: var(--soft); line-height: 1.35; display: block; margin-top: 2px; }
+.tile.on { border-color: var(--ink); box-shadow: 0 0 0 3px #EFE8DD; }
+.swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+.sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; position: relative; }
+.sw.on { box-shadow: 0 0 0 3px var(--ink); }
+.sw span { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); font-size: 11.5px; color: var(--soft); white-space: nowrap; }
+.picbox { border: 1px dashed #DCCFBD; border-radius: 14px; padding: 14px; background: #FFFCF7; }
+.stack > * + * { margin-top: 14px; }
+.idx { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; margin-top: 10px; }
+.idx label { display: flex; gap: 8px; align-items: center; font-size: 15px; }
+.done-box { text-align: center; padding: 10px 0 0; }
+.done-box h3 { font-size: 26px; }
+.spinner { width: 18px; height: 18px; border-radius: 50%; border: 3px solid #E7DCCD; border-top-color: var(--red); animation: spin 0.8s linear infinite; display: inline-block; vertical-align: -3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hidden { display: none !important; }
+</style>
 </head>
-<body class="bg-pureWhite text-ink font-sans">
-  <header class="border-b border-hairline">
-    <div class="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-claret"></span><span class="font-bold tracking-tight">Redworm</span><span class="text-slateMuted">· Make your book</span></a>
-      <a href="index.html" class="text-sm text-slateMuted hover:text-ink">← About Redworm</a>
+<body>
+<div class="top">
+  <a class="brand" href="index.html"><span class="dot"></span>Redworm <span class="muted" style="font-weight:600">by Red Panda</span></a>
+  <a class="back" href="index.html">About Redworm</a>
+</div>
+
+<main>
+  <section class="hero">
+    <h1>Turn your manuscript into a <em>real book</em>.</h1>
+    <p>Novel, stories or poems, in English or Hindi. You make every choice; Redworm sets the pages, the cover and the ebook. Your file is deleted when you leave.</p>
+    <ul class="rail" id="rail">
+      <li data-s="upload"><span class="n">1</span>Manuscript</li>
+      <li data-s="proof"><span class="n">2</span>Proofreading</li>
+      <li data-s="cover"><span class="n">3</span>Cover</li>
+      <li data-s="details"><span class="n">4</span>Details</li>
+      <li data-s="make"><span class="n">5</span>Your book</li>
+    </ul>
+    <p id="wake" class="small muted hidden"><span class="spinner"></span> Waking Redworm up — the first visit after a quiet spell takes about a minute.</p>
+  </section>
+
+  <!-- 1 -->
+  <section class="card" id="c-upload">
+    <header><div class="badge">1</div><div><h2>Your manuscript</h2><p>Word (.docx), text (.txt) or ebook (.epub), up to 35,000 words.</p></div></header>
+    <label class="drop" id="drop"><input id="file" type="file" accept=".docx,.txt,.epub" hidden>
+      <strong>Choose your file</strong><span>or drop it here</span></label>
+    <p id="upload-msg" class="small"></p>
+    <div id="found" class="stack hidden">
+      <div class="chips" id="facts"></div>
+      <div class="grid2">
+        <label class="field"><span>Title</span><input type="text" id="title"></label>
+        <label class="field"><span>Author</span><input type="text" id="author"></label>
+      </div>
+      <label class="field"><span>Subtitle (optional)</span><input type="text" id="subtitle"></label>
+      <div><span class="small muted" style="font-weight:700">This book is</span>&nbsp;
+        <span class="seg" id="form"><button data-f="prose">Prose</button><button data-f="poetry">Poetry</button></span>
+        <span class="small muted" id="form-hint"></span></div>
+      <details><summary>Chapters Redworm found</summary><ol id="chapters" class="small"></ol></details>
+      <details><summary>How Redworm read your file</summary><ul id="notes" class="small muted"></ul></details>
     </div>
-  </header>
+  </section>
 
-  <main class="max-w-3xl mx-auto px-6 py-12 space-y-10">
-    <div class="space-y-2">
-      <h1 class="text-2xl font-bold tracking-tight">Make your book</h1>
-      <p class="text-slateMuted">Upload a Word or text file (English or Hindi, up to 35,000 words). You make every choice; Redworm does the rest. Your manuscript is deleted when you leave this page.</p>
-      <p id="wake" class="hidden text-sm text-slateMuted">Waking Redworm up… the first visit after a quiet spell takes about a minute.</p>
+  <!-- 2 -->
+  <section class="card locked" id="c-proof">
+    <header><div class="badge">2</div><div><h2>Proofreading</h2><p>Nothing in your text changes unless you choose <b>Change</b>.</p></div></header>
+    <p id="proof-line" class="muted"></p>
+    <div id="ai-box" class="picbox hidden">
+      <b>Ask the AI to check too</b> <span class="small muted">(Google Gemini, free)</span>
+      <p class="small muted" style="margin:6px 0 10px">Your chapters are sent to Google. On the free plan Google may use the text to improve its products and people there may read it. Your name and title are not sent. Only use this if you're happy with that.</p>
+      <label class="small" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="ai-consent"> I agree to send my text to Google's Gemini for checking.</label>
+      <p style="margin:10px 0 0"><button class="btn ghost" id="ai-go" disabled>Check with AI</button> <span id="ai-msg" class="small muted"></span></p>
     </div>
+    <div id="proof"></div>
+  </section>
 
-    <!-- 1 Upload -->
-    <section class="step space-y-4" id="s-upload">
-      <h2 class="font-semibold">1 · Your manuscript</h2>
-      <label id="drop" class="block rounded-xl border-2 border-dashed border-borderCrisp hover:border-ink p-10 text-center cursor-pointer">
-        <input id="file" type="file" accept=".docx,.txt" class="sr-only">
-        <span class="font-semibold">Choose a .docx or .txt file</span><span class="text-slateMuted"> or drop it here</span>
-      </label>
-      <p id="upload-msg" class="text-sm"></p>
-      <div id="found" class="hidden rounded-xl bg-subtleSurface p-5 space-y-3 text-sm">
-        <div class="grid sm:grid-cols-2 gap-3">
-          <label class="space-y-1"><span class="text-slateMuted">Title</span><input id="title" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white"></label>
-          <label class="space-y-1"><span class="text-slateMuted">Author</span><input id="author" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white"></label>
+  <!-- 3 -->
+  <section class="card locked" id="c-cover">
+    <header><div class="badge">3</div><div><h2>Your cover</h2><p>Your decision: pick a layout and colours, then press <b>Use this cover</b>.</p></div></header>
+    <div class="cover-wrap">
+      <div>
+        <div class="preview" id="preview">Your cover appears here</div>
+        <p style="margin:14px 0 0"><button class="btn red hidden" id="use-cover">Use this cover</button></p>
+        <p id="cover-chosen" class="small hidden" style="color:var(--green);font-weight:800;margin:10px 0 0">✓ This is your cover</p>
+      </div>
+      <div class="stack">
+        <div class="tiles" id="tiles"></div>
+        <div><div class="small muted" style="font-weight:700;margin-bottom:8px">Colours</div><div class="swatches" id="swatches"></div></div>
+        <div id="pic" class="picbox hidden stack" style="margin-top:34px">
+          <b>Your picture</b>
+          <div id="pic-ai" class="hidden">
+            <label class="field"><span>Describe it and the AI draws it (no words appear in the picture)</span>
+              <textarea id="pic-prompt" rows="2" placeholder="e.g. a quiet harbour at dawn, fishing boats, watercolour"></textarea></label>
+            <p style="margin:8px 0 0"><button class="btn ghost" id="pic-make">Make picture</button> <span id="pic-msg" class="small muted"></span></p>
+          </div>
+          <p style="margin:0"><label class="btn ghost" style="cursor:pointer">Upload your own picture<input type="file" id="pic-file" accept="image/jpeg,image/png" hidden></label></p>
+          <p class="small muted" style="margin:0">Square pictures work best, at least 1000 pixels wide. It prints in a framed panel at full 300 dpi quality.</p>
         </div>
-        <p id="found-line"></p>
-        <details><summary class="cursor-pointer text-slateMuted">Chapters found</summary><ol id="chapters" class="mt-2 list-decimal pl-6 space-y-0.5"></ol></details>
+        <label class="field" style="margin-top:34px"><span>Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900"></textarea></label>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 2 Proofread -->
-    <section class="step space-y-4" id="s-proof" aria-disabled="true">
-      <h2 class="font-semibold">2 · Proofreading</h2>
-      <p id="proof-line" class="text-sm text-slateMuted">Nothing changes unless you choose <b class="text-ink">Change</b>.</p>
-      <div id="proof" class="space-y-2"></div>
-    </section>
-
-    <!-- 3 Cover -->
-    <section class="step space-y-4" id="s-cover" aria-disabled="true">
-      <h2 class="font-semibold">3 · Your cover <span class="font-normal text-slateMuted">(your choice is required)</span></h2>
-      <div class="flex flex-wrap gap-2 text-sm" id="layouts"></div>
-      <div class="flex flex-wrap gap-2 text-sm" id="colours"></div>
-      <div class="flex gap-5 items-start">
-        <div class="w-48 shrink-0 aspect-[2/3] rounded-md bg-subtleSurface overflow-hidden shadow-sm grid place-items-center text-xs text-slateMuted" id="preview-box">Pick a layout and colours</div>
-        <div class="space-y-3 text-sm">
-          <p id="cover-name" class="font-semibold"></p>
-          <button id="use-cover" class="hidden px-4 py-2 rounded-lg bg-ink hover:bg-inkHover text-pureWhite font-semibold">Use this cover</button>
-          <p id="cover-chosen" class="hidden text-claret font-semibold">✓ This is your cover</p>
-          <label class="block space-y-1"><span class="text-slateMuted">Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900" class="w-72 max-w-full px-3 py-2 rounded-lg border border-borderCrisp"></textarea></label>
-        </div>
+  <!-- 4 -->
+  <section class="card locked" id="c-details">
+    <header><div class="badge">4</div><div><h2>Publisher & details</h2><p>Sensible defaults are filled in. Change only what you need.</p></div></header>
+    <div class="stack">
+      <div class="grid2">
+        <label class="field"><span>Publisher</span><input type="text" id="pub" value="Red Panda Publications"></label>
+        <label class="field"><span>City</span><input type="text" id="pubcity" value="New Delhi"></label>
       </div>
-    </section>
-
-    <!-- 4 Extras -->
-    <section class="step space-y-3" id="s-extra" aria-disabled="true">
-      <h2 class="font-semibold">4 · Optional</h2>
-      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">Index at the back <span class="text-slateMuted font-normal">— tick names and terms</span></summary><div id="index" class="mt-3 grid sm:grid-cols-2 gap-1"></div></details>
-      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">ISBN <span class="text-slateMuted font-normal">— adds a barcode; skip if you don't have one</span></summary>
-        <div class="mt-3 grid sm:grid-cols-2 gap-3"><input id="isbn" placeholder="Paperback ISBN" class="px-3 py-2 rounded-lg border border-borderCrisp"><input id="eisbn" placeholder="Ebook ISBN" class="px-3 py-2 rounded-lg border border-borderCrisp"></div></details>
-      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">Public domain book <span class="text-slateMuted font-normal">— an old text you didn't write</span></summary>
-        <input id="pd" type="number" min="1400" max="2100" placeholder="Year first published, e.g. 1886" class="mt-3 px-3 py-2 rounded-lg border border-borderCrisp w-72"></details>
-    </section>
-
-    <!-- 5 Make -->
-    <section class="step space-y-4" id="s-make" aria-disabled="true">
-      <h2 class="font-semibold">5 · Make the book</h2>
-      <button id="make" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold disabled:opacity-40" disabled>Make my book</button>
-      <p id="make-msg" class="text-sm"></p>
-      <div id="done" class="hidden rounded-xl bg-subtleSurface p-5 space-y-3 text-sm">
-        <p class="font-semibold">Your book is ready.</p>
-        <p id="done-line" class="text-slateMuted"></p>
-        <a id="download" class="inline-block px-5 py-2.5 rounded-lg bg-claret text-pureWhite font-semibold" href="#">Download everything (.zip)</a>
-        <p class="text-xs text-slateMuted">Inside: the complete book to read, the ebook, files for your printer and a ready set for Amazon KDP. Download now: nothing is kept after you leave.</p>
+      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pubpage" checked> Add an “About the publisher” page at the back</label>
+      <label class="field" id="pubabout-wrap"><span>About the publisher (leave empty to use Red Panda's own text)</span><textarea id="pubabout" rows="3" maxlength="1500"></textarea></label>
+      <div id="isbn-found" class="note hidden"></div>
+      <div class="grid2">
+        <label class="field"><span>Paperback ISBN (optional — adds a barcode)</span><input type="text" id="isbn"></label>
+        <label class="field"><span>Ebook ISBN (optional)</span><input type="text" id="eisbn"></label>
       </div>
-    </section>
-  </main>
+      <label class="field"><span>Classic book? Year first published (optional)</span><input type="number" id="pd" min="1400" max="2100" placeholder="e.g. 1886 — leave empty for your own work"></label>
+      <details><summary>Index at the back (for non-fiction)</summary><div class="idx" id="index"></div></details>
+    </div>
+  </section>
 
-  <script src="config.js"></script>
-  <script>
-    const API = window.RW_API;
-    const el = (id) => document.getElementById(id);
-    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const cap = (s) => s[0].toUpperCase() + s.slice(1);
-    let S = null, layout = null, colour = null, chosen = null, beat = null;
-    const choices = {}, picked = new Set();
+  <!-- 5 -->
+  <section class="card locked" id="c-make">
+    <header><div class="badge">5</div><div><h2>Make your book</h2><p>Printer files, an Amazon KDP set, an ebook and a copy to read.</p></div></header>
+    <button class="btn red" id="make" disabled>Make my book</button>
+    <p id="make-msg" class="small"></p>
+    <div id="done" class="done-box hidden">
+      <h3>Your book is ready 🎉</h3>
+      <p id="done-line" class="muted"></p>
+      <p><a class="btn red" id="download" href="#">Download everything (.zip)</a></p>
+      <p class="small muted">Download now — nothing is kept after you leave this page.</p>
+    </div>
+  </section>
+</main>
 
-    const enable = (id, on = true) => el(id).setAttribute('aria-disabled', on ? 'false' : 'true');
-    async function call(path, opts = {}) {
-      const r = await fetch(API + path, opts);
-      if (!r.ok) { let m = 'Something went wrong.'; try { m = (await r.json()).detail || m; } catch (e) {} throw new Error(typeof m === 'string' ? m : 'Please check your choices.'); }
-      return r;
-    }
+<script src="config.js"></script>
+<script>
+const API = window.RW_API;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+const COLOURS = { midnight:'#1F2A44', oxblood:'#6E1F24', forest:'#24443A', charcoal:'#3A3A3C', cream:'#F2EADB', saffron:'#E7A03A' };
+const LAYOUT_HINT = { classic:'Centred serif title, small ornament', modern:'Big bold title, accent bar', band:'Title in a colour band', frame:'Fine double border', minimal:'Small title, quiet space', picture:'Your picture, framed' };
+let S = null, H = {}, form = 'prose', layout = null, colour = null, chosen = null, beat = null, artVersion = 0;
+const choices = {}, aiChoices = {}, picked = new Set();
 
-    // Wake the free server early so the upload doesn't wait.
-    const wakeTimer = setTimeout(() => el('wake').classList.remove('hidden'), 2500);
-    fetch(API + '/api/health').then(() => { clearTimeout(wakeTimer); el('wake').classList.add('hidden'); }).catch(() => {});
+function done(step, on = true) {
+  document.querySelector(`#rail [data-s="${step}"]`).classList.toggle('done', on);
+  $('c-' + step).classList.toggle('complete', on);
+}
+function unlock(id) { $(id).classList.remove('locked'); }
+async function call(path, opts = {}) {
+  const r = await fetch(API + path, opts);
+  if (!r.ok) { let m = 'Something went wrong. Please try again.'; try { const d = (await r.json()).detail; if (typeof d === 'string') m = d; } catch (e) {} throw new Error(m); }
+  return r;
+}
 
-    async function upload(file) {
-      el('upload-msg').textContent = 'Reading your manuscript…';
-      const fd = new FormData(); fd.append('file', file);
-      try {
-        S = await (await call('/api/sessions', { method: 'POST', body: fd })).json();
-      } catch (e) { el('upload-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; return; }
-      clearInterval(beat);
-      beat = setInterval(() => fetch(`${API}/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
-      el('upload-msg').textContent = '';
-      el('found').classList.remove('hidden');
-      el('title').value = S.title; el('author').value = (S.authors || []).join(', ');
-      el('found-line').textContent = `${S.words.toLocaleString()} words · ${S.chapters.length} chapters` + (S.set_aside.length ? ` · set aside: ${S.set_aside.join(', ')}` : '');
-      el('chapters').innerHTML = S.chapters.map(c => `<li>${esc(c)}</li>`).join('');
-      renderProof(); renderCovers(); renderIndex();
-      ['s-proof', 's-cover', 's-extra', 's-make'].forEach(id => enable(id));
-    }
+const wake = setTimeout(() => $('wake').classList.remove('hidden'), 2500);
+fetch(API + '/api/health').then(r => r.json()).then(h => { H = h; clearTimeout(wake); $('wake').classList.add('hidden'); }).catch(() => {});
 
-    function renderProof() {
-      const items = S.proofreading.items;
-      const auto = S.proofreading.auto_applied;
-      el('proof-line').innerHTML = (items.length ? `${items.length} ${items.length === 1 ? 'thing' : 'things'} to check. ` : 'Nothing to check. ')
-        + (auto ? `${auto} invisible tidy-ups (stray spaces, hidden characters) done automatically. ` : '') + 'Nothing else changes unless you choose <b class="text-ink">Change</b>.';
-      el('proof').innerHTML = items.map(i => `<div class="rounded-lg border border-borderCrisp p-3 text-sm space-y-2">
-        <p class="text-slateMuted">${esc(i.section)} · ${esc(i.message)}</p>
-        <p>${esc(i.before)}<mark class="bg-amber-100 px-0.5">${esc(i.original)}</mark>${esc(i.after)}</p>
-        <div class="flex gap-2">${i.replacement !== null ? `<button data-c="${i.id}" data-v="change" class="px-3 py-1 rounded-md border">Change to “${esc(i.replacement)}”</button>` : ''}
-        <button data-c="${i.id}" data-v="keep" class="px-3 py-1 rounded-md border">Keep</button></div></div>`).join('');
-      paintProof();
-    }
-    function paintProof() {
-      document.querySelectorAll('[data-c]').forEach(b => {
-        const on = choices[b.dataset.c] === b.dataset.v || (!choices[b.dataset.c] && b.dataset.v === 'keep');
-        b.className = 'px-3 py-1 rounded-md border ' + (on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink');
-      });
-    }
-    el('proof').addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) { choices[b.dataset.c] = b.dataset.v; paintProof(); } });
+async function upload(file) {
+  $('upload-msg').innerHTML = '<span class="spinner"></span> Reading your manuscript…';
+  const fd = new FormData(); fd.append('file', file);
+  try { S = await (await call('/api/sessions', { method: 'POST', body: fd })).json(); }
+  catch (e) { $('upload-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; return; }
+  clearInterval(beat);
+  beat = setInterval(() => fetch(`${API}/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
+  $('upload-msg').textContent = '';
+  $('found').classList.remove('hidden');
+  $('title').value = S.title; $('author').value = (S.authors || []).join(', '); $('subtitle').value = S.subtitle || '';
+  const lang = S.language === 'hi' ? 'Hindi' : 'English';
+  $('facts').innerHTML = [`📄 ${esc(file.name)}`, `${S.words.toLocaleString()} words`, `${S.chapters.length} ${S.form === 'poetry' ? 'poems' : 'chapters'}`, lang].map(t => `<span class="chip">${t}</span>`).join('');
+  $('chapters').innerHTML = S.chapters.map(c => `<li>${esc(c)}</li>`).join('');
+  $('notes').innerHTML = (S.notes || []).map(n => `<li>${esc(n)}</li>`).join('') + (S.set_aside.length ? `<li>Set aside, not printed: ${esc(S.set_aside.join(', '))}</li>` : '');
+  setForm(S.form);
+  if (S.found_isbn) { $('isbn-found').classList.remove('hidden'); $('isbn-found').innerHTML = `Your file mentions ISBN <b>${esc(S.found_isbn)}</b>. <button class="btn ghost" style="padding:5px 10px" id="use-isbn">Use it</button>`; $('use-isbn').onclick = () => { $('isbn').value = S.found_isbn; $('isbn-found').classList.add('hidden'); }; }
+  if (S.found_publisher && S.found_publisher !== 'Red Panda Publications') $('pub').placeholder = S.found_publisher;
+  renderProof(); renderCovers(); renderIndex();
+  ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
+  done('upload'); done('proof'); done('details');
+  if (H.ai_proofreading) $('ai-box').classList.remove('hidden');
+  if (H.ai_pictures) $('pic-ai').classList.remove('hidden');
+}
+function setForm(f) { form = f; document.querySelectorAll('#form button').forEach(b => b.classList.toggle('on', b.dataset.f === f)); $('form-hint').textContent = f === 'poetry' ? '— line breaks kept, each poem on its own page' : ''; }
+$('form').onclick = (e) => { const b = e.target.closest('button'); if (b) setForm(b.dataset.f); };
 
-    function renderCovers() {
-      const chip = (kind, v, on) => `<button data-${kind}="${v}" class="px-3 py-1.5 rounded-full border ${on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink'}">${cap(v)}</button>`;
-      el('layouts').innerHTML = '<span class="text-slateMuted self-center mr-1">Layout</span>' + Object.keys(S.covers.layouts).map(k => chip('l', k, k === layout)).join('');
-      el('colours').innerHTML = '<span class="text-slateMuted self-center mr-1">Colours</span>' + S.covers.colours.map(k => chip('k', k, k === colour)).join('');
-    }
-    async function preview() {
-      if (!layout || !colour) return;
-      const choice = `${layout}/${colour}`;
-      el('cover-name').textContent = `${cap(layout)} layout · ${cap(colour)} colours`;
-      el('preview-box').innerHTML = 'Drawing…';
-      el('use-cover').classList.toggle('hidden', choice === chosen);
-      el('cover-chosen').classList.toggle('hidden', choice !== chosen);
-      const q = new URLSearchParams({ choice, title: el('title').value, author: el('author').value });
-      try {
-        const blob = await (await call(`/api/sessions/${S.id}/cover-preview?${q}`)).blob();
-        if (`${layout}/${colour}` === choice) el('preview-box').innerHTML = `<img src="${URL.createObjectURL(blob)}" class="w-full h-full object-cover" alt="Cover preview">`;
-      } catch (e) { el('preview-box').textContent = e.message; }
-    }
-    document.addEventListener('click', (e) => {
-      const b = e.target.closest('button'); if (!b || !S) return;
-      if (b.dataset.l) { layout = b.dataset.l; renderCovers(); preview(); }
-      if (b.dataset.k) { colour = b.dataset.k; renderCovers(); preview(); }
-    });
-    el('use-cover').onclick = () => { chosen = `${layout}/${colour}`; el('use-cover').classList.add('hidden'); el('cover-chosen').classList.remove('hidden'); el('make').disabled = false; el('make-msg').textContent = ''; };
+function proofCard(i, ai) {
+  const map = ai ? aiChoices : choices, cur = map[i.id] || 'keep';
+  return `<div class="proof-item"><div class="where">${ai ? '<span class="tag">AI</span>' : ''}${esc(i.section)} · ${esc(i.message)}</div>
+    <div style="margin-top:6px">${esc(i.before)}<mark>${esc(i.original)}</mark>${esc(i.after)}</div>
+    <div class="choice">${i.replacement !== null ? `<button data-c="${i.id}" data-ai="${ai ? 1 : ''}" data-v="change" class="${cur === 'change' ? 'on' : ''}">Change to “${esc(i.replacement)}”</button>` : ''}
+    <button data-c="${i.id}" data-ai="${ai ? 1 : ''}" data-v="keep" class="${cur === 'keep' ? 'on' : ''}">Keep as is</button></div></div>`;
+}
+let aiItems = [];
+function renderProof() {
+  const items = S.proofreading.items, auto = S.proofreading.auto_applied;
+  $('proof-line').innerHTML = (items.length ? `<b>${items.length}</b> ${items.length === 1 ? 'thing' : 'things'} to look at.` : '✓ Nothing to look at.') + (auto ? ` ${auto} invisible tidy-ups (extra spaces, hidden characters) were done for you.` : '');
+  $('proof').innerHTML = items.map(i => proofCard(i, false)).join('') + aiItems.map(i => proofCard(i, true)).join('');
+}
+$('proof').onclick = (e) => { const b = e.target.closest('[data-c]'); if (!b) return; (b.dataset.ai ? aiChoices : choices)[b.dataset.c] = b.dataset.v; renderProof(); };
+$('ai-consent').onchange = () => { $('ai-go').disabled = !$('ai-consent').checked; };
+$('ai-go').onclick = async () => {
+  $('ai-go').disabled = true; $('ai-msg').innerHTML = '<span class="spinner"></span> Starting…';
+  try { await call(`/api/sessions/${S.id}/ai-proofread`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consent: true }) }); }
+  catch (e) { $('ai-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; $('ai-go').disabled = false; return; }
+  const t = setInterval(async () => {
+    try {
+      const st = await (await call(`/api/sessions/${S.id}`)).json();
+      if (st.ai.state === 'running') { $('ai-msg').innerHTML = `<span class="spinner"></span> ${esc(st.ai.note)}`; return; }
+      clearInterval(t);
+      if (st.ai.state === 'done') { aiItems = st.ai.items; $('ai-msg').textContent = '✓ ' + st.ai.note; renderProof(); }
+      else { $('ai-msg').innerHTML = `<span class="err">${esc(st.ai.note)}</span>`; $('ai-go').disabled = false; }
+    } catch (e) { clearInterval(t); $('ai-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  }, 3000);
+};
 
-    function renderIndex() {
-      el('index').innerHTML = S.index_suggestions.length ? S.index_suggestions.map((t, i) => `<label class="flex gap-2 items-center"><input type="checkbox" data-ix="${i}"> ${esc(t.heading)} <span class="text-slateMuted">${t.count}×</span></label>`).join('')
-        : '<p class="text-slateMuted">No names or repeated terms found.</p>';
-    }
-    el('index').addEventListener('change', (e) => { const i = e.target.dataset.ix; if (i !== undefined) e.target.checked ? picked.add(+i) : picked.delete(+i); });
+function renderCovers() {
+  $('tiles').innerHTML = Object.keys(S.covers.layouts).map(k => `<button class="tile ${k === layout ? 'on' : ''}" data-l="${k}"><b>${cap(k)}</b><span>${esc(LAYOUT_HINT[k] || '')}</span></button>`).join('');
+  $('swatches').innerHTML = S.covers.colours.map(k => `<div class="sw ${k === colour ? 'on' : ''}" data-k="${k}" style="background:${COLOURS[k] || '#ccc'}" title="${cap(k)}"><span>${cap(k)}</span></div>`).join('');
+  $('pic').classList.toggle('hidden', layout !== 'picture');
+}
+async function preview() {
+  if (!layout || !colour) { $('preview').textContent = layout ? 'Now pick the colours' : 'Pick a layout'; return; }
+  const choice = `${layout}/${colour}`;
+  $('use-cover').classList.toggle('hidden', choice === chosen); $('cover-chosen').classList.toggle('hidden', choice !== chosen);
+  if (layout === 'picture' && !artVersion) { $('preview').textContent = 'Make or upload your picture below'; $('use-cover').classList.add('hidden'); return; }
+  $('preview').innerHTML = '<span><span class="spinner"></span><br>Drawing…</span>';
+  const q = new URLSearchParams({ choice, title: $('title').value, author: $('author').value, v: artVersion });
+  try {
+    const blob = await (await call(`/api/sessions/${S.id}/cover-preview?${q}`)).blob();
+    if (`${layout}/${colour}` === choice) $('preview').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Cover preview">`;
+  } catch (e) { $('preview').innerHTML = `<span class="err" style="padding:12px">${esc(e.message)}</span>`; }
+}
+document.addEventListener('click', (e) => {
+  if (!S) return;
+  const t = e.target.closest('[data-l],[data-k]'); if (!t) return;
+  if (t.dataset.l) layout = t.dataset.l; else colour = t.dataset.k;
+  renderCovers(); preview();
+});
+$('use-cover').onclick = () => { chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; };
+$('pic-make').onclick = async () => {
+  $('pic-make').disabled = true; $('pic-msg').innerHTML = '<span class="spinner"></span> Drawing your picture (about 10 seconds)…';
+  try { const r = await (await call(`/api/sessions/${S.id}/art`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: $('pic-prompt').value }) })).json();
+        artVersion++; $('pic-msg').textContent = `✓ Done. ${r.left} more tries left for this book.`; chosen = null; preview(); }
+  catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  $('pic-make').disabled = false;
+};
+$('pic-file').onchange = async () => {
+  const f = $('pic-file').files[0]; if (!f) return; const fd = new FormData(); fd.append('file', f);
+  $('pic-msg').textContent = 'Uploading…';
+  try { await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: fd }); artVersion++; $('pic-msg').textContent = '✓ Picture added.'; chosen = null; preview(); }
+  catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+};
 
-    el('make').onclick = async () => {
-      if (!chosen) { el('make-msg').textContent = 'Choose your cover first.'; return; }
-      const body = {
-        cover: chosen, title: el('title').value.trim() || null, author: el('author').value.trim() || null,
-        blurb: el('blurb').value.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).slice(0, 6),
-        isbn: el('isbn').value.trim() || null, ebook_isbn: el('eisbn').value.trim() || null,
-        public_domain_year: el('pd').value ? +el('pd').value : null,
-        proof_choices: choices,
-        index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
-      };
-      el('make').disabled = true; el('done').classList.add('hidden');
-      try { await call(`/api/sessions/${S.id}/make`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
-      catch (e) { el('make-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; el('make').disabled = false; return; }
-      const t0 = Date.now();
-      const poll = setInterval(async () => {
-        try {
-          const st = await (await call(`/api/sessions/${S.id}`)).json();
-          el('make-msg').textContent = st.step + (st.state === 'making' ? ` (${Math.round((Date.now() - t0) / 1000)} s — usually a few minutes)` : '');
-          if (st.state === 'done') {
-            clearInterval(poll); el('make-msg').textContent = ''; el('make').disabled = false; el('make').textContent = 'Make it again';
-            const s = st.summary;
-            el('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ready for the printer' : '');
-            el('download').href = `${API}/api/sessions/${S.id}/download`;
-            el('done').classList.remove('hidden');
-          } else if (st.state === 'failed') {
-            clearInterval(poll); el('make').disabled = false;
-            el('make-msg').innerHTML = `<span class="text-claret">${esc(st.error)}</span>`;
-          }
-        } catch (e) { clearInterval(poll); el('make').disabled = false; el('make-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; }
-      }, 3000);
-    };
+function renderIndex() {
+  $('index').innerHTML = S.index_suggestions.length ? S.index_suggestions.map((t, i) => `<label><input type="checkbox" data-ix="${i}"> ${esc(t.heading)} <span class="muted small">${t.count}×</span></label>`).join('') : '<p class="muted small">No names or repeated terms found.</p>';
+}
+$('index').onchange = (e) => { const i = e.target.dataset.ix; if (i !== undefined) e.target.checked ? picked.add(+i) : picked.delete(+i); };
+$('pubpage').onchange = () => $('pubabout-wrap').classList.toggle('hidden', !$('pubpage').checked);
 
-    el('file').onchange = () => el('file').files[0] && upload(el('file').files[0]);
-    const drop = el('drop');
-    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('border-ink'); });
-    drop.addEventListener('dragleave', () => drop.classList.remove('border-ink'));
-    drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('border-ink'); e.dataTransfer.files[0] && upload(e.dataTransfer.files[0]); });
-    window.addEventListener('pagehide', () => { if (S) navigator.sendBeacon && fetch(`${API}/api/sessions/${S.id}`, { method: 'DELETE', keepalive: true }).catch(() => {}); });
-  </script>
+$('make').onclick = async () => {
+  if (!chosen) { $('make-msg').innerHTML = '<span class="err">Choose your cover first (step 3).</span>'; return; }
+  const body = {
+    cover: chosen, title: $('title').value.trim() || null, author: $('author').value.trim() || null,
+    subtitle: $('subtitle').value.trim(), form,
+    blurb: $('blurb').value.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).slice(0, 6),
+    isbn: $('isbn').value.trim() || null, ebook_isbn: $('eisbn').value.trim() || null,
+    public_domain_year: $('pd').value ? +$('pd').value : null,
+    publisher: $('pub').value.trim() || 'Red Panda Publications', publisher_city: $('pubcity').value.trim(),
+    publisher_page: $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
+    proof_choices: choices, ai_choices: aiChoices,
+    index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
+  };
+  $('make').disabled = true; $('done').classList.add('hidden');
+  try { await call(`/api/sessions/${S.id}/make`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  catch (e) { $('make-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; $('make').disabled = false; return; }
+  const t0 = Date.now();
+  const poll = setInterval(async () => {
+    try {
+      const st = await (await call(`/api/sessions/${S.id}`)).json();
+      if (st.state === 'queued' || st.state === 'making') { $('make-msg').innerHTML = `<span class="spinner"></span> ${esc(st.step)} ${Math.round((Date.now() - t0) / 1000)} s — usually a few minutes.`; return; }
+      clearInterval(poll); $('make').disabled = false;
+      if (st.state === 'done') {
+        const s = st.summary; $('make-msg').textContent = ''; $('make').textContent = 'Make it again';
+        $('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index && s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ✓ ready for the printer' : ' · ⚠ not yet ready for the printer: see “Read me first” in the download (often a character the fonts can’t print — check step 2)');
+        $('download').href = `${API}/api/sessions/${S.id}/download`; $('done').classList.remove('hidden'); done('make');
+      } else { $('make-msg').innerHTML = `<span class="err">${esc(st.error || 'Something went wrong.')}</span>`; }
+    } catch (e) { clearInterval(poll); $('make').disabled = false; $('make-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  }, 3000);
+};
+
+$('file').onchange = () => $('file').files[0] && upload($('file').files[0]);
+const drop = $('drop');
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); e.dataTransfer.files[0] && upload(e.dataTransfer.files[0]); });
+window.addEventListener('pagehide', () => { if (S) fetch(`${API}/api/sessions/${S.id}`, { method: 'DELETE', keepalive: true }).catch(() => {}); });
+</script>
 </body>
 </html>
