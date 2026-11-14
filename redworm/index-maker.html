@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index — Redworm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Noto+Serif+Devanagari:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
+      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'], reader:['"Newsreader"','"Noto Serif Devanagari"','Georgia','serif'] } } } };
+  </script>
+  <style>
+    html, body { -webkit-font-smoothing: antialiased; }
+    .ix-page { columns: 2; column-gap: 1.5rem; }
+    .ix-page p { text-indent: -1em; padding-left: 1em; margin: 0 0 2px; break-inside: avoid; }
+    .ix-page h4 { break-after: avoid; }
+  </style>
+</head>
+<body class="bg-pureWhite text-ink font-sans">
+  <header class="border-b border-hairline">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-claret"></span><span class="font-bold tracking-tight">Redworm</span><span class="text-slateMuted">· Index</span></a>
+      <a href="index.html" class="text-sm text-slateMuted hover:text-ink">← All tools</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-12 space-y-8">
+    <div class="space-y-3 max-w-2xl">
+      <p class="text-sm text-slateMuted" id="book-line"></p>
+      <h1 class="text-2xl font-bold tracking-tight">Choose what goes in the index</h1>
+      <p class="text-slateMuted">Redworm found these names and phrases. Tick the ones you want, rename any line, or add your own. Redworm finds every page they're on. <b class="text-ink">Nothing is added unless you tick it.</b></p>
+      <p class="text-sm text-slateMuted">An index is optional. Most novels don't have one, but history, biography and how-to books do.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-[1fr_1fr] gap-10 items-start">
+      <section class="space-y-4">
+        <div class="flex items-center justify-between text-sm">
+          <span id="count" class="text-slateMuted"></span>
+          <span class="space-x-3"><button id="all" class="text-slateMuted hover:text-ink underline-offset-4 hover:underline">Tick all</button><button id="none" class="text-slateMuted hover:text-ink underline-offset-4 hover:underline">Clear</button></span>
+        </div>
+        <ul id="terms" class="divide-y divide-hairline border-y border-hairline"></ul>
+
+        <form id="add" class="rounded-xl bg-subtleSurface p-4 space-y-3">
+          <p class="text-sm font-semibold">Add your own</p>
+          <input id="add-heading" required placeholder="As it should appear, e.g. Regent's Park" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white text-sm" />
+          <input id="add-match" placeholder="Words to look for in the book (optional, separate with commas)" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white text-sm" />
+          <details class="text-sm text-slateMuted">
+            <summary class="cursor-pointer">Point to another line instead (a “see” line)</summary>
+            <input id="add-see" placeholder="e.g. Jekyll, Henry" class="mt-2 w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white text-sm text-ink" />
+          </details>
+          <button class="px-4 py-2 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Add</button>
+        </form>
+      </section>
+
+      <section class="lg:sticky lg:top-6 space-y-3">
+        <p class="text-sm font-semibold">How it will look at the back of the book</p>
+        <div class="rounded-xl border border-borderCrisp p-8 bg-white shadow-sm min-h-[420px]">
+          <h2 class="font-reader text-2xl font-bold mb-5">Index</h2>
+          <div id="preview" class="ix-page font-reader text-[13px] leading-snug"></div>
+        </div>
+        <p class="text-xs text-slateMuted">Page numbers are the real ones from this book's layout. Lines you add here get their pages when the book is made.</p>
+      </section>
+    </div>
+
+    <div class="pt-4 border-t border-hairline flex flex-wrap items-center justify-between gap-4">
+      <p class="text-sm text-slateMuted">Saved as <code>index.json</code>. Hand it to the Pages step and the index is printed with the book.</p>
+      <button id="download" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Save my index</button>
+    </div>
+  </main>
+
+  <script src="books/jekyll-and-hyde/index-terms.js"></script>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const D = window.RW_INDEX;
+    const KEY = 'rw-index-' + D.title;
+    let state;
+    try { state = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { state = null; }
+    if (!state) state = { picked: {}, renamed: {}, own: [] };
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+    el('book-line').textContent = `${D.title} · ${D.author}`;
+
+    const KIND = { person: 'person', name: 'place or name', phrase: 'repeated phrase' };
+    const sortKey = (h) => h.toLowerCase().replace(/^(the|a|an) /, '').replace(/[^\p{L}\p{N} ]/gu, '');
+
+    function entries() {
+      const out = [];
+      D.suggestions.forEach((s, i) => {
+        if (state.picked[i]) out.push({ heading: state.renamed[i] || s.heading, match: s.match, pages: s.pages });
+      });
+      state.own.forEach(o => out.push({ heading: o.heading, match: o.match, see: o.see || undefined, pages: '' }));
+      return out;
+    }
+
+    function renderTerms() {
+      el('terms').innerHTML = D.suggestions.map((s, i) => {
+        const on = !!state.picked[i];
+        return `<li class="py-3 flex gap-3 items-start">
+          <input type="checkbox" data-i="${i}" ${on ? 'checked' : ''} class="mt-1.5 w-4 h-4 accent-[#141414]" aria-label="Include ${esc(s.heading)}">
+          <div class="flex-1 min-w-0">
+            <input data-rename="${i}" value="${esc(state.renamed[i] || s.heading)}" class="w-full font-medium bg-transparent border-b border-transparent hover:border-borderCrisp focus:border-ink focus:outline-none py-0.5 ${on ? '' : 'text-slateMuted'}">
+            <p class="text-xs text-slateMuted mt-0.5">${esc(KIND[s.kind] || s.kind)} · ${s.count}× in ${s.chapters} ${s.chapters === 1 ? 'chapter' : 'chapters'}${s.match.length > 1 ? ' · also counts ' + s.match.filter(m => m !== s.heading).map(esc).join(', ') : ''}</p>
+          </div>
+        </li>`;
+      }).join('') + state.own.map((o, j) => `<li class="py-3 flex gap-3 items-start">
+          <span class="mt-1 text-xs px-1.5 py-0.5 rounded bg-subtleSurface text-slateMuted">yours</span>
+          <div class="flex-1"><p class="font-medium">${esc(o.heading)}</p><p class="text-xs text-slateMuted">${o.see ? 'see ' + esc(o.see) : (o.match.length ? 'looks for ' + o.match.map(esc).join(', ') : 'looks for the words as written')}</p></div>
+          <button data-del="${j}" class="text-sm text-slateMuted hover:text-claret">Remove</button></li>`).join('');
+      const n = entries().length;
+      el('count').textContent = n ? `${n} ${n === 1 ? 'line' : 'lines'} in your index` : 'Your index is empty';
+    }
+
+    function renderPreview() {
+      const list = entries().sort((a, b) => sortKey(a.heading).localeCompare(sortKey(b.heading)));
+      if (!list.length) { el('preview').innerHTML = '<p class="text-slateMuted font-sans text-sm" style="text-indent:0;padding:0">Tick a line on the left to see it here.</p>'; return; }
+      let letter = null, html = '';
+      list.forEach(e => {
+        const g = (sortKey(e.heading)[0] || '#').toUpperCase();
+        if (g !== letter) { html += `<h4 class="font-bold mt-3 mb-1 first:mt-0">${esc(g)}</h4>`; letter = g; }
+        const tail = e.see ? `, <i>see</i> ${esc(e.see)}` : (e.pages ? `, ${esc(e.pages)}` : ', <span class="text-slateMuted">…</span>');
+        html += `<p>${esc(e.heading)}${tail}</p>`;
+      });
+      el('preview').innerHTML = html;
+    }
+
+    function render() { renderTerms(); renderPreview(); }
+
+    el('terms').addEventListener('change', (ev) => {
+      const i = ev.target.dataset.i;
+      if (i !== undefined) { state.picked[i] = ev.target.checked; save(); render(); }
+    });
+    el('terms').addEventListener('input', (ev) => {
+      const i = ev.target.dataset.rename;
+      if (i !== undefined) { state.renamed[i] = ev.target.value.trim(); save(); renderPreview(); }
+    });
+    el('terms').addEventListener('click', (ev) => {
+      const j = ev.target.dataset.del;
+      if (j !== undefined) { state.own.splice(+j, 1); save(); render(); }
+    });
+    el('all').onclick = () => { D.suggestions.forEach((_, i) => state.picked[i] = true); save(); render(); };
+    el('none').onclick = () => { state.picked = {}; save(); render(); };
+    el('add').addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const heading = el('add-heading').value.trim();
+      if (!heading) return;
+      const match = el('add-match').value.split(',').map(s => s.trim()).filter(Boolean);
+      state.own.push({ heading, match, see: el('add-see').value.trim() });
+      ev.target.reset(); save(); render();
+    });
+    el('download').onclick = () => {
+      const plan = { entries: entries().map(e => {
+        const o = { heading: e.heading };
+        if (e.match && e.match.length && !(e.match.length === 1 && e.match[0] === e.heading)) o.match = e.match;
+        if (e.see) o.see = e.see;
+        return o;
+      }) };
+      const blob = new Blob([JSON.stringify(plan, null, 2)], { type: 'application/json' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'index.json' });
+      a.click(); URL.revokeObjectURL(a.href);
+    };
+    render();
+  </script>
+</body>
+</html>

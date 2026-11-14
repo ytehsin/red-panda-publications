@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose your cover — Redworm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
+      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'] } } } };
+  </script>
+  <style> html, body { -webkit-font-smoothing: antialiased; } </style>
+</head>
+<body class="bg-pureWhite text-ink font-sans">
+  <header class="border-b border-hairline">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-claret"></span><span class="font-bold tracking-tight">Redworm</span><span class="text-slateMuted">· Cover</span></a>
+      <a href="index.html" class="text-sm text-slateMuted hover:text-ink">← All tools</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-8">
+    <div class="space-y-3 max-w-2xl">
+      <p class="text-sm text-slateMuted">The Strange Case of Dr. Jekyll and Mr. Hyde · Robert Louis Stevenson</p>
+      <h1 class="text-2xl font-bold tracking-tight">Choose your cover</h1>
+      <p class="text-slateMuted">This is your decision. Redworm only shows the options. <b class="text-ink">Nothing goes to print until you choose one.</b></p>
+    </div>
+
+    <div id="chosen-bar" class="hidden rounded-xl bg-subtleSurface p-4 flex flex-wrap items-center gap-4">
+      <img id="chosen-thumb" class="h-20 rounded shadow-sm" alt="">
+      <div class="flex-1 min-w-[12rem]">
+        <p class="text-sm text-slateMuted">Your cover</p>
+        <p id="chosen-name" class="font-semibold"></p>
+      </div>
+      <button id="save" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Save my choice</button>
+    </div>
+
+    <div class="flex flex-wrap gap-x-8 gap-y-3 text-sm">
+      <div class="flex flex-wrap items-center gap-2"><span class="text-slateMuted mr-1">Layout</span><span id="layouts" class="flex flex-wrap gap-2"></span></div>
+      <div class="flex flex-wrap items-center gap-2"><span class="text-slateMuted mr-1">Colours</span><span id="colours" class="flex flex-wrap gap-2"></span></div>
+    </div>
+    <p id="layout-note" class="text-sm text-slateMuted -mt-4"></p>
+
+    <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5"></div>
+  </main>
+
+  <dialog id="look" class="rounded-2xl p-0 max-w-5xl w-[95vw] backdrop:bg-black/50">
+    <div class="p-6 space-y-4">
+      <div class="flex items-start justify-between gap-4">
+        <div><p id="look-name" class="font-semibold text-lg"></p><p class="text-sm text-slateMuted">The whole cover: back, spine and front. The red lines show where the paper is trimmed and folded.</p></div>
+        <button id="look-close" class="text-slateMuted hover:text-ink text-2xl leading-none" aria-label="Close">×</button>
+      </div>
+      <img id="look-img" class="w-full max-h-[62vh] object-contain rounded border border-hairline bg-subtleSurface" alt="">
+      <div class="flex justify-end gap-3">
+        <button id="look-back" class="px-4 py-2 rounded-lg border border-borderCrisp text-sm">Keep looking</button>
+        <button id="look-pick" class="px-5 py-2 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">This is my cover</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="books/jekyll-and-hyde/covers.js"></script>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const C = window.RW_COVERS;
+    const base = 'books/jekyll-and-hyde/';
+    const KEY = 'rw-cover-choice-jekyll-and-hyde';
+    let layout = 'all', colours = 'all', looking = null;
+    let chosen = null;
+    try { chosen = localStorage.getItem(KEY); } catch (e) {}
+    const cap = (s) => s[0].toUpperCase() + s.slice(1);
+    const label = (o) => `${cap(o.layout)} layout · ${cap(o.colours)} colours`;
+
+    function chip(kind, value, text, on, swatch) {
+      return `<button data-${kind}="${value}" class="px-3 py-1.5 rounded-full border flex items-center gap-1.5 ${on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink'}">${swatch ? `<span class="w-3 h-3 rounded-full border border-black/10" style="background:${swatch}"></span>` : ''}${esc(text)}</button>`;
+    }
+
+    function render() {
+      el('layouts').innerHTML = chip('layout', 'all', 'All', layout === 'all') + Object.keys(C.layouts).map(k => chip('layout', k, cap(k), layout === k)).join('');
+      el('colours').innerHTML = chip('colours', 'all', 'All', colours === 'all') + Object.entries(C.colours).map(([k, hex]) => chip('colours', k, cap(k), colours === k, hex)).join('');
+      el('layout-note').textContent = layout === 'all' ? '' : C.layouts[layout] + '.';
+      const shown = C.options.filter(o => (layout === 'all' || o.layout === layout) && (colours === 'all' || o.colours === colours));
+      el('grid').innerHTML = shown.map(o => {
+        const on = o.choice === chosen;
+        return `<button data-look="${o.choice}" class="group text-left space-y-2">
+          <div class="relative rounded-md overflow-hidden shadow-sm ring-offset-2 ${on ? 'ring-2 ring-claret' : 'group-hover:shadow-md'} transition">
+            <img src="${base + o.front}" alt="${esc(label(o))}" loading="lazy" class="w-full block">
+            ${on ? '<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-claret text-white text-xs font-semibold">Your cover</span>' : ''}
+          </div>
+          <p class="text-xs ${on ? 'text-ink font-semibold' : 'text-slateMuted'}">${esc(label(o))}</p>
+        </button>`;
+      }).join('');
+      const c = C.options.find(o => o.choice === chosen);
+      el('chosen-bar').classList.toggle('hidden', !c);
+      if (c) { el('chosen-thumb').src = base + c.front; el('chosen-name').textContent = label(c); }
+    }
+
+    document.addEventListener('click', (ev) => {
+      const b = ev.target.closest('button');
+      if (!b) return;
+      if (b.dataset.layout) { layout = b.dataset.layout; render(); }
+      if (b.dataset.colours) { colours = b.dataset.colours; render(); }
+      if (b.dataset.look) {
+        looking = C.options.find(o => o.choice === b.dataset.look);
+        el('look-name').textContent = label(looking);
+        el('look-img').src = base + looking.whole;
+        el('look-pick').textContent = looking.choice === chosen ? 'This is already your cover' : 'This is my cover';
+        el('look').showModal();
+      }
+    });
+    el('look-close').onclick = el('look-back').onclick = () => el('look').close();
+    el('look-pick').onclick = () => {
+      chosen = looking.choice;
+      try { localStorage.setItem(KEY, chosen); } catch (e) {}
+      el('look').close(); render();
+      el('chosen-bar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    el('save').onclick = () => {
+      const blob = new Blob([JSON.stringify({ cover: chosen }, null, 2)], { type: 'application/json' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'my-cover.json' });
+      a.click(); URL.revokeObjectURL(a.href);
+    };
+    render();
+  </script>
+</body>
+</html>

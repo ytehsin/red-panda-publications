@@ -1,0 +1,2527 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Red Panda Publications — Stories Worth Keeping, Beautifully Made</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pureWhite: '#FFFFFF',
+            subtleSurface: '#F7F7F8',
+            studioCanvas: '#F6F6F7',
+            ink: '#141414',
+            inkHover: '#2C2C2E',
+            slateMuted: '#6E6E73',
+            claret: '#8B1E24',
+            hairline: '#EFEFEF',
+            borderCrisp: '#EAEAEA'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            fraunces: ['"Fraunces"', 'Georgia', 'serif'],
+            playfair: ['"Playfair Display"', 'Georgia', 'serif'],
+            reader: ['"Newsreader"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* =====================================================================
+       1. PURE WHITE GALLERY BASE & TYPOGRAPHY
+       ===================================================================== */
+    html, body {
+      background-color: #FFFFFF;
+      color: #141414;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* =====================================================================
+       2. HYPER-REALISTIC 6-FACE CSS 3D CLOTHBOUND HARDCOVER ENGINE
+       ===================================================================== */
+    .book-stage-3d {
+      perspective: 1700px;
+    }
+
+    .hardcover-3d {
+      width: 214px;
+      height: 318px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateY(-24deg) rotateX(5deg);
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: pointer;
+      --mx: 42%;
+      --my: 28%;
+    }
+
+    .hardcover-3d.is-tracking {
+      transition: transform 0.09s linear;
+    }
+
+    /* Larger Hero Scale for Featured Hardcover */
+    .hero-book-scale {
+      width: 254px;
+      height: 376px;
+    }
+    .hero-book-scale .hc-spine {
+      width: 40px;
+      left: -20px;
+    }
+    .hero-book-scale .hc-front {
+      transform: translateZ(20px);
+    }
+    .hero-book-scale .hc-back {
+      transform: rotateY(180deg) translateZ(20px);
+    }
+    .hero-book-scale .hc-foreedge {
+      width: 37px;
+      right: -15.5px;
+    }
+    .hero-book-scale .hc-top,
+    .hero-book-scale .hc-bottom {
+      height: 37px;
+    }
+    .hero-book-scale .hc-top { top: -15.5px; }
+    .hero-book-scale .hc-bottom { bottom: -15.5px; }
+
+    /* Fine Woven Bookbinding Buckram Grain */
+    .buckram-weave {
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 3px),
+        radial-gradient(circle at 28% 18%, rgba(255,255,255,0.12), transparent 68%);
+    }
+
+    /* Realistic Multi-Layered Soft Studio Floor Shadow Over Pure #FFFFFF */
+    .book-studio-shadow {
+      position: absolute;
+      bottom: -22px;
+      left: -6px;
+      right: -18px;
+      height: 34px;
+      background:
+        radial-gradient(ellipse at 44% 48%, rgba(20, 20, 20, 0.34) 0%, rgba(20, 20, 20, 0.14) 44%, rgba(20, 20, 20, 0.03) 68%, transparent 80%);
+      filter: blur(8px);
+      transform: translateZ(-26px);
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+      pointer-events: none;
+    }
+
+    .book-card-wrap:hover .hardcover-3d:not(.is-tracking) {
+      transform: rotateY(-33deg) rotateX(7deg) translateY(-7px);
+    }
+    .book-card-wrap:hover .book-studio-shadow {
+      transform: translateZ(-32px) scaleX(1.09) translateX(6px);
+      opacity: 0.88;
+    }
+
+    /* FACE 1: Overhanging Front Cloth Board */
+    .hc-front {
+      position: absolute;
+      inset: 0;
+      transform: translateZ(19px);
+      border-radius: 2px 5px 5px 2px;
+      box-shadow:
+        inset 2px 0 4px rgba(255,255,255,0.22),
+        inset -1.5px 0 3px rgba(0,0,0,0.28),
+        inset 0 1.5px 2px rgba(255,255,255,0.2),
+        inset 0 -2px 3px rgba(0,0,0,0.26);
+      overflow: hidden;
+      backface-visibility: hidden;
+    }
+
+    /* Authentic French Hinge Groove (12px from Spine Shoulder) */
+    .hc-front::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 12px;
+      width: 3px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.38) 0%, rgba(255,255,255,0.22) 100%);
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    /* Rounded Spine Shoulder Highlight */
+    .hc-front::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 12px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.1) 100%);
+      z-index: 29;
+      pointer-events: none;
+    }
+
+    /* Cursor-Tracking Foil & Cloth Sheen */
+    .hc-specular {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle 200px at var(--mx) var(--my), rgba(255,255,255,0.24), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 35;
+      mix-blend-mode: soft-light;
+    }
+    .book-card-wrap:hover .hc-specular,
+    .hardcover-3d:hover .hc-specular {
+      opacity: 1;
+    }
+
+    /* FACE 2: Back Cloth Board */
+    .hc-back {
+      position: absolute;
+      inset: 0;
+      transform: rotateY(180deg) translateZ(19px);
+      border-radius: 5px 2px 2px 5px;
+      box-shadow:
+        inset -3px 0 7px rgba(0,0,0,0.32),
+        inset 1px 1px 2px rgba(255,255,255,0.18);
+      overflow: hidden;
+      backface-visibility: hidden;
+    }
+
+    /* FACE 3: Cylindrical Rounded Cloth Spine */
+    .hc-spine {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 38px;
+      left: -19px;
+      transform: rotateY(-90deg);
+      border-radius: 2px;
+      background-image: linear-gradient(90deg,
+        rgba(255,255,255,0.2) 0%,
+        rgba(255,255,255,0.05) 30%,
+        rgba(0,0,0,0.08) 65%,
+        rgba(0,0,0,0.38) 100%
+      );
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.32);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* FACE 4: Recessed Cream Paper Block — Fore-Edge */
+    .hc-foreedge {
+      position: absolute;
+      top: 3.5px;
+      bottom: 3.5px;
+      width: 35px;
+      right: -14.5px;
+      transform: rotateY(90deg);
+      background:
+        repeating-linear-gradient(90deg,
+          #F6F2E7 0px,
+          #E4DDD0 1.1px,
+          #FBF9F2 2.2px
+        );
+      box-shadow:
+        inset 0 4px 6px rgba(0,0,0,0.14),
+        inset 0 -4px 6px rgba(0,0,0,0.14),
+        inset 4px 0 8px rgba(0,0,0,0.14);
+    }
+
+    /* FACE 5: Recessed Top Paper Block + Crimson/Gold Silk Headband */
+    .hc-top {
+      position: absolute;
+      left: 2px;
+      right: 3.5px;
+      height: 35px;
+      top: -14.5px;
+      transform: rotateX(90deg);
+      background:
+        repeating-linear-gradient(0deg,
+          #F5F1E6 0px,
+          #E0D8C8 1.2px,
+          #FAF7F0 2.4px
+        );
+      box-shadow: inset 0 0 7px rgba(0,0,0,0.16);
+    }
+    .hc-top::before,
+    .hc-bottom::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 3px;
+      bottom: 3px;
+      width: 5px;
+      background: repeating-linear-gradient(0deg, #8B1E24 0px, #8B1E24 2px, #D4AF63 2px, #D4AF63 4px);
+    }
+
+    /* FACE 6: Recessed Bottom Paper Block */
+    .hc-bottom {
+      position: absolute;
+      left: 2px;
+      right: 3.5px;
+      height: 35px;
+      bottom: -14.5px;
+      transform: rotateX(-90deg);
+      background:
+        repeating-linear-gradient(0deg,
+          #EDE7D9 0px,
+          #D6CEBC 1.2px,
+          #F4F0E6 2.4px
+        );
+      box-shadow: inset 0 0 9px rgba(0,0,0,0.22);
+    }
+
+    /* =====================================================================
+       3. CURVED TWO-PAGE OPEN SPREAD & 3D PAGE TURN ANIMATION
+       ===================================================================== */
+    .open-spread-shell {
+      background: #EAE8E3;
+      padding: 6px 9px 9px 9px;
+      border-radius: 6px;
+      box-shadow:
+        0 24px 54px rgba(20, 20, 20, 0.12),
+        0 4px 14px rgba(20, 20, 20, 0.06);
+      border: 1px solid #DFDDD7;
+      position: relative;
+    }
+
+    .open-page-stack {
+      background:
+        linear-gradient(90deg,
+          #D8D2C5 0px, #F5F2EA 2px, #D8D2C5 4px, #FAF8F3 7px,
+          #FDFCF9 11px,
+          #FDFCF9 calc(100% - 11px),
+          #FAF8F3 calc(100% - 7px), #D8D2C5 calc(100% - 4px), #F5F2EA calc(100% - 2px), #D8D2C5 100%
+        );
+      border-radius: 3px;
+      position: relative;
+      perspective: 1800px;
+    }
+
+    .spread-verso {
+      background: linear-gradient(90deg, #F9F7F1 0%, #FDFCF9 76%, #EFECE3 95%, #DCD6C8 100%);
+    }
+    .spread-recto {
+      background: linear-gradient(90deg, #DCD6C8 0%, #EFECE3 5%, #FDFCF9 24%, #F9F7F1 100%);
+    }
+
+    .page-flip-leaf {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      right: 0;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      pointer-events: none;
+      z-index: 40;
+    }
+    .page-flip-leaf.turn-forward {
+      animation: leafForward 0.62s cubic-bezier(0.42, 0.05, 0.2, 1) forwards;
+    }
+    .page-flip-leaf.turn-backward {
+      animation: leafBackward 0.62s cubic-bezier(0.42, 0.05, 0.2, 1) forwards;
+    }
+    @keyframes leafForward {
+      0% { transform: rotateY(0deg); box-shadow: -4px 0 14px rgba(0,0,0,0.06); }
+      50% { box-shadow: -24px 0 36px rgba(0,0,0,0.16); }
+      100% { transform: rotateY(-180deg); box-shadow: -2px 0 8px rgba(0,0,0,0.04); }
+    }
+    @keyframes leafBackward {
+      0% { transform: rotateY(-180deg); }
+      50% { box-shadow: -24px 0 36px rgba(0,0,0,0.16); }
+      100% { transform: rotateY(0deg); }
+    }
+
+    /* Subtle Range Inputs */
+    input[type="range"] {
+      accent-color: #141414;
+      height: 4px;
+      cursor: pointer;
+    }
+
+    /* Smooth Workspace Reveal */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .workspace-transition {
+      animation: fadeSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Simulated Walkthrough Pointer */
+    #sim-cursor {
+      transition: left 0.72s cubic-bezier(0.22, 1, 0.36, 1), top 0.72s cubic-bezier(0.22, 1, 0.36, 1), transform 0.18s ease;
+    }
+    #sim-cursor.clicking {
+      transform: scale(0.8);
+    }
+  </style>
+</head>
+<body class="bg-pureWhite text-ink selection:bg-ink selection:text-pureWhite">
+
+  <!-- SIMULATED POINTER FOR 60s AUTOMATED WALKTHROUGH -->
+  <div id="sim-cursor" class="fixed z-[95] pointer-events-none hidden" style="left: 50%; top: 50%;">
+    <div class="w-6 h-6 rounded-full bg-claret/15 border border-claret flex items-center justify-center shadow-sm">
+      <div class="w-2 h-2 rounded-full bg-ink"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PART A: RED PANDA PUBLICATIONS — PURE WHITE LITERARY WEBSITE          -->
+  <!-- ===================================================================== -->
+  <div id="website-shell" class="min-h-screen flex flex-col bg-pureWhite">
+
+    <!-- Minimal Literary Sticky Header (No Theme Dots, No Bag, No Loud Buttons) -->
+    <header class="sticky top-0 z-40 bg-white/[0.94] backdrop-blur-md border-b border-hairline">
+      <div class="max-w-6xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+        <!-- Left: Understated Brand Seal + Mixed-Weight Wordmark -->
+        <button onclick="switchSiteTab('home')" class="flex items-center gap-3 text-left group focus:outline-none">
+          <span class="w-7 h-7 rounded-full border border-claret/35 flex items-center justify-center text-claret group-hover:bg-claret group-hover:text-white transition duration-300 shrink-0">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M7 12 L5 5 L12 8.5 C14.5 7.8 17.5 7.8 20 8.5 L27 5 L25 12 C27.5 15.5 26.5 22 22 25 C18.5 27.2 13.5 27.2 10 25 C5.5 22 4.5 15.5 7 12 Z"/>
+              <circle cx="12.5" cy="16" r="1.4" fill="currentColor"/>
+              <circle cx="19.5" cy="16" r="1.4" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="flex items-baseline gap-1.5 leading-none">
+            <span class="font-sans font-bold text-lg sm:text-[19px] tracking-[-0.03em] text-ink">Red Panda</span>
+            <span class="font-fraunces italic font-light text-base sm:text-[18px] text-slateMuted">Publications</span>
+          </span>
+        </button>
+
+        <!-- Right: Clean Text Navigation Links ONLY -->
+        <nav class="flex items-center gap-6 sm:gap-9 text-[13.5px] font-medium">
+          <button onclick="switchSiteTab('books')" data-sitetab="books" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Books</button>
+          <button onclick="switchSiteTab('authors')" data-sitetab="authors" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Authors</button>
+          <button onclick="switchSiteTab('journal')" data-sitetab="journal" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Journal</button>
+          <button onclick="switchSiteTab('about')" data-sitetab="about" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">About</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ================================================================= -->
+    <!-- WEBSITE VIEW 1: HOMEPAGE                                          -->
+    <!-- ================================================================= -->
+    <main id="site-view-home" class="site-view flex-1 bg-pureWhite">
+
+      <!-- 1. UNCLUTTERED HERO ON PURE #FFFFFF -->
+      <section class="border-b border-hairline">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10 py-20 sm:py-28 lg:py-32 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+          
+          <!-- Left Column: Dramatic Mixed-Weight Typography, Short Lead, Crisp Ink CTA -->
+          <div class="lg:col-span-7 space-y-8">
+            <h1 class="text-5xl sm:text-6xl lg:text-[72px] leading-[1.01] text-ink">
+              <span class="font-sans font-extrabold tracking-[-0.04em]">Stories</span>
+              <em class="font-fraunces italic font-light text-slateMuted px-1">worth</em>
+              <span class="font-sans font-extrabold tracking-[-0.04em]">keeping,</span><br/>
+              <em class="font-fraunces italic font-light text-claret">beautifully</em>
+              <span class="font-sans font-extrabold tracking-[-0.04em]">made.</span>
+            </h1>
+
+            <p class="text-base sm:text-[19px] text-slateMuted max-w-xl leading-[1.68] font-normal">
+              An independent literary publishing house devoted to enduring fiction, essays, poetry, and translations—crafted with archival care in New Delhi.
+            </p>
+
+            <div class="pt-2 flex flex-wrap items-center gap-7">
+              <button id="hero-explore-btn" onclick="scrollToShowroom()" class="px-7 py-3.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold tracking-[-0.01em] transition">
+                Explore the Showroom
+              </button>
+              <button onclick="switchSiteTab('journal')" class="text-sm font-medium text-ink hover:text-claret transition">
+                Read the Journal →
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Single Floating 6-Face 3D Clothbound Hardcover Over Pure #FFFFFF -->
+          <div class="lg:col-span-5 flex items-center justify-center py-4">
+            <div id="hero-3d-mount" class="book-stage-3d flex items-center justify-center">
+              <!-- Populated dynamically with The Salt Roads 3D Hardcover -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 2. BORDERLESS 3D BOOK SHOWROOM ON PURE #FFFFFF -->
+      <section id="showroom-sec" class="max-w-6xl mx-auto px-6 sm:px-10 py-24 sm:py-28">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-16">
+          <h2 class="text-3xl sm:text-[44px] leading-none text-ink">
+            <span class="font-sans font-extrabold tracking-[-0.035em]">The</span>
+            <em class="font-fraunces italic font-light ml-1.5">Showroom</em>
+          </h2>
+
+          <!-- Simple Literary Genre Filter Pills -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="filterHomeShowroom('All')" data-hcat="All" class="home-cat-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-ink text-pureWhite transition">All</button>
+            <button onclick="filterHomeShowroom('Fiction')" data-hcat="Fiction" class="home-cat-btn px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Fiction</button>
+            <button onclick="filterHomeShowroom('Poetry & Ghazals')" data-hcat="Poetry & Ghazals" class="home-cat-btn px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Poetry &amp; Ghazals</button>
+            <button onclick="filterHomeShowroom('Essays')" data-hcat="Essays" class="home-cat-btn px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Essays</button>
+            <button onclick="filterHomeShowroom('Translations')" data-hcat="Translations" class="home-cat-btn px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Translations</button>
+          </div>
+        </div>
+
+        <!-- 6 Tactile Clothbound Hardcovers Sitting Directly on Pure #FFFFFF -->
+        <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- 3. EDITORIAL ETHOS (WIDE, BORDERLESS, SEPARATED ONLY BY 1PX HAIRLINES) -->
+      <section class="border-t border-hairline">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10 py-24">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 md:divide-x md:divide-hairline">
+            <div class="md:pr-12 space-y-3">
+              <span class="font-fraunces italic font-light text-2xl text-claret block">i.</span>
+              <h3 class="text-xl text-ink">
+                <span class="font-sans font-bold tracking-tight">Edited</span>
+                <em class="font-fraunces italic font-light ml-1">with patience</em>
+              </h3>
+              <p class="text-sm text-slateMuted leading-relaxed">
+                Every manuscript is read closely and shaped alongside its author, honouring cadence, argument, and stillness on the page.
+              </p>
+            </div>
+
+            <div class="md:px-12 space-y-3">
+              <span class="font-fraunces italic font-light text-2xl text-claret block">ii.</span>
+              <h3 class="text-xl text-ink">
+                <span class="font-sans font-bold tracking-tight">Bound</span>
+                <em class="font-fraunces italic font-light ml-1">to endure</em>
+              </h3>
+              <p class="text-sm text-slateMuted leading-relaxed">
+                Smyth-sewn signatures, natural archival paper, and tactile cloth boards designed to age gracefully on a reader’s shelf.
+              </p>
+            </div>
+
+            <div class="md:pl-12 space-y-3">
+              <span class="font-fraunces italic font-light text-2xl text-claret block">iii.</span>
+              <h3 class="text-xl text-ink">
+                <span class="font-sans font-bold tracking-tight">Open</span>
+                <em class="font-fraunces italic font-light ml-1">to independent makers</em>
+              </h3>
+              <p class="text-sm text-slateMuted leading-relaxed">
+                Alongside our curated house list, we build publishing tools that give authors direct command over book typography and print craft.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. ARCHITECTURAL Redworm STUDIO INTRODUCTION (NO BLACK BOX, NO BOOK GRAPHIC) -->
+      <section id="studio-intro-sec" class="border-y border-borderCrisp bg-pureWhite">
+        <div class="max-w-6xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+          <div class="max-w-3xl space-y-7">
+            <h2 class="text-4xl sm:text-5xl lg:text-[56px] leading-[1.05] text-ink">
+              <span class="font-sans font-extrabold tracking-[-0.04em]">From manuscript</span>
+              <em class="font-fraunces italic font-light text-claret"> to a beautifully</em>
+              <span class="font-sans font-extrabold tracking-[-0.04em]"> made book.</span>
+            </h2>
+
+            <p class="text-base sm:text-lg text-slateMuted leading-[1.7] max-w-2xl">
+              Step into <strong class="font-semibold text-ink">Redworm</strong>—our standalone publishing workbench for manuscript import, live two-page typesetting, proofreading, cover wrap design, and print export.
+            </p>
+
+            <div class="pt-2">
+              <button id="open-studio-btn" onclick="openStudio(1)" class="px-7 py-3.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold tracking-[-0.01em] transition">
+                Open Redworm →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================================================================= -->
+    <!-- WEBSITE VIEW 2: FULL BOOKS CATALOGUE                              -->
+    <!-- ================================================================= -->
+    <section id="site-view-books" class="site-view hidden flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 py-20 sm:py-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-16">
+        <div>
+          <h1 class="text-4xl sm:text-5xl text-ink">
+            <span class="font-sans font-extrabold tracking-[-0.035em]">Complete</span>
+            <em class="font-fraunces italic font-light ml-1.5">Catalogue</em>
+          </h1>
+          <p class="text-sm text-slateMuted mt-2">Clothbound first editions and trade paperbacks in print.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="filterBooksView('All')" data-bcat="All" class="book-view-cat px-4 py-1.5 rounded-full text-xs font-semibold bg-ink text-pureWhite transition">All</button>
+          <button onclick="filterBooksView('Fiction')" data-bcat="Fiction" class="book-view-cat px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Fiction</button>
+          <button onclick="filterBooksView('Poetry & Ghazals')" data-bcat="Poetry & Ghazals" class="book-view-cat px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Poetry &amp; Ghazals</button>
+          <button onclick="filterBooksView('Essays')" data-bcat="Essays" class="book-view-cat px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Essays</button>
+          <button onclick="filterBooksView('Translations')" data-bcat="Translations" class="book-view-cat px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition">Translations</button>
+        </div>
+      </div>
+
+      <div id="full-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20"></div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- WEBSITE VIEW 3: AUTHORS                                           -->
+    <!-- ================================================================= -->
+    <section id="site-view-authors" class="site-view hidden flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 py-20 sm:py-24">
+      <div class="border-b border-hairline pb-8 mb-14">
+        <h1 class="text-4xl sm:text-5xl text-ink">
+          <span class="font-sans font-extrabold tracking-[-0.035em]">House</span>
+          <em class="font-fraunces italic font-light ml-1.5">Authors</em>
+        </h1>
+        <p class="text-sm text-slateMuted mt-2 max-w-xl">Novelists, poets, essayists, and translators published by Red Panda Publications.</p>
+      </div>
+
+      <div id="authors-roster-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-14"></div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- WEBSITE VIEW 4: LITERARY JOURNAL                                  -->
+    <!-- ================================================================= -->
+    <section id="site-view-journal" class="site-view hidden flex-1 max-w-5xl w-full mx-auto px-6 sm:px-10 py-20 sm:py-24">
+      <div class="border-b border-hairline pb-8 mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <h1 class="text-4xl sm:text-5xl text-ink">
+          <span class="font-sans font-extrabold tracking-[-0.035em]">The</span>
+          <em class="font-fraunces italic font-light ml-1.5">Journal</em>
+        </h1>
+        <p class="text-sm text-slateMuted">Essays on craft, translation dispatches, and long-form conversations.</p>
+      </div>
+
+      <div id="journal-list" class="divide-y divide-hairline">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- WEBSITE VIEW 5: ABOUT & MANUSCRIPT SUBMISSIONS                    -->
+    <!-- ================================================================= -->
+    <section id="site-view-about" class="site-view hidden flex-1 max-w-5xl w-full mx-auto px-6 sm:px-10 py-20 sm:py-24">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div class="lg:col-span-6 space-y-6">
+          <h1 class="text-4xl sm:text-5xl leading-[1.06] text-ink">
+            <span class="font-sans font-extrabold tracking-[-0.035em]">An independent house</span><br/>
+            <em class="font-fraunces italic font-light text-claret">for lasting literature.</em>
+          </h1>
+          <p class="text-base text-slateMuted leading-[1.75]">
+            Founded in New Delhi, Red Panda Publications publishes a focused annual list of literary fiction, poetry and ghazals, narrative non-fiction, and Indian translations.
+          </p>
+          <p class="text-sm text-slateMuted leading-[1.75]">
+            We believe digital tools should serve editorial craft rather than replace it. Our engineering team develops <button onclick="openStudio(1)" class="text-ink font-semibold underline underline-offset-4 hover:text-claret">Redworm</button> as an independent workbench for writers and small presses preparing print-ready books.
+          </p>
+          <div class="pt-4 border-t border-hairline grid grid-cols-2 gap-6 text-xs">
+            <div>
+              <div class="font-semibold text-ink mb-1">Editorial Desk</div>
+              <div class="text-slateMuted">Connaught Place, New Delhi 110001</div>
+            </div>
+            <div>
+              <div class="font-semibold text-ink mb-1">Reading Window</div>
+              <div class="text-slateMuted">Open year-round for unagented work</div>
+            </div>
+          </div>
+        </div>
+
+        <form onsubmit="submitEditorialEnquiry(event)" class="lg:col-span-6 border-t lg:border-t-0 lg:border-l border-hairline pt-10 lg:pt-0 lg:pl-12 space-y-5">
+          <h2 class="font-sans font-bold text-xl tracking-tight text-ink">Manuscript Enquiries</h2>
+          <p class="text-xs text-slateMuted leading-relaxed">Send a brief synopsis and the opening ten pages of your work to our editors.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+              <label class="block font-medium text-slateMuted mb-1.5">Author Name</label>
+              <input required type="text" placeholder="Arundhati Rao" class="w-full px-3.5 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink"/>
+            </div>
+            <div>
+              <label class="block font-medium text-slateMuted mb-1.5">Email Address</label>
+              <input required type="email" placeholder="author@domain.com" class="w-full px-3.5 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink"/>
+            </div>
+          </div>
+          <div class="text-xs">
+            <label class="block font-medium text-slateMuted mb-1.5">Category</label>
+            <select class="w-full px-3.5 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink">
+              <option>Literary Fiction</option>
+              <option>Poetry &amp; Ghazals</option>
+              <option>Essays &amp; Monograph</option>
+              <option>Literary Translation</option>
+            </select>
+          </div>
+          <div class="text-xs">
+            <label class="block font-medium text-slateMuted mb-1.5">Working Title &amp; Note</label>
+            <textarea required rows="4" placeholder="Introduce your manuscript..." class="w-full px-3.5 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink"></textarea>
+          </div>
+          <button type="submit" class="px-6 py-3 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold transition">
+            Submit to Editorial Desk →
+          </button>
+          <p id="about-submit-msg" class="hidden text-xs font-medium text-claret">Thank you. Your note has been logged for our reading committee.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Pure White Borderless Literary Footer -->
+    <footer class="border-t border-hairline bg-pureWhite mt-auto">
+      <div class="max-w-6xl mx-auto px-6 sm:px-10 py-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 text-xs text-slateMuted">
+        <div class="space-y-1.5">
+          <div class="flex items-baseline gap-1.5 text-ink">
+            <span class="font-sans font-bold text-sm tracking-tight">Red Panda</span>
+            <em class="font-fraunces italic font-light text-sm text-slateMuted">Publications</em>
+          </div>
+          <p>New Delhi · Independent Literary Publishing</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-7">
+          <button onclick="switchSiteTab('books')" class="hover:text-ink transition">Books</button>
+          <button onclick="switchSiteTab('authors')" class="hover:text-ink transition">Authors</button>
+          <button onclick="switchSiteTab('journal')" class="hover:text-ink transition">Journal</button>
+          <button onclick="switchSiteTab('about')" class="hover:text-ink transition">About</button>
+          <button onclick="openStudio(1)" class="text-ink font-medium hover:text-claret transition">Redworm ↗</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PART B: STANDALONE Redworm STUDIO (PURE WHITE & SOFT ALABASTER THEME) -->
+  <!-- ===================================================================== -->
+  <div id="studio-shell" class="hidden min-h-screen bg-pureWhite text-ink flex-col workspace-transition">
+
+    <!-- Standalone Subdomain Application Top Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-borderCrisp">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+        
+        <!-- Left: Subdomain Identity + Active Manuscript -->
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-claret"></span>
+            <span class="font-sans font-bold text-sm tracking-tight text-ink">Redworm</span>
+            <span class="hidden md:inline font-mono text-[11px] text-slateMuted border-l border-borderCrisp pl-2.5">redpandapublications.com/redworm</span>
+          </div>
+          <span class="hidden xl:inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-subtleSurface border border-borderCrisp text-xs text-slateMuted truncate">
+            <strong id="st-top-title" class="font-medium text-ink">The Salt Roads</strong>
+            <span>·</span>
+            <span id="st-top-words" class="font-mono text-[11px]">92,310 words</span>
+          </span>
+        </div>
+
+        <!-- Center: Clean 5-Stage Progress Stepper -->
+        <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
+          <button onclick="goStudioStep(1)" id="sstep-1" class="sstep-pill px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition shrink-0">
+            <span class="sstep-idx font-mono text-[10px]">1</span><span>Import</span>
+          </button>
+          <span class="text-borderCrisp text-xs">/</span>
+          <button onclick="goStudioStep(2)" id="sstep-2" class="sstep-pill px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition shrink-0">
+            <span class="sstep-idx font-mono text-[10px]">2</span><span>Layout</span>
+          </button>
+          <span class="text-borderCrisp text-xs">/</span>
+          <button onclick="goStudioStep(3)" id="sstep-3" class="sstep-pill px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition shrink-0">
+            <span class="sstep-idx font-mono text-[10px]">3</span><span>Proofread</span>
+          </button>
+          <span class="text-borderCrisp text-xs">/</span>
+          <button onclick="goStudioStep(4)" id="sstep-4" class="sstep-pill px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition shrink-0">
+            <span class="sstep-idx font-mono text-[10px]">4</span><span>Cover</span>
+          </button>
+          <span class="text-borderCrisp text-xs">/</span>
+          <button onclick="goStudioStep(5)" id="sstep-5" class="sstep-pill px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition shrink-0">
+            <span class="sstep-idx font-mono text-[10px]">5</span><span>Export</span>
+          </button>
+        </nav>
+
+        <!-- Right: Exit Link Back to Publishing House -->
+        <button onclick="closeStudio()" class="text-xs font-medium text-slateMuted hover:text-ink transition shrink-0">
+          ← Red Panda Publications
+        </button>
+      </div>
+    </header>
+
+    <!-- ================================================================= -->
+    <!-- STUDIO STAGE 1: IMPORT MANUSCRIPT                                 -->
+    <!-- ================================================================= -->
+    <div id="studio-pane-1" class="studio-pane flex-1 bg-studioCanvas">
+      <div class="max-w-5xl mx-auto px-6 sm:px-8 py-12 space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">Stage 1 of 5</div>
+            <h1 class="text-3xl font-sans font-extrabold tracking-tight text-ink mt-1">Manuscript Import</h1>
+          </div>
+          <div class="text-xs text-slateMuted">Supported: <span class="font-mono text-ink">.docx · .md · .txt</span> · Non-destructive parse</div>
+        </div>
+
+        <!-- Clean White Dropzone & Sample Loader -->
+        <div class="bg-pureWhite border border-borderCrisp rounded-xl p-8 text-center space-y-5">
+          <div class="max-w-lg mx-auto space-y-4">
+            <div class="font-sans font-semibold text-base text-ink">Drop manuscript file or test with a sample</div>
+            <div class="p-4 rounded-lg bg-subtleSurface border border-borderCrisp flex items-center justify-between gap-4 text-left">
+              <div class="min-w-0 flex-1">
+                <div id="imp-filename" class="font-mono text-xs font-semibold text-ink truncate">salt-roads-manuscript.docx</div>
+                <div id="imp-status-txt" class="text-[11px] text-slateMuted mt-0.5">Parsed · 12 chapters structured</div>
+                <div class="w-full h-1 bg-borderCrisp rounded-full mt-2 overflow-hidden">
+                  <div id="imp-bar" class="h-full bg-ink w-full transition-all duration-500"></div>
+                </div>
+              </div>
+              <button onclick="reparseSampleManuscript()" class="px-3.5 py-2 rounded-md bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold shrink-0 transition">
+                Re-parse
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-4 text-xs">
+              <label class="cursor-pointer font-medium text-ink underline underline-offset-4 hover:text-claret">
+                <input type="file" accept=".txt,.md,.docx" class="hidden" onchange="handleManuscriptUpload(event)" />
+                Upload from computer
+              </label>
+              <span class="text-borderCrisp">·</span>
+              <button onclick="loadPresetManuscript('The Salt Roads', 'A. Khan', 92310, 12)" class="text-slateMuted hover:text-ink">Load Fiction Sample</button>
+              <span class="text-borderCrisp">·</span>
+              <button onclick="loadPresetManuscript('Mirrors of Daryaganj', 'Z. Siddiqui', 34800, 8)" class="text-slateMuted hover:text-ink">Load Poetry Sample</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parsed Chapters & Telemetry -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div class="md:col-span-8 bg-pureWhite border border-borderCrisp rounded-xl divide-y divide-hairline text-xs">
+            <div class="px-5 py-3.5 font-semibold text-slateMuted uppercase tracking-wider text-[10px]">Detected Chapter Map</div>
+            <div class="px-5 py-3 flex justify-between"><span class="font-mono text-slateMuted w-8">00</span><span class="flex-1 font-medium text-ink">Prologue: The Winter Ford</span><span class="font-mono text-slateMuted">2,140 words</span></div>
+            <div class="px-5 py-3 flex justify-between"><span class="font-mono text-slateMuted w-8">01</span><span class="flex-1 font-medium text-ink">The Harbour at Dawn</span><span class="font-mono text-slateMuted">7,820 words</span></div>
+            <div class="px-5 py-3 flex justify-between"><span class="font-mono text-slateMuted w-8">02</span><span class="flex-1 font-medium text-ink">Thirteen Carts</span><span class="font-mono text-slateMuted">8,410 words</span></div>
+            <div class="px-5 py-3 flex justify-between"><span class="font-mono text-slateMuted w-8">03</span><span class="flex-1 font-medium text-ink">White Salt</span><span class="font-mono text-slateMuted">7,960 words</span></div>
+            <div class="px-5 py-3 flex justify-between"><span class="font-mono text-slateMuted w-8">04</span><span class="flex-1 font-medium text-ink">The Customs House (+ 7 chapters)</span><span class="font-mono text-slateMuted">65,980 words</span></div>
+          </div>
+
+          <div class="md:col-span-4 bg-pureWhite border border-borderCrisp rounded-xl divide-y divide-hairline text-xs h-fit">
+            <div class="px-5 py-3.5 font-semibold text-slateMuted uppercase tracking-wider text-[10px]">Document Telemetry</div>
+            <div class="px-5 py-3.5 flex justify-between"><span class="text-slateMuted">Word Count</span><span id="tel-words" class="font-mono font-semibold text-ink">92,310</span></div>
+            <div class="px-5 py-3.5 flex justify-between"><span class="text-slateMuted">Chapters</span><span id="tel-chaps" class="font-mono font-semibold text-ink">12</span></div>
+            <div class="px-5 py-3.5 flex justify-between"><span class="text-slateMuted">Estimated Pages (6"×9")</span><span id="tel-pages" class="font-mono font-semibold text-ink">312 pp</span></div>
+            <div class="px-5 py-3.5 flex justify-between"><span class="text-slateMuted">Scene Breaks</span><span class="font-mono font-semibold text-ink">24</span></div>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button onclick="goStudioStep(2)" class="px-6 py-3 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold transition">
+            Continue to Layout →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- STUDIO STAGE 2: LIVE TWO-PAGE TYPESETTING LAYOUT                  -->
+    <!-- ================================================================= -->
+    <div id="studio-pane-2" class="studio-pane hidden flex-1 bg-studioCanvas">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 py-10 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">Stage 2 of 5</div>
+            <h1 class="text-3xl font-sans font-extrabold tracking-tight text-ink mt-1">Typesetting &amp; Spread Layout</h1>
+          </div>
+          <div id="layout-telemetry-badge" class="font-mono text-xs text-slateMuted bg-pureWhite border border-borderCrisp px-3.5 py-1.5 rounded-md">
+            6" × 9" · 312 pages · Spine 18.4 mm
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Left Controls on Crisp White Card -->
+          <div class="lg:col-span-4 bg-pureWhite border border-borderCrisp rounded-xl p-6 space-y-5 text-xs">
+            <div>
+              <label class="block font-semibold text-slateMuted uppercase tracking-wider text-[10px] mb-2">Trim Format</label>
+              <div class="grid grid-cols-3 gap-2 font-mono text-[11px]">
+                <button onclick="setStudioTrim('5.5\" × 8.5\"', 344)" data-trim="5.5&quot; × 8.5&quot;" class="trim-opt py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink">5.5"×8.5"</button>
+                <button onclick="setStudioTrim('6\" × 9\"', 312)" data-trim="6&quot; × 9&quot;" class="trim-opt py-2 rounded-md bg-ink text-pureWhite font-semibold">6"×9"</button>
+                <button onclick="setStudioTrim('Royal Octavo', 286)" data-trim="Royal Octavo" class="trim-opt py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink">Octavo</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slateMuted uppercase tracking-wider text-[10px] mb-2">Typeface Pairing</label>
+              <select id="st-font-select" onchange="updateStudioTypesetting()" class="w-full px-3 py-2 rounded-md border border-borderCrisp bg-subtleSurface text-ink font-medium focus:outline-none">
+                <option value="Newsreader">Newsreader Book Serif</option>
+                <option value="Fraunces">Fraunces Old-Style</option>
+                <option value="Playfair Display">Playfair Modern Scot</option>
+              </select>
+            </div>
+
+            <div class="space-y-3 pt-2 border-t border-hairline">
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slateMuted">Point Size</span><span id="val-pt" class="font-mono font-medium">11.0 pt</span></div>
+                <input id="rng-pt" type="range" min="9.5" max="13" step="0.5" value="11" oninput="updateStudioTypesetting()" class="w-full"/>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slateMuted">Line Height</span><span id="val-lh" class="font-mono font-medium">1.62</span></div>
+                <input id="rng-lh" type="range" min="1.35" max="1.9" step="0.05" value="1.62" oninput="updateStudioTypesetting()" class="w-full"/>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span class="text-slateMuted">Inner Gutter Margin</span><span id="val-margin" class="font-mono font-medium">24 mm</span></div>
+                <input id="rng-margin" type="range" min="16" max="34" step="1" value="24" oninput="updateStudioTypesetting()" class="w-full"/>
+              </div>
+            </div>
+
+            <div class="space-y-2.5 pt-3 border-t border-hairline">
+              <label class="flex items-center justify-between cursor-pointer">
+                <span class="text-ink font-medium">Chapter Drop Caps</span>
+                <input id="chk-dropcap" type="checkbox" checked onchange="updateStudioTypesetting()" class="accent-ink w-4 h-4"/>
+              </label>
+              <label class="flex items-center justify-between cursor-pointer">
+                <span class="text-ink font-medium">Running Headers</span>
+                <input id="chk-headers" type="checkbox" checked onchange="updateStudioTypesetting()" class="accent-ink w-4 h-4"/>
+              </label>
+            </div>
+          </div>
+
+          <!-- Right Live Two-Page Spread Canvas with Page Flip -->
+          <div class="lg:col-span-8 space-y-4">
+            <div class="open-spread-shell">
+              <div class="open-page-stack grid grid-cols-1 md:grid-cols-2 min-h-[450px] overflow-hidden relative">
+                <div id="studio-flip-leaf" class="page-flip-leaf hidden spread-recto border-l border-black/10"></div>
+
+                <div id="st-spread-left" class="spread-verso p-8 flex flex-col justify-between border-b md:border-b-0 border-black/10">
+                  <div id="st-head-left" class="flex justify-between font-mono text-[9px] tracking-[0.18em] uppercase text-slateMuted">
+                    <span id="st-pnum-l">14</span><span>THE SALT ROADS</span><span></span>
+                  </div>
+                  <div id="st-body-left" class="font-reader text-[14px] leading-[1.62] text-ink/90 text-justify space-y-3 my-4"></div>
+                  <div class="font-mono text-[9px] text-slateMuted">Verso</div>
+                </div>
+
+                <div id="st-spread-right" class="spread-recto p-8 flex flex-col justify-between">
+                  <div id="st-head-right" class="flex justify-between font-mono text-[9px] tracking-[0.18em] uppercase text-slateMuted">
+                    <span></span><span>THE HARBOUR AT DAWN</span><span id="st-pnum-r">15</span>
+                  </div>
+                  <div id="st-body-right" class="font-reader text-[14px] leading-[1.62] text-ink/90 text-justify space-y-3 my-4"></div>
+                  <div class="font-mono text-[9px] text-slateMuted text-right">Recto</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <button onclick="flipStudioSpread(-1)" class="px-3.5 py-1.5 rounded-md bg-pureWhite border border-borderCrisp hover:border-ink font-medium transition">← Previous Spread</button>
+                <button onclick="flipStudioSpread(1)" class="px-3.5 py-1.5 rounded-md bg-pureWhite border border-borderCrisp hover:border-ink font-medium transition">Next Spread →</button>
+                <span id="st-spread-indicator" class="font-mono text-[11px] text-slateMuted ml-2">Spread 1 of 3</span>
+              </div>
+              <button onclick="goStudioStep(3)" class="px-6 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite font-semibold transition">
+                Continue to Proofread →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- STUDIO STAGE 3: EDITORIAL PROOFREADING                            -->
+    <!-- ================================================================= -->
+    <div id="studio-pane-3" class="studio-pane hidden flex-1 bg-studioCanvas">
+      <div class="max-w-6xl mx-auto px-6 sm:px-8 py-10 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">Stage 3 of 5</div>
+            <h1 class="text-3xl font-sans font-extrabold tracking-tight text-ink mt-1">Editorial Proofread</h1>
+          </div>
+          <div id="proof-counter-badge" class="font-mono text-xs px-3.5 py-1.5 rounded-md bg-pureWhite border border-borderCrisp text-claret font-medium">
+            4 open queries
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Manuscript Sheet -->
+          <div class="lg:col-span-7 bg-pureWhite border border-borderCrisp rounded-xl p-8 sm:p-10 space-y-5">
+            <div class="flex justify-between items-center border-b border-hairline pb-3 text-xs text-slateMuted">
+              <span class="font-medium text-ink">Chapter 1 · The Harbour at Dawn</span>
+              <span class="font-mono text-[11px]">House Style: Oxford / EN-GB</span>
+            </div>
+            <div id="proof-text-sheet" class="font-reader text-[18px] leading-[1.85] text-ink space-y-5"></div>
+          </div>
+
+          <!-- Interactive Review Cards -->
+          <div id="proof-cards-col" class="lg:col-span-5 space-y-3"></div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button onclick="goStudioStep(4)" class="px-6 py-3 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold transition">
+            Continue to Cover Designer →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- STUDIO STAGE 4: COVER DESIGNER (3D HARDCOVER + FULL PRINT WRAP)   -->
+    <!-- ================================================================= -->
+    <div id="studio-pane-4" class="studio-pane hidden flex-1 bg-studioCanvas">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8 py-10 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">Stage 4 of 5</div>
+            <h1 class="text-3xl font-sans font-extrabold tracking-tight text-ink mt-1">Cover &amp; Binding Designer</h1>
+          </div>
+
+          <!-- Toggle Between Real-Time 3D Hardcover & Flat Print-Wrap Sheet -->
+          <div class="inline-flex bg-pureWhite p-1 rounded-lg border border-borderCrisp text-xs font-medium">
+            <button onclick="setStudioCoverView('3d')" id="cov-tab-3d" class="px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition">3D Hardcover Mockup</button>
+            <button onclick="setStudioCoverView('wrap')" id="cov-tab-wrap" class="px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition">Full Print-Wrap Sheet</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Vertical Tool Controls -->
+          <div class="lg:col-span-4 bg-pureWhite border border-borderCrisp rounded-xl p-6 space-y-5 text-xs">
+            <div>
+              <label class="block font-semibold text-slateMuted uppercase tracking-wider text-[10px] mb-2.5">Cloth &amp; Foil Palette</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="applyStudioCoverPalette('#182844','#0F1B30','#FFFFFF','#D4AF63')" class="p-2.5 rounded-lg border border-borderCrisp hover:border-ink flex items-center gap-2 text-left">
+                  <span class="w-4 h-4 rounded-full bg-[#182844] shrink-0"></span><span class="font-medium">Midnight Indigo</span>
+                </button>
+                <button onclick="applyStudioCoverPalette('#691920','#4A1015','#FFF9F5','#E5C88D')" class="p-2.5 rounded-lg border border-borderCrisp hover:border-ink flex items-center gap-2 text-left">
+                  <span class="w-4 h-4 rounded-full bg-[#691920] shrink-0"></span><span class="font-medium">Oxblood Linen</span>
+                </button>
+                <button onclick="applyStudioCoverPalette('#17382C','#0E241C','#F2F7F4','#D4AF63')" class="p-2.5 rounded-lg border border-borderCrisp hover:border-ink flex items-center gap-2 text-left">
+                  <span class="w-4 h-4 rounded-full bg-[#17382C] shrink-0"></span><span class="font-medium">Forest Buckram</span>
+                </button>
+                <button onclick="applyStudioCoverPalette('#EDEAE2','#691920','#141414','#8B1E24')" class="p-2.5 rounded-lg border border-borderCrisp hover:border-ink flex items-center gap-2 text-left">
+                  <span class="w-4 h-4 rounded-full bg-[#EDEAE2] border border-black/20 shrink-0"></span><span class="font-medium">Archival Cream</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slateMuted uppercase tracking-wider text-[10px] mb-2">Cover Typography</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="setStudioCoverFont('sans')" id="cfont-sans" class="py-2 rounded-md bg-ink text-pureWhite font-semibold">Modern Sans + Italic</button>
+                <button onclick="setStudioCoverFont('serif')" id="cfont-serif" class="py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink">Display Serif</button>
+              </div>
+            </div>
+
+            <div class="space-y-3 pt-2 border-t border-hairline">
+              <div>
+                <label class="block text-slateMuted mb-1">Front &amp; Spine Title</label>
+                <input id="st-cov-title" type="text" value="THE SALT ROADS" oninput="renderStudioCoverStage()" class="w-full px-3 py-2 rounded-md border border-borderCrisp bg-subtleSurface text-ink font-medium focus:outline-none focus:border-ink"/>
+              </div>
+              <div>
+                <label class="block text-slateMuted mb-1">Author Name</label>
+                <input id="st-cov-author" type="text" value="A. KHAN" oninput="renderStudioCoverStage()" class="w-full px-3 py-2 rounded-md border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink"/>
+              </div>
+              <div>
+                <label class="block text-slateMuted mb-1">Back Cover Synopsis</label>
+                <textarea id="st-cov-blurb" rows="2" oninput="renderStudioCoverStage()" class="w-full px-3 py-2 rounded-md border border-borderCrisp bg-subtleSurface text-ink focus:outline-none focus:border-ink">A luminous novel about a winter harbour, an old customs ledger, and a young archivist tracing unrecorded salt caravans.</textarea>
+              </div>
+              <div>
+                <label class="block text-slateMuted mb-1">ISBN-13 Barcode</label>
+                <input id="st-cov-isbn" type="text" value="978-81-97384-21-0" oninput="renderStudioCoverStage()" class="w-full px-3 py-2 rounded-md border border-borderCrisp bg-subtleSurface font-mono text-ink focus:outline-none focus:border-ink"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Stage on Clean White Canvas -->
+          <div class="lg:col-span-8 bg-pureWhite border border-borderCrisp rounded-xl p-8 min-h-[470px] flex flex-col items-center justify-between">
+            
+            <!-- Real-Time 360° 3D Hardcover Mockup -->
+            <div id="st-cov-stage-3d" class="flex-1 flex flex-col items-center justify-center w-full select-none">
+              <div id="studio-3d-drag" class="book-stage-3d py-6 px-10 cursor-grab active:cursor-grabbing">
+                <div id="studio-3d-book" class="hardcover-3d" style="transform: rotateY(-25deg) rotateX(6deg);"></div>
+              </div>
+              <div class="flex flex-wrap items-center justify-center gap-2 mt-6 text-[11px]">
+                <button onclick="rotateStudioCover3D(-25, 6)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink">Front 3/4</button>
+                <button onclick="rotateStudioCover3D(82, 2)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink">Spine</button>
+                <button onclick="rotateStudioCover3D(-86, 2)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink">Fore-Edge</button>
+                <button onclick="rotateStudioCover3D(-174, 4)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink">Back &amp; ISBN</button>
+              </div>
+            </div>
+
+            <!-- Flat Full Print-Wrap Sheet with Bleed Guides -->
+            <div id="st-cov-stage-wrap" class="hidden flex-1 items-center justify-center w-full py-4 overflow-x-auto">
+              <div class="p-4 border border-dashed border-claret/50 rounded bg-subtleSurface">
+                <div class="font-mono text-[9.5px] text-claret uppercase tracking-wider mb-2 flex justify-between">
+                  <span>┼ 3.0 mm Bleed</span>
+                  <span id="wrap-spine-mm-label">Spine 18.4 mm</span>
+                  <span>Trim 6" × 9" ┼</span>
+                </div>
+                <div id="studio-flat-wrap" class="buckram-weave flex items-stretch shadow-lg rounded-xs overflow-hidden" style="background:#182844; color:#FFFFFF;">
+                  <!-- Back Cover -->
+                  <div class="w-[175px] sm:w-[196px] p-5 flex flex-col justify-between border-r border-white/15 text-left">
+                    <p id="flat-wrap-blurb" class="font-fraunces italic font-light text-xs leading-relaxed opacity-90"></p>
+                    <div class="flex items-end justify-between pt-6">
+                      <span class="font-mono text-[11px]">₹699</span>
+                      <div class="bg-white text-black px-1.5 py-1 rounded-[2px]">
+                        <div class="h-4 w-14 bg-[repeating-linear-gradient(90deg,#000_0,#000_1.3px,#fff_1.3px,#fff_2.6px)]"></div>
+                        <div id="flat-wrap-isbn" class="text-[5.5px] font-mono text-center mt-0.5">978-81-97384-21-0</div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Spine -->
+                  <div id="flat-wrap-spine" class="w-9 flex flex-col items-center justify-between py-4 border-r border-white/15" style="background:#0F1B30;">
+                    <span class="font-mono text-[8px] opacity-80">RP</span>
+                    <span id="flat-wrap-spine-title" class="[writing-mode:vertical-rl] font-sans font-bold text-[9.5px] tracking-[0.16em] uppercase">THE SALT ROADS</span>
+                    <span id="flat-wrap-spine-author" class="font-mono text-[7px] opacity-80">KHAN</span>
+                  </div>
+                  <!-- Front -->
+                  <div id="flat-wrap-front" class="w-[175px] sm:w-[196px] min-h-[275px] flex flex-col justify-between"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full pt-4 border-t border-hairline flex items-center justify-between text-xs">
+              <span class="font-mono text-[11px] text-slateMuted">300 DPI CMYK · 3.0 mm Press Bleed</span>
+              <button onclick="goStudioStep(5)" class="px-6 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite font-semibold transition">
+                Continue to Export →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- STUDIO STAGE 5: PRINT PREFLIGHT & EXPORT                          -->
+    <!-- ================================================================= -->
+    <div id="studio-pane-5" class="studio-pane hidden flex-1 bg-studioCanvas">
+      <div class="max-w-5xl mx-auto px-6 sm:px-8 py-12 space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">Stage 5 of 5</div>
+            <h1 class="text-3xl font-sans font-extrabold tracking-tight text-ink mt-1">Preflight &amp; Master Export</h1>
+          </div>
+
+          <!-- Paper GSM Spine Width Calculator -->
+          <div class="flex items-center gap-3 bg-pureWhite border border-borderCrisp rounded-lg px-3.5 py-2 text-xs">
+            <span class="text-slateMuted">Paper Stock:</span>
+            <select id="exp-gsm-select" onchange="recalcExportSpine()" class="bg-transparent font-medium text-ink focus:outline-none">
+              <option value="0.052">80 GSM Cream Bookwove</option>
+              <option value="0.059" selected>100 GSM Natural Archival</option>
+              <option value="0.068">120 GSM Cotton Rag</option>
+            </select>
+            <span class="text-borderCrisp">|</span>
+            <span id="exp-spine-calc" class="font-mono font-semibold text-claret">Spine: 18.4 mm</span>
+          </div>
+        </div>
+
+        <!-- 3 Primary Production Deliverables -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div onclick="compileExportPackage('Interior-PDF-X1a.pdf')" class="cursor-pointer bg-pureWhite border border-borderCrisp hover:border-ink rounded-xl p-6 space-y-4 transition">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-semibold px-2.5 py-1 rounded bg-subtleSurface border border-borderCrisp">PDF/X-1a</span>
+              <span class="exp-ready-lbl font-mono text-[11px] text-ink font-medium">Verified ✓</span>
+            </div>
+            <div>
+              <h3 class="font-sans font-bold text-base text-ink">Print-Ready Interior</h3>
+              <p class="text-xs text-slateMuted mt-1 leading-relaxed">Embedded fonts, mirrored gutters, crop &amp; 3.0 mm bleed boxes.</p>
+            </div>
+            <div class="h-1 bg-subtleSurface rounded-full overflow-hidden">
+              <div class="exp-prog h-full bg-ink w-full transition-all duration-700"></div>
+            </div>
+          </div>
+
+          <div onclick="compileExportPackage('Reflowable-Ebook.epub')" class="cursor-pointer bg-pureWhite border border-borderCrisp hover:border-ink rounded-xl p-6 space-y-4 transition">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-semibold px-2.5 py-1 rounded bg-subtleSurface border border-borderCrisp">EPUB 3</span>
+              <span class="exp-ready-lbl font-mono text-[11px] text-ink font-medium">Verified ✓</span>
+            </div>
+            <div>
+              <h3 class="font-sans font-bold text-base text-ink">Reflowable Digital Edition</h3>
+              <p class="text-xs text-slateMuted mt-1 leading-relaxed">Semantic TOC, linked footnotes, and high-res cover metadata.</p>
+            </div>
+            <div class="h-1 bg-subtleSurface rounded-full overflow-hidden">
+              <div class="exp-prog h-full bg-ink w-full transition-all duration-700"></div>
+            </div>
+          </div>
+
+          <div onclick="compileExportPackage('Full-Cover-Wrap.pdf')" class="cursor-pointer bg-pureWhite border border-borderCrisp hover:border-ink rounded-xl p-6 space-y-4 transition">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] font-semibold px-2.5 py-1 rounded bg-subtleSurface border border-borderCrisp">COVER PDF</span>
+              <span class="exp-ready-lbl font-mono text-[11px] text-ink font-medium">Verified ✓</span>
+            </div>
+            <div>
+              <h3 class="font-sans font-bold text-base text-ink">Full Jacket &amp; Spine Wrap</h3>
+              <p class="text-xs text-slateMuted mt-1 leading-relaxed">Exact spine width geometry with vector ISBN-13 barcode.</p>
+            </div>
+            <div class="h-1 bg-subtleSurface rounded-full overflow-hidden">
+              <div class="exp-prog h-full bg-ink w-full transition-all duration-700"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preflight Checklist -->
+        <div class="bg-pureWhite border border-borderCrisp rounded-xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+          <div class="flex items-center gap-2.5"><span class="text-ink font-bold">✓</span><span class="text-slateMuted">All subset fonts embedded (<span class="font-mono text-ink">pdffonts</span>)</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-ink font-bold">✓</span><span class="text-slateMuted">TrimBox &amp; 3.0 mm BleedBox verified</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-ink font-bold">✓</span><span class="text-slateMuted">EPUBCheck 3.3 schema · 0 errors</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-ink font-bold">✓</span><span class="text-slateMuted">ISBN-13 checksum &amp; imprint colophon valid</span></div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+          <span id="exp-status-note" class="text-xs text-slateMuted">Ready to compile complete press bundle.</span>
+          <button id="exp-bundle-btn" onclick="compileExportPackage('RedPanda-Redworm-Press-Master.txt')" class="px-7 py-3.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold transition">
+            Compile &amp; Download Press Package →
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PURE WHITE EDITORIAL BOOK MONOGRAPH MODAL (360° 3D + SAMPLE READER)   -->
+  <!-- ===================================================================== -->
+  <div id="monograph-modal" class="fixed inset-0 z-50 bg-ink/35 backdrop-blur-xs hidden items-center justify-center p-4 sm:p-8">
+    <div class="bg-pureWhite border border-borderCrisp rounded-2xl max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl">
+      
+      <!-- Modal Top Header -->
+      <div class="px-6 sm:px-10 py-5 border-b border-hairline sticky top-0 z-30 bg-white/95 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+        <div class="inline-flex bg-subtleSurface p-1 rounded-lg border border-borderCrisp text-xs font-medium">
+          <button onclick="setMonographTab('3d')" id="mono-tab-3d" class="px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition">360° Edition</button>
+          <button onclick="setMonographTab('read')" id="mono-tab-read" class="px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition">Open &amp; Read Excerpt</button>
+        </div>
+        <button onclick="closeMonograph()" class="text-xs font-medium text-slateMuted hover:text-ink px-2 py-1">
+          Close ✕
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-pureWhite">
+        <!-- Left 7 Cols: Pure White Stage for 360° Spin OR Open Two-Page Spread -->
+        <div class="lg:col-span-7 min-h-[420px] flex flex-col items-center justify-center py-4">
+          
+          <!-- 360° Drag-to-Rotate Hardcover -->
+          <div id="mono-stage-3d" class="w-full flex flex-col items-center select-none">
+            <div id="mono-drag-zone" class="book-stage-3d py-6 px-10 cursor-grab active:cursor-grabbing">
+              <div id="mono-3d-book" class="hardcover-3d" style="transform: rotateY(-25deg) rotateX(6deg);"></div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2 mt-6 text-[11px] text-slateMuted">
+              <button onclick="spinMonographBook(-25, 6)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink hover:text-ink transition">Front</button>
+              <button onclick="spinMonographBook(82, 2)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink hover:text-ink transition">Spine</button>
+              <button onclick="spinMonographBook(-86, 2)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink hover:text-ink transition">Paper Edges</button>
+              <button onclick="spinMonographBook(-174, 4)" class="px-3 py-1 rounded-full border border-borderCrisp hover:border-ink hover:text-ink transition">Back &amp; ISBN</button>
+            </div>
+            <p class="text-[11px] text-slateMuted mt-2.5">Drag horizontally across the cover to inspect in 360°</p>
+          </div>
+
+          <!-- Open Curved Two-Page Excerpt Reader -->
+          <div id="mono-stage-read" class="hidden w-full flex-col items-center">
+            <div class="open-spread-shell w-full">
+              <div class="open-page-stack grid grid-cols-1 sm:grid-cols-2 min-h-[365px] overflow-hidden relative">
+                <div id="mono-flip-leaf" class="page-flip-leaf hidden spread-recto border-l border-black/10"></div>
+
+                <div class="spread-verso p-6 sm:p-7 flex flex-col justify-between border-b sm:border-b-0 border-black/10">
+                  <div class="flex justify-between font-mono text-[9px] uppercase tracking-widest text-slateMuted">
+                    <span id="mono-pnum-l">12</span><span id="mono-head-l"></span>
+                  </div>
+                  <div id="mono-body-l" class="font-reader text-[14px] leading-[1.68] text-ink/90 text-justify my-4 space-y-2.5"></div>
+                  <div class="font-mono text-[8px] text-slateMuted/60">Verso</div>
+                </div>
+
+                <div class="spread-recto p-6 sm:p-7 flex flex-col justify-between">
+                  <div class="flex justify-between font-mono text-[9px] uppercase tracking-widest text-slateMuted">
+                    <span>EXCERPT</span><span id="mono-pnum-r">13</span>
+                  </div>
+                  <div id="mono-body-r" class="font-reader text-[14px] leading-[1.68] text-ink/90 text-justify my-4 space-y-2.5"></div>
+                  <div class="font-mono text-[8px] text-slateMuted/60 text-right">Recto</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 mt-5 text-xs font-medium">
+              <button onclick="turnMonographPage(-1)" class="px-4 py-1.5 rounded-full border border-borderCrisp hover:border-ink transition">← Previous</button>
+              <span id="mono-page-stat" class="font-mono text-[11px] text-slateMuted">1 / 3</span>
+              <button onclick="turnMonographPage(1)" class="px-4 py-1.5 rounded-full bg-ink text-pureWhite hover:bg-inkHover transition">Next Page →</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right 5 Cols: Editorial Monograph Details & Format Selector -->
+        <div id="mono-meta-col" class="lg:col-span-5 space-y-6 border-t lg:border-t-0 lg:border-l border-hairline pt-6 lg:pt-0 lg:pl-8"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PURE WHITE JOURNAL ESSAY READER MODAL -->
+  <div id="journal-modal" class="fixed inset-0 z-50 bg-ink/35 backdrop-blur-xs hidden items-center justify-center p-4 sm:p-6">
+    <div class="bg-pureWhite border border-borderCrisp rounded-2xl max-w-2xl w-full p-8 sm:p-12 space-y-6 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <span id="jmod-rubric" class="font-fraunces italic text-sm text-claret"></span>
+        <button onclick="closeJournalModal()" class="text-xs font-medium text-slateMuted hover:text-ink">Close ✕</button>
+      </div>
+      <h2 id="jmod-title" class="font-sans font-extrabold text-2xl sm:text-3xl tracking-tight text-ink leading-snug"></h2>
+      <div id="jmod-body" class="font-reader text-[17px] leading-[1.82] text-ink/90 space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- COMPACT TRANSLUCENT WHITE WALKTHROUGH PILL & SCRUBBER                 -->
+  <!-- ===================================================================== -->
+  <button id="wt-launch-pill" onclick="startWalkthrough()" class="fixed bottom-5 right-5 z-[75] px-4 py-2.5 rounded-full bg-white/95 backdrop-blur-md border border-borderCrisp hover:border-ink text-ink text-xs font-semibold shadow-lg flex items-center gap-2 transition">
+    <span class="text-claret text-[10px]">▶</span>
+    <span>60s Walkthrough</span>
+  </button>
+
+  <div id="wt-player-bar" class="fixed bottom-5 right-5 z-[80] w-[92vw] max-w-md bg-white/95 backdrop-blur-md text-ink border border-borderCrisp rounded-2xl px-4 py-3.5 shadow-xl hidden flex-col gap-2.5">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button onclick="togglePauseWalkthrough()" id="wt-pause-btn" class="w-7 h-7 rounded-full bg-ink text-pureWhite text-[10px] font-semibold flex items-center justify-center shrink-0">❚❚</button>
+        <div class="min-w-0">
+          <div id="wt-scene-title" class="font-sans font-semibold text-xs text-ink truncate">Homepage &amp; Floating 3D Hardcover</div>
+          <div class="font-mono text-[10px] text-slateMuted"><span id="wt-time-cur">00</span>s / 60s</div>
+        </div>
+      </div>
+      <button onclick="stopWalkthrough()" class="text-[11px] font-medium text-slateMuted hover:text-ink shrink-0">Exit ✕</button>
+    </div>
+    <input id="wt-scrubber" type="range" min="0" max="60" value="0" oninput="scrubWalkthrough(this.value)" class="w-full" />
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION LOGIC: 6 CLOTHBOUND BOOKS, STUDIO & WALKTHROUGH           -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. SIX CURATED CLOTHBOUND HARDCOVER EDITIONS
+    const BOOKS = [
+      {
+        id: 'salt-roads',
+        title: 'The Salt Roads',
+        author: 'A. Khan',
+        genre: 'Fiction',
+        hardcoverPrice: 699,
+        paperbackPrice: 399,
+        pages: 312,
+        trim: '6" × 9"',
+        language: 'English',
+        isbn: '978-81-97384-21-0',
+        cloth: '#182844',
+        spineCloth: '#0F1B30',
+        ink: '#FFFFFF',
+        foil: '#D4AF63',
+        motif: 'salt',
+        synopsis: 'A luminous novel set between a nineteenth-century Himalayan pass and a winter harbour—following a young customs archivist who discovers three unrecorded salt caravans in a dead clerk’s ledger.',
+        authorNote: 'A. Khan divides his time between New Delhi and Leh, researching trans-Himalayan trade archives.',
+        spreads: [
+          {
+            l: `<p><span class="float-left font-playfair font-bold text-4xl leading-[0.85] pr-2 pt-1 text-claret">T</span>he harbour below the fort smelled of wet rope, coal smoke, and mountain salt before sunrise ever cleared the ridge. Thirteen carts stood hub to hub along the stone quay while the clerk warmed his brass seal.</p><p class="indent-5">Behind the customs shed, Mira counted forty-seer sacks by touch alone, her fingers grey with winter brine.</p>`,
+            r: `<p>Coarse salt from the western flats went to the dyers; clean white crystal from the high passes travelled south in double-stitched linen.</p><p class="indent-5">“One sack short on the third mule,” called the driver, wiping frost from his sleeve. “The river took its share at the winter ford.”</p>`
+          },
+          {
+            l: `<p>Nobody stepped beyond the chalk line until the long oak weigh-beam settled. Once the clerk pressed his claret wax across the twine, the hill road to Shimla was open.</p><p class="indent-5">Mira opened her ledger and noticed three entries written in paler ink—dated two nights before the pass had thawed.</p>`,
+            r: `<p>“Who weighed the Tuesday caravan?” she asked the watchman beside the charcoal brazier.</p><p class="indent-5">The old man did not look up from the embers. “No caravan came Tuesday, child. Only the wind off the water.”</p>`
+          },
+          {
+            l: `<p>That evening she walked the seawall with a shuttered lantern, counting the pale salt rings left along the iron moorings where unrecorded boats had tied in the dark.</p>`,
+            r: `<p>Far beyond the breakwater, a single mast lamp rose and fell on the tide, waiting for the moon to slip behind the customs tower.</p>`
+          }
+        ]
+      },
+      {
+        id: 'mirrors-daryaganj',
+        title: 'Mirrors of Daryaganj',
+        author: 'Z. Siddiqui',
+        genre: 'Poetry & Ghazals',
+        hardcoverPrice: 649,
+        paperbackPrice: 375,
+        pages: 196,
+        trim: '5.5" × 8.5"',
+        language: 'English & Urdu (Bilingual)',
+        isbn: '978-81-97384-39-5',
+        cloth: '#691920',
+        spineCloth: '#4A1015',
+        ink: '#FFF9F5',
+        foil: '#E5C88D',
+        motif: 'ghazal',
+        synopsis: 'Forty-eight contemporary ghazals and nazms presented en face with English renderings—walking through Sunday book bazaars, monsoon courtyards, and vanishing Delhi calligraphers’ lanes.',
+        authorNote: 'Z. Siddiqui is a poet, translator, and scholar of classical Indo-Persian prosody in Old Delhi.',
+        spreads: [
+          {
+            l: `<p class="italic">In the Sunday dust of Daryaganj,<br/>someone sold my father’s dictionary—<br/>with dried jasmine still pressed<br/>between patience and departure.</p>`,
+            r: `<p class="italic">Every mirror in the old haveli<br/>remembers a different afternoon;<br/>none of them agrees on the year<br/>we locked the river gate.</p>`
+          },
+          {
+            l: `<p class="italic">Calligrapher, trim your reed again:<br/>the monsoon air has softened the paper,<br/>and a single drop on the margin<br/>wants to become a lake.</p>`,
+            r: `<p class="italic">At dusk the pigeons circle Jama Masjid<br/>like loose pages lifted by wind,<br/>settling back into stone niches<br/>when the lamps are lit.</p>`
+          }
+        ]
+      },
+      {
+        id: 'field-notes-tea',
+        title: 'Field Notes on Tea',
+        author: 'S. Mehta',
+        genre: 'Essays',
+        hardcoverPrice: 699,
+        paperbackPrice: 399,
+        pages: 248,
+        trim: '5.5" × 8.5"',
+        language: 'English',
+        isbn: '978-81-97384-32-6',
+        cloth: '#17382C',
+        spineCloth: '#0E241C',
+        ink: '#F2F7F4',
+        foil: '#D4AF63',
+        motif: 'tea',
+        synopsis: 'An intimate naturalist’s notebook from Kangra, Darjeeling, and Upper Assam—where high-altitude botany meets generations of quiet hand craft.',
+        authorNote: 'S. Mehta writes on mountain agriculture, Himalayan flora, and culinary history from Palampur.',
+        spreads: [
+          {
+            l: `<p>Every tea bush on a forty-degree slope remembers the wrist of the woman who pruned it three monsoons ago; a spring flush is never merely weather, it is accumulated attention.</p>`,
+            r: `<p>In Palampur we drank pale first-flush liquor from chipped porcelain while retired planters debated whether wild Camellia ever consented to geometry.</p>`
+          }
+        ]
+      },
+      {
+        id: 'quiet-machines',
+        title: 'Quiet Machines',
+        author: 'T. Iyer',
+        genre: 'Essays',
+        hardcoverPrice: 725,
+        paperbackPrice: 425,
+        pages: 284,
+        trim: '6" × 9"',
+        language: 'English',
+        isbn: '978-81-97384-48-7',
+        cloth: '#EDEAE2',
+        spineCloth: '#691920',
+        ink: '#141414',
+        foil: '#8B1E24',
+        motif: 'machines',
+        synopsis: 'Twelve essays on mechanical clocks, Kanchipuram handlooms, Devanagari typewriters, and calm tools built to be repaired rather than replaced.',
+        authorNote: 'T. Iyer is a design historian and essayist based in Chennai.',
+        spreads: [
+          {
+            l: `<p>A well-oiled Godrej typewriter in an old Fort office never interrupted its writer with an alert; its small brass bell rang only at the honest physical margin of thought.</p>`,
+            r: `<p>In Kanchipuram, the rhythm of the wooden shuttle precedes speech—a geometry passed from thumb to palm without a manual.</p>`
+          }
+        ]
+      },
+      {
+        id: 'monsoon-ferry',
+        title: 'The Monsoon Ferry',
+        author: 'R. Chatterjee',
+        genre: 'Translations',
+        hardcoverPrice: 675,
+        paperbackPrice: 399,
+        pages: 256,
+        trim: '5.5" × 8.5"',
+        language: 'Translated from Bengali',
+        isbn: '978-81-97384-64-7',
+        cloth: '#8C4728',
+        spineCloth: '#633019',
+        ink: '#FFFBF7',
+        foil: '#F0D7A7',
+        motif: 'ferry',
+        synopsis: 'Translated from the 1968 Bengali classic: over a single rain-swept crossing of the Padma, a village schoolmaster and a wandering cartographer trade maps of submerged islands.',
+        authorNote: 'Translated with an introduction by R. Chatterjee, fellow in comparative literature at Jadavpur.',
+        spreads: [
+          {
+            l: `<p>By August the river had swallowed its own landmarks; neither the banyan by the post office nor the brick kiln chimney remained to tell east from west.</p>`,
+            r: `<p>Only the boatman’s oar knew the depth of the sandbank beneath the brown current, reading silt by the resistance in his shoulder.</p>`
+          }
+        ]
+      },
+      {
+        id: 'house-by-river',
+        title: 'A House by the River',
+        author: 'M. Sen',
+        genre: 'Fiction',
+        hardcoverPrice: 699,
+        paperbackPrice: 399,
+        pages: 272,
+        trim: '6" × 9"',
+        language: 'English',
+        isbn: '978-81-97384-61-6',
+        cloth: '#262B31',
+        spineCloth: '#171A1E',
+        ink: '#F7F7F5',
+        foil: '#C8CFD8',
+        motif: 'river',
+        synopsis: 'Three siblings return to sell an ancestral home beside the Hooghly, uncovering an architect’s sketchbook bricked behind a green monsoon shutter.',
+        authorNote: 'M. Sen practices conservation architecture and writes fiction in Kolkata.',
+        spreads: [
+          {
+            l: `<p>At high tide the Hooghly threw pale ribbons of light across the louvred shutters of the south verandah, moving like slow clock hands across teak beams.</p>`,
+            r: `<p>Every monsoon had left its watermark along the lower stair, yet the banister remained smooth as river glass.</p>`
+          }
+        ]
+      }
+    ];
+
+    const AUTHORS = [
+      { name: 'A. Khan', city: 'New Delhi & Leh', title: 'The Salt Roads', bookId: 'salt-roads', bio: 'Novelist exploring trans-Himalayan trade corridors, customs archives, and borderland memory.' },
+      { name: 'Z. Siddiqui', city: 'Old Delhi', title: 'Mirrors of Daryaganj', bookId: 'mirrors-daryaganj', bio: 'Bilingual poet and translator working between classical Urdu ghazal form and contemporary English verse.' },
+      { name: 'S. Mehta', city: 'Palampur', title: 'Field Notes on Tea', bookId: 'field-notes-tea', bio: 'Naturalist and essayist chronicling mountain ecology and artisanal tea estates.' },
+      { name: 'T. Iyer', city: 'Chennai', title: 'Quiet Machines', bookId: 'quiet-machines', bio: 'Design historian writing on repairable instruments, Indian typography, and handloom geometry.' },
+      { name: 'R. Chatterjee', city: 'Kolkata', title: 'The Monsoon Ferry', bookId: 'monsoon-ferry', bio: 'Literary translator bringing mid-century Bengali riverine fiction to contemporary readers.' },
+      { name: 'M. Sen', city: 'Kolkata', title: 'A House by the River', bookId: 'house-by-river', bio: 'Conservation architect and novelist studying domestic spaces and generational memory.' }
+    ];
+
+    const JOURNAL_ENTRIES = [
+      {
+        rubric: 'Conversation · A. Khan',
+        date: 'Autumn Issue',
+        title: 'Walking the Forgotten Salt Corridors of Ladakh',
+        summary: 'How nineteenth-century customs ledgers and winter caravan songs shaped the architecture of The Salt Roads.',
+        body: `<p>Long before asphalt connected the western passes to the plains, salt caravans kept their own calendar—measured by thawed fords, high pastures, and customs houses where brass seals were warmed over apricot-wood charcoal.</p><p>While researching <em>The Salt Roads</em>, I spent two winters reading surviving toll registers. Between columns of weight and tariff, clerks occasionally jotted a quiet sentence in the margin: an early snowfall, an unclaimed mule, or a boat arriving after curfew. Fiction lives inside those margins.</p>`
+      },
+      {
+        rubric: 'On Craft · T. Iyer',
+        date: 'Typography Dispatch',
+        title: 'Why the Margin of a Printed Page Helps Us Think',
+        summary: 'Notes on generous white space, quiet mechanical tools, and why enduring books resist hurry.',
+        body: `<p>A generous inner gutter and outer margin are not wasted paper; they are acoustic insulation for the reader’s eye. When type is crowded to the trim edge, prose feels breathless and transactional.</p><p>Whether in an old letterpress workshop or a modern digital typesetter like Redworm, good bookmaking begins with proportion—giving every paragraph room to breathe.</p>`
+      },
+      {
+        rubric: 'Translation Note · Z. Siddiqui',
+        date: 'Poetics',
+        title: 'Carrying the Radif Across Two Scripts',
+        summary: 'On translating the refrain of an Urdu ghazal into English without losing its hush and return.',
+        body: `<p>In a classical ghazal, the refrain—the <em>radif</em>—is not a decorative echo at the end of a couplet; it is the gravitational centre toward which two seemingly unrelated images bend.</p><p>Set en face on crisp archival paper, two scripts converse across the gutter, allowing the reader’s eye to rest in the silence between languages.</p>`
+      }
+    ];
+
+    // 2. BESPOKE FOIL-STAMPED FRONT JACKET RENDERER
+    function renderFrontJacket(book, custom = null) {
+      if (custom) {
+        const useSerif = custom.fontMode === 'serif';
+        return `
+          <div class="h-full p-6 pl-7 flex flex-col justify-between text-center items-center relative z-10">
+            <div class="w-6 h-[1px] opacity-60" style="background:${custom.foil}"></div>
+            <div class="my-auto space-y-3 flex flex-col items-center">
+              <div class="${useSerif ? 'font-playfair font-bold tracking-tight' : 'font-sans font-extrabold tracking-[-0.035em]'} text-[21px] leading-[1.06] uppercase">${custom.title}</div>
+              <div class="font-fraunces italic font-light text-xs opacity-80">First Edition</div>
+              <svg viewBox="0 0 90 50" class="w-16 h-9 pt-1" fill="none" stroke="${custom.foil}" stroke-width="1.5">
+                <path d="M8 18 Q26 6 45 18 T82 18"/>
+                <path d="M14 32 Q30 20 46 32 T78 32" opacity="0.7"/>
+              </svg>
+            </div>
+            <div class="font-mono text-[9px] tracking-[0.22em] uppercase opacity-90">${custom.author}</div>
+          </div>
+        `;
+      }
+
+      switch (book.motif) {
+        case 'salt':
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-left relative z-10">
+              <div class="w-6 h-[1.5px]" style="background:${book.foil}"></div>
+              <div class="my-auto space-y-3">
+                <div class="font-sans font-extrabold text-[25px] leading-[0.95] tracking-[-0.04em] uppercase">
+                  THE<br/>SALT<br/><span class="font-fraunces italic font-light tracking-normal" style="color:${book.foil}">Roads</span>
+                </div>
+                <svg viewBox="0 0 120 38" class="w-full h-9 pt-1" fill="none" stroke="${book.foil}" stroke-width="1.5">
+                  <path d="M0 12 Q20 2 40 12 T80 12 T120 12"/>
+                  <path d="M0 23 Q20 13 40 23 T80 23 T120 23" opacity="0.7"/>
+                  <path d="M0 34 Q20 24 40 34 T80 34 T120 34" opacity="0.4"/>
+                </svg>
+              </div>
+              <div class="border-t border-white/20 pt-2 flex justify-between items-center font-mono text-[9px] tracking-[0.22em] uppercase">
+                <span>${book.author}</span><span style="color:${book.foil}">◆</span>
+              </div>
+            </div>
+          `;
+        case 'ghazal':
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-center relative z-10">
+              <div class="absolute inset-3.5 left-5 border border-[#E5C88D]/35 rounded-t-full pointer-events-none"></div>
+              <div class="pt-2 font-fraunces italic font-light text-xs" style="color:${book.foil}">Poems &amp; Ghazals</div>
+              <div class="my-auto space-y-2 px-1">
+                <div class="font-playfair font-bold text-[22px] leading-[1.02] tracking-tight">MIRRORS<br/><span class="font-fraunces italic font-light text-lg">of</span><br/>DARYAGANJ</div>
+              </div>
+              <div class="font-mono text-[9px] tracking-[0.22em] uppercase pb-1">${book.author}</div>
+            </div>
+          `;
+        case 'tea':
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-center relative z-10">
+              <div>
+                <div class="font-sans font-extrabold text-[20px] leading-none tracking-[-0.035em] uppercase">FIELD NOTES</div>
+                <div class="font-fraunces italic font-light text-base mt-1" style="color:${book.foil}">on Tea</div>
+              </div>
+              <div class="my-auto flex justify-center">
+                <svg viewBox="0 0 80 80" class="w-16 h-16" fill="none" stroke="${book.foil}" stroke-width="1.4">
+                  <path d="M40 68 C40 45 42 26 48 12"/>
+                  <path d="M40 52 C21 48 21 30 39 30 C40 40 40 46 40 52 Z" fill="${book.foil}" fill-opacity="0.16"/>
+                  <path d="M42 36 C59 32 59 16 44 18 C42 26 42 31 42 36 Z" fill="${book.foil}" fill-opacity="0.22"/>
+                </svg>
+              </div>
+              <div class="font-mono text-[9px] tracking-[0.22em] uppercase">${book.author}</div>
+            </div>
+          `;
+        case 'machines':
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-left relative z-10">
+              <div class="font-sans font-extrabold text-[23px] leading-[0.94] tracking-[-0.045em] uppercase text-[#141414]">
+                QUIET<br/>MACHINES
+              </div>
+              <div class="my-auto flex items-center justify-center">
+                <svg viewBox="0 0 90 90" class="w-20 h-20">
+                  <circle cx="42" cy="45" r="27" fill="none" stroke="#141414" stroke-width="2"/>
+                  <circle cx="53" cy="36" r="11" fill="#8B1E24"/>
+                  <line x1="12" y1="45" x2="76" y2="45" stroke="#141414" stroke-width="1.3"/>
+                </svg>
+              </div>
+              <div class="border-t border-[#141414]/30 pt-2 font-mono text-[9px] tracking-[0.2em] uppercase text-[#141414]">
+                ${book.author}
+              </div>
+            </div>
+          `;
+        case 'ferry':
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-left relative z-10">
+              <div class="font-fraunces italic font-light text-xs" style="color:${book.foil}">Translated from Bengali</div>
+              <div class="my-auto space-y-2">
+                <div class="font-playfair font-bold text-[23px] leading-[0.98] tracking-tight uppercase">THE<br/>MONSOON<br/>FERRY</div>
+                <svg viewBox="0 0 100 32" class="w-24 h-8 pt-1" fill="none" stroke="${book.foil}" stroke-width="1.4">
+                  <path d="M6 14 L94 14 L80 25 L20 25 Z"/>
+                </svg>
+              </div>
+              <div class="font-mono text-[9px] tracking-[0.2em] uppercase">${book.author}</div>
+            </div>
+          `;
+        default:
+          return `
+            <div class="h-full p-6 pl-7 flex flex-col justify-between text-left relative z-10">
+              <div class="font-mono text-[9px] tracking-[0.22em] uppercase opacity-75">${book.author}</div>
+              <div class="my-auto">
+                <div class="font-fraunces italic font-light text-xl leading-none opacity-90">A House</div>
+                <div class="font-sans font-extrabold text-[23px] leading-[0.95] tracking-[-0.04em] uppercase mt-1">BY THE<br/>RIVER</div>
+              </div>
+              <svg viewBox="0 0 120 44" class="w-full h-10" fill="none" stroke="${book.foil}" stroke-width="1.3">
+                <path d="M0 12 C35 26 75 -2 120 14"/>
+                <path d="M0 24 C35 38 75 10 120 26" opacity="0.65"/>
+              </svg>
+            </div>
+          `;
+      }
+    }
+
+    // 3. BUILD 6-FACE PHYSICAL 3D HARDCOVER HTML
+    function buildHardcover3D(book, custom = null) {
+      const cloth = custom?.cloth || book.cloth;
+      const spineCloth = custom?.spineCloth || book.spineCloth;
+      const ink = custom?.ink || book.ink;
+      const title = custom?.title || book.title;
+      const author = custom?.author || book.author;
+      const blurb = custom?.blurb || book.synopsis;
+      const isbn = custom?.isbn || book.isbn;
+      const spineInk = (spineCloth === '#EDEAE2') ? '#141414' : '#FFFFFF';
+
+      return `
+        <div class="book-studio-shadow"></div>
+        <div class="hc-top"></div>
+        <div class="hc-bottom"></div>
+        <div class="hc-foreedge"></div>
+
+        <!-- Cylindrical Rounded Cloth Spine -->
+        <div class="hc-spine buckram-weave py-4 px-1" style="background-color:${spineCloth}; color:${spineInk};">
+          <span class="font-mono text-[7.5px] tracking-widest opacity-80">RP</span>
+          <span class="[writing-mode:vertical-rl] rotate-180 font-sans font-bold text-[9px] tracking-[0.16em] uppercase truncate max-h-[205px]">
+            ${title}
+          </span>
+          <span class="font-mono text-[7px] uppercase opacity-80">${author.split(' ').pop()}</span>
+        </div>
+
+        <!-- Back Cloth Board with ISBN Barcode -->
+        <div class="hc-back buckram-weave p-5 flex flex-col justify-between text-left" style="background-color:${cloth}; color:${ink};">
+          <div>
+            <div class="font-mono text-[7.5px] tracking-[0.2em] uppercase opacity-65">RED PANDA</div>
+            <p class="font-fraunces italic font-light text-[11px] leading-relaxed mt-4 opacity-90 line-clamp-6">“${blurb}”</p>
+          </div>
+          <div class="pt-3 border-t border-current/15 flex items-end justify-between">
+            <span class="font-mono text-[11px]">₹${book.hardcoverPrice}</span>
+            <div class="bg-white text-black px-1.5 py-1 rounded-[2px]">
+              <div class="h-4 w-14 bg-[repeating-linear-gradient(90deg,#000_0,#000_1.3px,#fff_1.3px,#fff_2.6px)]"></div>
+              <div class="text-[5.5px] font-mono text-center mt-0.5">${isbn}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Front Cloth Board with French Hinge & Specular Sheen -->
+        <div class="hc-front buckram-weave" style="background-color:${cloth}; color:${ink};">
+          <div class="hc-specular"></div>
+          ${renderFrontJacket(book, custom)}
+        </div>
+      `;
+    }
+
+    // Borderless Book Card Directly on Pure #FFFFFF
+    function renderBorderlessBookCard(book) {
+      return `
+        <div id="book-card-${book.id}" onclick="openMonograph('${book.id}', '3d')" class="book-card-wrap group cursor-pointer flex flex-col items-center text-center">
+          <div class="w-full py-6 flex items-center justify-center">
+            <div class="book-stage-3d" onmousemove="tiltBookOnHover(event, this)" onmouseleave="resetBookTilt(this)">
+              <div class="hardcover-3d">
+                ${buildHardcover3D(book)}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 space-y-1">
+            <h3 class="font-sans font-bold text-[17px] tracking-[-0.02em] text-ink group-hover:text-claret transition">${book.title}</h3>
+            <p class="text-[13px] text-slateMuted">${book.author}</p>
+            <p class="text-[11.5px] text-slateMuted/80 font-mono pt-0.5">Hardcover · ₹${book.hardcoverPrice}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function tiltBookOnHover(e, stageEl) {
+      const bookEl = stageEl.querySelector('.hardcover-3d');
+      if (!bookEl) return;
+      const rect = stageEl.getBoundingClientRect();
+      const px = ((e.clientX - rect.left) / rect.width) * 100;
+      const py = ((e.clientY - rect.top) / rect.height) * 100;
+      bookEl.style.setProperty('--mx', `${px.toFixed(1)}%`);
+      bookEl.style.setProperty('--my', `${py.toFixed(1)}%`);
+
+      const nx = (px / 100) - 0.5;
+      const ny = (py / 100) - 0.5;
+      bookEl.classList.add('is-tracking');
+      bookEl.style.transform = `rotateY(${-24 + nx * 30}deg) rotateX(${5 - ny * 16}deg) translateY(-6px)`;
+    }
+
+    function resetBookTilt(stageEl) {
+      const bookEl = stageEl.querySelector('.hardcover-3d');
+      if (!bookEl) return;
+      bookEl.classList.remove('is-tracking');
+      bookEl.style.transform = '';
+    }
+
+    // 4. SITE NAVIGATION & SHOWROOM FILTERS
+    function mountHeroHardcover() {
+      const featured = BOOKS[0];
+      document.getElementById('hero-3d-mount').innerHTML = `
+        <div onclick="openMonograph('${featured.id}', '3d')" class="book-card-wrap cursor-pointer" onmousemove="tiltBookOnHover(event, this.parentElement)" onmouseleave="resetBookTilt(this.parentElement)">
+          <div class="hardcover-3d hero-book-scale">
+            ${buildHardcover3D(featured)}
+          </div>
+        </div>
+      `;
+    }
+
+    function filterHomeShowroom(genre) {
+      document.querySelectorAll('.home-cat-btn').forEach(btn => {
+        const active = btn.dataset.hcat === genre;
+        btn.className = active
+          ? 'home-cat-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-ink text-pureWhite transition'
+          : 'home-cat-btn px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition';
+      });
+      const items = genre === 'All' ? BOOKS : BOOKS.filter(b => b.genre === genre);
+      document.getElementById('home-books-grid').innerHTML = items.map(renderBorderlessBookCard).join('');
+    }
+
+    function filterBooksView(genre) {
+      document.querySelectorAll('.book-view-cat').forEach(btn => {
+        const active = btn.dataset.bcat === genre;
+        btn.className = active
+          ? 'book-view-cat px-4 py-1.5 rounded-full text-xs font-semibold bg-ink text-pureWhite transition'
+          : 'book-view-cat px-4 py-1.5 rounded-full text-xs font-medium text-slateMuted hover:text-ink border border-borderCrisp transition';
+      });
+      const items = genre === 'All' ? BOOKS : BOOKS.filter(b => b.genre === genre);
+      document.getElementById('full-books-grid').innerHTML = items.map(renderBorderlessBookCard).join('');
+    }
+
+    function switchSiteTab(tab) {
+      closeStudio();
+      document.querySelectorAll('.site-view').forEach(v => v.classList.add('hidden'));
+      document.getElementById('site-view-' + tab)?.classList.remove('hidden');
+
+      document.querySelectorAll('.site-nav-btn').forEach(b => {
+        b.className = b.dataset.sitetab === tab
+          ? 'site-nav-btn text-ink font-semibold border-b border-claret py-1 transition'
+          : 'site-nav-btn text-slateMuted hover:text-ink py-1 transition';
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToShowroom() {
+      switchSiteTab('home');
+      setTimeout(() => {
+        document.getElementById('showroom-sec')?.scrollIntoView({ behavior: 'smooth' });
+      }, 60);
+    }
+
+    function openJournalModal(idx) {
+      const j = JOURNAL_ENTRIES[idx] || JOURNAL_ENTRIES[0];
+      document.getElementById('jmod-rubric').textContent = `${j.rubric} · ${j.date}`;
+      document.getElementById('jmod-title').textContent = j.title;
+      document.getElementById('jmod-body').innerHTML = j.body;
+      const m = document.getElementById('journal-modal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeJournalModal() {
+      const m = document.getElementById('journal-modal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    function submitEditorialEnquiry(e) {
+      e.preventDefault();
+      document.getElementById('about-submit-msg').classList.remove('hidden');
+    }
+
+    // 5. EDITORIAL BOOK MONOGRAPH MODAL (360° DRAG + CURVED EXCERPT READER)
+    let activeMonoBook = BOOKS[0];
+    let activeMonoFormat = 'hardcover';
+    let monoSpreadIdx = 0;
+    let monoRotY = -25, monoRotX = 6;
+
+    function openMonograph(bookId, initialTab = '3d') {
+      activeMonoBook = BOOKS.find(b => b.id === bookId) || BOOKS[0];
+      activeMonoFormat = 'hardcover';
+      monoSpreadIdx = 0;
+      monoRotY = -25;
+      monoRotX = 6;
+
+      const el = document.getElementById('mono-3d-book');
+      el.innerHTML = buildHardcover3D(activeMonoBook);
+      el.style.transform = `rotateY(${monoRotY}deg) rotateX(${monoRotX}deg)`;
+
+      renderMonographMeta();
+      renderMonographSpread();
+      setMonographTab(initialTab);
+
+      const modal = document.getElementById('monograph-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeMonograph() {
+      const modal = document.getElementById('monograph-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function setMonographTab(tab) {
+      const s3d = document.getElementById('mono-stage-3d');
+      const sRead = document.getElementById('mono-stage-read');
+      if (tab === 'read') {
+        s3d.classList.add('hidden');
+        sRead.classList.remove('hidden');
+        sRead.classList.add('flex');
+        document.getElementById('mono-tab-read').className = 'px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition';
+        document.getElementById('mono-tab-3d').className = 'px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition';
+      } else {
+        sRead.classList.add('hidden');
+        sRead.classList.remove('flex');
+        s3d.classList.remove('hidden');
+        document.getElementById('mono-tab-3d').className = 'px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition';
+        document.getElementById('mono-tab-read').className = 'px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition';
+      }
+    }
+
+    function spinMonographBook(ry, rx) {
+      monoRotY = ry;
+      monoRotX = rx;
+      const el = document.getElementById('mono-3d-book');
+      el.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+      el.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+    }
+
+    function selectMonoFormat(fmt) {
+      activeMonoFormat = fmt;
+      renderMonographMeta();
+    }
+
+    function renderMonographMeta() {
+      const b = activeMonoBook;
+      const price = activeMonoFormat === 'hardcover' ? b.hardcoverPrice : b.paperbackPrice;
+
+      document.getElementById('mono-meta-col').innerHTML = `
+        <div class="space-y-1.5">
+          <div class="font-fraunces italic text-xs text-claret">${b.genre}</div>
+          <h2 class="font-sans font-extrabold text-3xl tracking-[-0.035em] text-ink">${b.title}</h2>
+          <p class="text-sm text-slateMuted">by <strong class="font-semibold text-ink">${b.author}</strong></p>
+        </div>
+
+        <p class="font-reader text-[16px] leading-[1.7] text-ink/90">
+          ${b.synopsis}
+        </p>
+
+        <p class="text-xs text-slateMuted leading-relaxed border-l-2 border-claret/50 pl-3.5">
+          ${b.authorNote}
+        </p>
+
+        <div class="grid grid-cols-2 gap-y-2.5 gap-x-4 py-4 border-y border-hairline text-xs">
+          <div><span class="text-slateMuted">ISBN-13:</span> <span class="font-mono text-[11px] text-ink">${b.isbn}</span></div>
+          <div><span class="text-slateMuted">Extent:</span> <span class="text-ink font-medium">${b.pages} pages</span></div>
+          <div><span class="text-slateMuted">Trim:</span> <span class="text-ink font-medium">${b.trim}</span></div>
+          <div><span class="text-slateMuted">Language:</span> <span class="text-ink font-medium">${b.language}</span></div>
+        </div>
+
+        <!-- Format Selector -->
+        <div class="space-y-2.5">
+          <div class="text-[11px] font-medium text-slateMuted uppercase tracking-wider">Select Edition</div>
+          <div class="grid grid-cols-2 gap-2.5 text-xs">
+            <button onclick="selectMonoFormat('hardcover')" class="p-3 rounded-lg border text-left transition ${activeMonoFormat === 'hardcover' ? 'border-ink bg-subtleSurface font-semibold text-ink' : 'border-borderCrisp text-slateMuted hover:border-ink'}">
+              <div>Hardcover</div>
+              <div class="font-mono text-[11px] mt-0.5">₹${b.hardcoverPrice}</div>
+            </button>
+            <button onclick="selectMonoFormat('paperback')" class="p-3 rounded-lg border text-left transition ${activeMonoFormat === 'paperback' ? 'border-ink bg-subtleSurface font-semibold text-ink' : 'border-borderCrisp text-slateMuted hover:border-ink'}">
+              <div>Paperback</div>
+              <div class="font-mono text-[11px] mt-0.5">₹${b.paperbackPrice}</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <button onclick="document.getElementById('mono-order-note').classList.remove('hidden')" class="flex-1 py-3 px-5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-xs font-semibold transition">
+            Acquire ${activeMonoFormat === 'hardcover' ? 'Hardcover' : 'Paperback'} · ₹${price}
+          </button>
+          <button onclick="setMonographTab('read')" class="py-3 px-4 rounded-lg border border-borderCrisp hover:border-ink text-xs font-medium text-ink transition">
+            Read Excerpt
+          </button>
+        </div>
+        <p id="mono-order-note" class="hidden text-xs font-medium text-claret">✓ Edition reserved for direct house dispatch from New Delhi.</p>
+      `;
+    }
+
+    function renderMonographSpread() {
+      const spreads = activeMonoBook.spreads;
+      const cur = spreads[monoSpreadIdx] || spreads[0];
+      document.getElementById('mono-head-l').textContent = activeMonoBook.title.toUpperCase();
+      document.getElementById('mono-pnum-l').textContent = 12 + monoSpreadIdx * 2;
+      document.getElementById('mono-pnum-r').textContent = 13 + monoSpreadIdx * 2;
+      document.getElementById('mono-body-l').innerHTML = cur.l;
+      document.getElementById('mono-body-r').innerHTML = cur.r;
+      document.getElementById('mono-page-stat').textContent = `${monoSpreadIdx + 1} / ${spreads.length}`;
+    }
+
+    function turnMonographPage(dir) {
+      const len = activeMonoBook.spreads.length;
+      const next = (monoSpreadIdx + dir + len) % len;
+      const leaf = document.getElementById('mono-flip-leaf');
+      leaf.classList.remove('hidden', 'turn-forward', 'turn-backward');
+      void leaf.offsetWidth;
+      leaf.classList.add(dir > 0 ? 'turn-forward' : 'turn-backward');
+
+      setTimeout(() => {
+        monoSpreadIdx = next;
+        renderMonographSpread();
+      }, 280);
+      setTimeout(() => leaf.classList.add('hidden'), 640);
+    }
+
+    // Universal 360° Drag Utility
+    function attach360Drag(zoneId, bookId, getAngles, setAngles) {
+      const zone = document.getElementById(zoneId);
+      if (!zone) return;
+      let dragging = false, sx = 0, sy = 0, startY = 0, startX = 0;
+
+      const onDown = (x, y) => {
+        dragging = true; sx = x; sy = y;
+        const a = getAngles(); startY = a.y; startX = a.x;
+        const el = document.getElementById(bookId);
+        if (el) el.style.transition = 'none';
+      };
+      const onMove = (x, y) => {
+        if (!dragging) return;
+        const ny = startY + (x - sx) * 0.68;
+        const nx = Math.max(-28, Math.min(28, startX - (y - sy) * 0.34));
+        setAngles(ny, nx);
+        const el = document.getElementById(bookId);
+        if (el) el.style.transform = `rotateY(${ny}deg) rotateX(${nx}deg)`;
+      };
+      const onUp = () => {
+        if (!dragging) return;
+        dragging = false;
+        const el = document.getElementById(bookId);
+        if (el) el.style.transition = 'transform 0.35s ease-out';
+      };
+
+      zone.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+      window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+      window.addEventListener('mouseup', onUp);
+      zone.addEventListener('touchstart', e => { if (e.touches[0]) onDown(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchmove', e => { if (e.touches[0]) onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchend', onUp);
+    }
+
+    // =====================================================================
+    // 6. STANDALONE Redworm STUDIO (5-STAGE LIGHT WORKBENCH)
+    // =====================================================================
+    let studioState = {
+      title: 'The Salt Roads',
+      author: 'A. Khan',
+      words: 92310,
+      chapters: 12,
+      basePages: 312,
+      computedPages: 312,
+      trim: '6" × 9"',
+      spreadIdx: 0,
+      coverRotY: -25,
+      coverRotX: 6,
+      cover: {
+        cloth: '#182844',
+        spineCloth: '#0F1B30',
+        ink: '#FFFFFF',
+        foil: '#D4AF63',
+        fontMode: 'sans',
+        title: 'THE SALT ROADS',
+        author: 'A. KHAN',
+        blurb: 'A luminous novel about a winter harbour, an old customs ledger, and a young archivist tracing unrecorded salt caravans.',
+        isbn: '978-81-97384-21-0'
+      }
+    };
+
+    let studioProofItems = [
+      { id: 'p1', cat: 'SPELLING · OXFORD EN-GB', bad: 'gray', good: 'grey', note: 'Matches 14 other occurrences across Chapters 1–6.', status: 'open' },
+      { id: 'p2', cat: 'DUPLICATE TOKEN', bad: 'the the', good: 'the', note: 'Repeated definite article across line break.', status: 'open' },
+      { id: 'p3', cat: 'TYPOGRAPHY · DASH', bad: 'quay -- the', good: 'quay—the', note: 'Convert double hyphen to closed literary em-dash.', status: 'open' },
+      { id: 'p4', cat: 'LEXICAL CONSISTENCY', bad: 'recieve', good: 'receive', note: 'Standard spelling correction.', status: 'open' }
+    ];
+
+    function openStudio(step = 1) {
+      closeMonograph();
+      closeJournalModal();
+      document.getElementById('website-shell').classList.add('hidden');
+      const st = document.getElementById('studio-shell');
+      st.classList.remove('hidden');
+      st.classList.add('flex');
+      goStudioStep(step);
+      window.scrollTo({ top: 0 });
+    }
+
+    function closeStudio() {
+      const st = document.getElementById('studio-shell');
+      st.classList.add('hidden');
+      st.classList.remove('flex');
+      document.getElementById('website-shell').classList.remove('hidden');
+    }
+
+    function goStudioStep(step) {
+      document.querySelectorAll('.studio-pane').forEach(p => p.classList.add('hidden'));
+      document.getElementById('studio-pane-' + step)?.classList.remove('hidden');
+
+      for (let i = 1; i <= 5; i++) {
+        const pill = document.getElementById('sstep-' + i);
+        if (!pill) continue;
+        if (i === step) {
+          pill.className = 'sstep-pill px-3 py-1.5 rounded-md text-xs font-semibold bg-ink text-pureWhite flex items-center gap-1.5 transition shrink-0';
+        } else if (i < step) {
+          pill.className = 'sstep-pill px-3 py-1.5 rounded-md text-xs font-medium text-ink bg-subtleSurface flex items-center gap-1.5 transition shrink-0';
+        } else {
+          pill.className = 'sstep-pill px-3 py-1.5 rounded-md text-xs font-medium text-slateMuted hover:text-ink flex items-center gap-1.5 transition shrink-0';
+        }
+      }
+      if (step === 2) updateStudioTypesetting();
+      if (step === 3) renderStudioProofread();
+      if (step === 4) renderStudioCoverStage();
+      if (step === 5) recalcExportSpine();
+    }
+
+    // Stage 1: Import
+    function reparseSampleManuscript() {
+      const bar = document.getElementById('imp-bar');
+      const txt = document.getElementById('imp-status-txt');
+      bar.style.width = '22%';
+      txt.textContent = 'Scanning headings & scene breaks…';
+      setTimeout(() => { bar.style.width = '74%'; txt.textContent = 'Normalising smart quotes & dashes…'; }, 280);
+      setTimeout(() => { bar.style.width = '100%'; txt.textContent = `Parsed · ${studioState.chapters} chapters structured`; }, 680);
+    }
+
+    function loadPresetManuscript(title, author, words, chaps) {
+      studioState.title = title;
+      studioState.author = author;
+      studioState.words = words;
+      studioState.chapters = chaps;
+      studioState.basePages = Math.max(120, Math.round(words / 295));
+      studioState.cover.title = title.toUpperCase();
+      studioState.cover.author = author.toUpperCase();
+
+      document.getElementById('st-top-title').textContent = title;
+      document.getElementById('st-top-words').textContent = `${words.toLocaleString()} words`;
+      document.getElementById('imp-filename').textContent = `${title.toLowerCase().replace(/\s+/g, '-')}.docx`;
+      document.getElementById('tel-words').textContent = words.toLocaleString();
+      document.getElementById('tel-chaps').textContent = chaps;
+      document.getElementById('tel-pages').textContent = `${studioState.basePages} pp`;
+      document.getElementById('st-cov-title').value = studioState.cover.title;
+      document.getElementById('st-cov-author').value = studioState.cover.author;
+      reparseSampleManuscript();
+    }
+
+    function handleManuscriptUpload(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      document.getElementById('imp-filename').textContent = file.name;
+      reparseSampleManuscript();
+      if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const w = String(ev.target?.result || '').trim().split(/\s+/).filter(Boolean).length;
+          if (w > 10) {
+            loadPresetManuscript(file.name.replace(/\.[^.]+$/, ''), studioState.author, w, Math.max(4, Math.round(w / 4500)));
+          }
+        };
+        reader.readAsText(file);
+      }
+    }
+
+    // Stage 2: Live Spread Typesetter
+    function setStudioTrim(trimLabel, pages) {
+      studioState.trim = trimLabel;
+      studioState.basePages = pages;
+      document.querySelectorAll('.trim-opt').forEach(b => {
+        b.className = b.dataset.trim === trimLabel
+          ? 'trim-opt py-2 rounded-md bg-ink text-pureWhite font-semibold'
+          : 'trim-opt py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink';
+      });
+      updateStudioTypesetting();
+    }
+
+    function updateStudioTypesetting() {
+      const pt = parseFloat(document.getElementById('rng-pt').value);
+      const lh = parseFloat(document.getElementById('rng-lh').value);
+      const gutter = parseInt(document.getElementById('rng-margin').value);
+      const font = document.getElementById('st-font-select').value;
+      const dropCap = document.getElementById('chk-dropcap').checked;
+      const showHeaders = document.getElementById('chk-headers').checked;
+
+      document.getElementById('val-pt').textContent = pt.toFixed(1) + ' pt';
+      document.getElementById('val-lh').textContent = lh.toFixed(2);
+      document.getElementById('val-margin').textContent = gutter + ' mm';
+
+      const spreads = BOOKS[0].spreads;
+      const cur = spreads[studioState.spreadIdx] || spreads[0];
+
+      let leftHTML = cur.l;
+      if (!dropCap) {
+        leftHTML = leftHTML.replace(/<span class="float-left[^>]*>([A-Z])<\/span>/, '$1');
+      }
+
+      const bl = document.getElementById('st-body-left');
+      const br = document.getElementById('st-body-right');
+      bl.innerHTML = leftHTML;
+      br.innerHTML = cur.r;
+
+      [bl, br].forEach(el => {
+        el.style.fontFamily = `"${font}", Georgia, serif`;
+        el.style.fontSize = `${(pt * 1.25).toFixed(1)}px`;
+        el.style.lineHeight = lh;
+      });
+
+      document.getElementById('st-spread-left').style.paddingRight = `${gutter + 8}px`;
+      document.getElementById('st-spread-right').style.paddingLeft = `${gutter + 8}px`;
+
+      document.getElementById('st-head-left').style.visibility = showHeaders ? 'visible' : 'hidden';
+      document.getElementById('st-head-right').style.visibility = showHeaders ? 'visible' : 'hidden';
+      document.getElementById('st-pnum-l').textContent = 14 + studioState.spreadIdx * 2;
+      document.getElementById('st-pnum-r').textContent = 15 + studioState.spreadIdx * 2;
+      document.getElementById('st-spread-indicator').textContent = `Spread ${studioState.spreadIdx + 1} of ${spreads.length}`;
+
+      studioState.computedPages = Math.round(studioState.basePages * (pt / 11) * (lh / 1.62) * (1 + (gutter - 24) * 0.01));
+      const spineMm = (studioState.computedPages * 0.059).toFixed(1);
+      document.getElementById('layout-telemetry-badge').textContent = `${studioState.trim} · ${studioState.computedPages} pages · Spine ${spineMm} mm`;
+    }
+
+    function flipStudioSpread(dir) {
+      const total = BOOKS[0].spreads.length;
+      const next = (studioState.spreadIdx + dir + total) % total;
+      const leaf = document.getElementById('studio-flip-leaf');
+      leaf.classList.remove('hidden', 'turn-forward', 'turn-backward');
+      void leaf.offsetWidth;
+      leaf.classList.add(dir > 0 ? 'turn-forward' : 'turn-backward');
+
+      setTimeout(() => {
+        studioState.spreadIdx = next;
+        updateStudioTypesetting();
+      }, 260);
+      setTimeout(() => leaf.classList.add('hidden'), 630);
+    }
+
+    // Stage 3: Proofread
+    function renderStudioProofread() {
+      const tok = idx => {
+        const item = studioProofItems[idx];
+        if (item.status === 'accepted') return `<span class="px-1 rounded bg-subtleSurface font-medium text-ink underline decoration-ink/30">${item.good}</span>`;
+        if (item.status === 'dismissed') return `<span>${item.bad}</span>`;
+        return `<span class="px-1 rounded bg-claret/10 text-claret font-medium underline decoration-claret">${item.bad}</span>`;
+      };
+
+      document.getElementById('proof-text-sheet').innerHTML = `
+        <p>She had been instructed to watch for the ${tok(0)} salt of the western pans, which every cart in the province carried, yet the clean crystal arriving in sealed jars was another matter altogether.</p>
+        <p>The thirteenth cart halted short of ${tok(1)} stone ${tok(2)} driver stepped down, glanced once at the tide, and lit a pipe with the unhurried calm of a man who expects to ${tok(3)} nobody before noon.</p>
+      `;
+
+      const openCount = studioProofItems.filter(x => x.status === 'open').length;
+      document.getElementById('proof-counter-badge').textContent = openCount === 0 ? '✓ All queries resolved' : `${openCount} open ${openCount === 1 ? 'query' : 'queries'}`;
+
+      document.getElementById('proof-cards-col').innerHTML = studioProofItems.map(item => `
+        <div class="bg-pureWhite border border-borderCrisp rounded-xl p-4 space-y-2 text-xs ${item.status !== 'open' ? 'opacity-50' : ''}">
+          <div class="font-mono text-[10px] tracking-wider uppercase text-slateMuted">${item.cat}</div>
+          <div class="text-sm">
+            <span class="line-through text-slateMuted">${item.bad}</span>
+            <span class="mx-1.5 text-slateMuted">→</span>
+            <span class="font-semibold text-ink">${item.good}</span>
+          </div>
+          <p class="text-[11px] text-slateMuted">${item.note}</p>
+          ${item.status === 'open' ? `
+            <div class="flex justify-end gap-2 pt-1 font-medium">
+              <button onclick="resolveStudioProof('${item.id}','dismissed')" class="px-3 py-1 rounded border border-borderCrisp hover:border-ink text-slateMuted hover:text-ink transition">Dismiss</button>
+              <button onclick="resolveStudioProof('${item.id}','accepted')" class="px-3.5 py-1 rounded bg-ink hover:bg-inkHover text-pureWhite transition">Accept</button>
+            </div>
+          ` : `<div class="font-mono text-[10px] uppercase text-ink">✓ ${item.status}</div>`}
+        </div>
+      `).join('');
+    }
+
+    function resolveStudioProof(id, status) {
+      const target = studioProofItems.find(x => x.id === id);
+      if (target) target.status = status;
+      renderStudioProofread();
+    }
+
+    // Stage 4: Cover Designer
+    function setStudioCoverView(mode) {
+      const s3d = document.getElementById('st-cov-stage-3d');
+      const sWrap = document.getElementById('st-cov-stage-wrap');
+      if (mode === 'wrap') {
+        s3d.classList.add('hidden');
+        sWrap.classList.remove('hidden');
+        sWrap.classList.add('flex');
+        document.getElementById('cov-tab-wrap').className = 'px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition';
+        document.getElementById('cov-tab-3d').className = 'px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition';
+      } else {
+        sWrap.classList.add('hidden');
+        sWrap.classList.remove('flex');
+        s3d.classList.remove('hidden');
+        document.getElementById('cov-tab-3d').className = 'px-4 py-1.5 rounded-md bg-ink text-pureWhite font-semibold transition';
+        document.getElementById('cov-tab-wrap').className = 'px-4 py-1.5 rounded-md text-slateMuted hover:text-ink transition';
+      }
+    }
+
+    function applyStudioCoverPalette(cloth, spineCloth, ink, foil) {
+      studioState.cover.cloth = cloth;
+      studioState.cover.spineCloth = spineCloth;
+      studioState.cover.ink = ink;
+      studioState.cover.foil = foil;
+      renderStudioCoverStage();
+    }
+
+    function setStudioCoverFont(mode) {
+      studioState.cover.fontMode = mode;
+      document.getElementById('cfont-sans').className = mode === 'sans'
+        ? 'py-2 rounded-md bg-ink text-pureWhite font-semibold'
+        : 'py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink';
+      document.getElementById('cfont-serif').className = mode === 'serif'
+        ? 'py-2 rounded-md bg-ink text-pureWhite font-semibold'
+        : 'py-2 rounded-md border border-borderCrisp text-slateMuted hover:text-ink';
+      renderStudioCoverStage();
+    }
+
+    function rotateStudioCover3D(ry, rx) {
+      studioState.coverRotY = ry;
+      studioState.coverRotX = rx;
+      const el = document.getElementById('studio-3d-book');
+      el.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+      el.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg)`;
+    }
+
+    function renderStudioCoverStage() {
+      studioState.cover.title = document.getElementById('st-cov-title').value || 'THE SALT ROADS';
+      studioState.cover.author = document.getElementById('st-cov-author').value || 'A. KHAN';
+      studioState.cover.blurb = document.getElementById('st-cov-blurb').value || studioState.cover.blurb;
+      studioState.cover.isbn = document.getElementById('st-cov-isbn').value || '978-81-97384-21-0';
+
+      // Update 3D Hardcover
+      document.getElementById('studio-3d-book').innerHTML = buildHardcover3D(BOOKS[0], studioState.cover);
+
+      // Update Flat Full Print-Wrap Sheet
+      const wrap = document.getElementById('studio-flat-wrap');
+      wrap.style.background = studioState.cover.cloth;
+      wrap.style.color = studioState.cover.ink;
+      const spineEl = document.getElementById('flat-wrap-spine');
+      spineEl.style.background = studioState.cover.spineCloth;
+      spineEl.style.color = studioState.cover.spineCloth === '#EDEAE2' ? '#141414' : '#FFFFFF';
+      document.getElementById('flat-wrap-spine-title').textContent = studioState.cover.title;
+      document.getElementById('flat-wrap-spine-author').textContent = studioState.cover.author.split(' ').pop();
+      document.getElementById('flat-wrap-blurb').textContent = `“${studioState.cover.blurb}”`;
+      document.getElementById('flat-wrap-isbn').textContent = studioState.cover.isbn;
+      document.getElementById('flat-wrap-front').innerHTML = renderFrontJacket(BOOKS[0], studioState.cover);
+      document.getElementById('wrap-spine-mm-label').textContent = `Spine ${(studioState.computedPages * 0.059).toFixed(1)} mm`;
+    }
+
+    // Stage 5: Export & GSM Spine Calculator
+    function recalcExportSpine() {
+      const factor = parseFloat(document.getElementById('exp-gsm-select').value || '0.059');
+      const mm = (studioState.computedPages * factor).toFixed(1);
+      document.getElementById('exp-spine-calc').textContent = `Spine: ${mm} mm`;
+      return mm;
+    }
+
+    function compileExportPackage(filename) {
+      const bars = document.querySelectorAll('.exp-prog');
+      const lbls = document.querySelectorAll('.exp-ready-lbl');
+      bars.forEach(b => b.style.width = '25%');
+      lbls.forEach(l => l.textContent = 'Compiling…');
+
+      setTimeout(() => bars.forEach(b => b.style.width = '82%'), 260);
+      setTimeout(() => {
+        bars.forEach(b => b.style.width = '100%');
+        lbls.forEach(l => l.textContent = 'Verified ✓');
+
+        const spineMm = recalcExportSpine();
+        const manifest = [
+          `RED PANDA PUBLICATIONS — Redworm STUDIO PRODUCTION SPECIFICATION`,
+          `================================================================`,
+          `Artifact: ${filename}`,
+          `Title: ${studioState.cover.title}`,
+          `Author: ${studioState.cover.author}`,
+          `Trim Format: ${studioState.trim} | Extent: ${studioState.computedPages} pages`,
+          `Calculated Spine Width: ${spineMm} mm | Press Bleed: 3.0 mm`,
+          `ISBN-13: ${studioState.cover.isbn}`,
+          `Preflight: PDF/X-1a Fonts Embedded · EPUBCheck 0 Errors`
+        ].join('\n');
+
+        const blob = new Blob([manifest], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename.endsWith('.txt') ? filename : `${filename}.spec.txt`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        document.getElementById('exp-status-note').textContent = `✓ Exported ${filename} (${spineMm} mm spine)`;
+      }, 650);
+    }
+
+    // =====================================================================
+    // 7. COMPACT 60s WALKTHROUGH CONTROLLER WITH SCENE SCRUBBING
+    // =====================================================================
+    function pointSimCursor(selector) {
+      const cur = document.getElementById('sim-cursor');
+      const el = document.querySelector(selector);
+      if (!cur || !el) return;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) return;
+      cur.style.left = `${Math.max(24, Math.min(window.innerWidth - 24, r.left + r.width * 0.5))}px`;
+      cur.style.top = `${Math.max(24, Math.min(window.innerHeight - 24, r.top + r.height * 0.5))}px`;
+      setTimeout(() => {
+        cur.classList.add('clicking');
+        setTimeout(() => cur.classList.remove('clicking'), 180);
+      }, 650);
+    }
+
+    const WT_SCENES = [
+      {
+        sec: 0,
+        title: 'Pure White Editorial Hero & 3D Hardcover',
+        exec: () => {
+          closeMonograph();
+          closeStudio();
+          switchSiteTab('home');
+          setTimeout(() => pointSimCursor('#hero-3d-mount'), 500);
+        }
+      },
+      {
+        sec: 7,
+        title: 'Borderless 3D Clothbound Showroom',
+        exec: () => {
+          closeMonograph();
+          closeStudio();
+          scrollToShowroom();
+          setTimeout(() => pointSimCursor('#book-card-mirrors-daryaganj'), 900);
+        }
+      },
+      {
+        sec: 14,
+        title: 'Book Monograph — 360° Spin & Curved Excerpt Flip',
+        exec: () => {
+          closeStudio();
+          openMonograph('salt-roads', '3d');
+          setTimeout(() => spinMonographBook(-174, 4), 1300);
+          setTimeout(() => { pointSimCursor('#mono-tab-read'); setMonographTab('read'); }, 3000);
+          setTimeout(() => turnMonographPage(1), 4600);
+        }
+      },
+      {
+        sec: 22,
+        title: 'Authors, Literary Journal & Architectural Studio Intro',
+        exec: () => {
+          closeMonograph();
+          switchSiteTab('authors');
+          setTimeout(() => switchSiteTab('journal'), 2400);
+          setTimeout(() => {
+            switchSiteTab('home');
+            setTimeout(() => {
+              document.getElementById('studio-intro-sec')?.scrollIntoView({ behavior: 'smooth' });
+              pointSimCursor('#open-studio-btn');
+            }, 350);
+          }, 4800);
+        }
+      },
+      {
+        sec: 30,
+        title: 'Redworm — Stage 1 Manuscript Import',
+        exec: () => {
+          openStudio(1);
+          reparseSampleManuscript();
+        }
+      },
+      {
+        sec: 36,
+        title: 'Stage 2 — Live Two-Page Typesetting & Page Turn',
+        exec: () => {
+          openStudio(2);
+          setTimeout(() => setStudioTrim('Royal Octavo', 286), 1200);
+          setTimeout(() => flipStudioSpread(1), 2800);
+        }
+      },
+      {
+        sec: 43,
+        title: 'Stage 3 — Editorial Proofreading Queries',
+        exec: () => {
+          openStudio(3);
+          setTimeout(() => resolveStudioProof('p1', 'accepted'), 1200);
+          setTimeout(() => resolveStudioProof('p2', 'accepted'), 2600);
+        }
+      },
+      {
+        sec: 49,
+        title: 'Stage 4 — 3D Hardcover & Full Print-Wrap Sheet',
+        exec: () => {
+          openStudio(4);
+          setStudioCoverView('3d');
+          setTimeout(() => applyStudioCoverPalette('#691920', '#4A1015', '#FFF9F5', '#E5C88D'), 1200);
+          setTimeout(() => setStudioCoverView('wrap'), 3200);
+        }
+      },
+      {
+        sec: 55,
+        title: 'Stage 5 — GSM Spine Math & Master Export',
+        exec: () => {
+          openStudio(5);
+          setTimeout(() => pointSimCursor('#exp-bundle-btn'), 1200);
+        }
+      }
+    ];
+
+    let wtInterval = null;
+    let wtSec = 0;
+    let wtIsPaused = false;
+    let wtCurrentScene = -1;
+
+    function startWalkthrough() {
+      document.getElementById('wt-launch-pill').classList.add('hidden');
+      const bar = document.getElementById('wt-player-bar');
+      bar.classList.remove('hidden');
+      bar.classList.add('flex');
+      document.getElementById('sim-cursor').classList.remove('hidden');
+
+      wtSec = 0;
+      wtIsPaused = false;
+      wtCurrentScene = -1;
+      document.getElementById('wt-pause-btn').textContent = '❚❚';
+      syncWalkthroughTick();
+
+      if (wtInterval) clearInterval(wtInterval);
+      wtInterval = setInterval(() => {
+        if (wtIsPaused) return;
+        wtSec++;
+        if (wtSec > 60) {
+          stopWalkthrough();
+          return;
+        }
+        syncWalkthroughTick();
+      }, 1000);
+    }
+
+    function syncWalkthroughTick() {
+      document.getElementById('wt-time-cur').textContent = String(wtSec).padStart(2, '0');
+      document.getElementById('wt-scrubber').value = wtSec;
+
+      let idx = 0;
+      for (let i = 0; i < WT_SCENES.length; i++) {
+        if (wtSec >= WT_SCENES[i].sec) idx = i;
+      }
+      if (idx !== wtCurrentScene) {
+        wtCurrentScene = idx;
+        document.getElementById('wt-scene-title').textContent = WT_SCENES[idx].title;
+        WT_SCENES[idx].exec();
+      }
+    }
+
+    function scrubWalkthrough(val) {
+      wtSec = parseInt(val, 10) || 0;
+      wtCurrentScene = -1;
+      syncWalkthroughTick();
+    }
+
+    function togglePauseWalkthrough() {
+      wtIsPaused = !wtIsPaused;
+      document.getElementById('wt-pause-btn').textContent = wtIsPaused ? '▶' : '❚❚';
+    }
+
+    function stopWalkthrough() {
+      if (wtInterval) clearInterval(wtInterval);
+      wtInterval = null;
+      document.getElementById('sim-cursor').classList.add('hidden');
+      const bar = document.getElementById('wt-player-bar');
+      bar.classList.add('hidden');
+      bar.classList.remove('flex');
+      document.getElementById('wt-launch-pill').classList.remove('hidden');
+    }
+
+    // INITIALISE APPLICATION
+    window.addEventListener('DOMContentLoaded', () => {
+      mountHeroHardcover();
+      filterHomeShowroom('All');
+      filterBooksView('All');
+
+      // Populate Authors View
+      document.getElementById('authors-roster-grid').innerHTML = AUTHORS.map(a => `
+        <div class="border-t border-hairline pt-6 space-y-3">
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="font-sans font-bold text-xl tracking-tight text-ink">${a.name}</h3>
+            <span class="text-xs text-slateMuted">${a.city}</span>
+          </div>
+          <p class="text-sm text-slateMuted leading-relaxed">${a.bio}</p>
+          <div class="pt-1 flex items-center justify-between text-xs">
+            <em class="font-fraunces italic text-ink">${a.title}</em>
+            <button onclick="openMonograph('${a.bookId}', '3d')" class="font-medium text-ink hover:text-claret transition">View edition →</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Populate Journal View
+      document.getElementById('journal-list').innerHTML = JOURNAL_ENTRIES.map((j, i) => `
+        <article onclick="openJournalModal(${i})" class="py-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline cursor-pointer group">
+          <div class="md:col-span-3">
+            <div class="font-fraunces italic text-sm text-claret">${j.rubric}</div>
+            <div class="text-xs text-slateMuted mt-0.5">${j.date}</div>
+          </div>
+          <div class="md:col-span-7 space-y-2">
+            <h2 class="font-sans font-bold text-2xl tracking-tight text-ink group-hover:text-claret transition">${j.title}</h2>
+            <p class="text-sm text-slateMuted leading-relaxed">${j.summary}</p>
+          </div>
+          <div class="md:col-span-2 md:text-right text-xs font-medium text-ink group-hover:text-claret transition">Read essay →</div>
+        </article>
+      `).join('');
+
+      updateStudioTypesetting();
+      renderStudioProofread();
+      renderStudioCoverStage();
+
+      attach360Drag(
+        'mono-drag-zone',
+        'mono-3d-book',
+        () => ({ y: monoRotY, x: monoRotX }),
+        (y, x) => { monoRotY = y; monoRotX = x; }
+      );
+      attach360Drag(
+        'studio-3d-drag',
+        'studio-3d-book',
+        () => ({ y: studioState.coverRotY, x: studioState.coverRotX }),
+        (y, x) => { studioState.coverRotY = y; studioState.coverRotX = x; }
+      );
+    });
+  </script>
+  <script src="showroom-data.js"></script>
+  <script src="showroom.js"></script>
+  <style>#wt-launch-pill{display:none!important}</style>
+  <script>
+    // Redworm lives at /redworm — open it instead of the old in-page studio mock-up.
+    window.addEventListener('DOMContentLoaded', () => {
+      window.openStudio = function () { window.location.href = 'redworm/index.html'; };
+    });
+  </script>
+</body>
+</html>

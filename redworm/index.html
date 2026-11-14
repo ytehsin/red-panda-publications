@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redworm — Red Panda Publications</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
+      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'], fraunces:['"Fraunces"','Georgia','serif'], mono:['"JetBrains Mono"','monospace'] } } } };
+  </script>
+  <style>
+    html, body { -webkit-font-smoothing: antialiased; }
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .chev { transform: rotate(90deg); }
+  </style>
+</head>
+<body class="bg-pureWhite text-ink font-sans">
+
+  <header class="border-b border-hairline">
+    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-claret"></span>
+        <span class="font-bold tracking-tight">Redworm</span>
+      </div>
+      <a href="../index.html" class="text-sm text-slateMuted hover:text-ink">← Red Panda Publications</a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6">
+
+    <!-- 1. What it is -->
+    <section class="py-16 sm:py-20 space-y-5">
+      <h1 class="text-4xl sm:text-5xl leading-[1.08]">
+        <span class="font-extrabold tracking-[-0.04em]">Your manuscript,</span><br>
+        <em class="font-fraunces italic font-light text-claret">ready for the printer.</em>
+      </h1>
+      <p class="text-lg text-slateMuted max-w-xl leading-relaxed">Upload a Word file in English or Hindi. Redworm lays out the pages, builds the cover and gives you files a printer can use.</p>
+      <p class="inline-block text-sm px-3 py-1.5 rounded-full bg-subtleSurface text-slateMuted">Uploading opens soon. Below is a real book Redworm made.</p>
+    </section>
+
+    <!-- 2. Five steps -->
+    <section class="pb-12">
+      <ol class="grid grid-cols-5 gap-2 text-center text-sm">
+        <li><div class="h-1 rounded-full bg-ink mb-3"></div>Import</li>
+        <li><div class="h-1 rounded-full bg-ink mb-3"></div>Proofread</li>
+        <li><div class="h-1 rounded-full bg-ink mb-3"></div>Pages</li>
+        <li><div class="h-1 rounded-full bg-ink mb-3"></div>Cover</li>
+        <li><div class="h-1 rounded-full bg-ink mb-3"></div>Download</li>
+      </ol>
+      <p class="mt-4 text-xs text-slateMuted text-center">
+        <span class="inline-block w-2 h-2 rounded-full bg-ink align-middle"></span> working
+        <span class="inline-block w-2 h-2 rounded-full bg-claret/40 align-middle ml-3"></span> basics working, more coming
+      </p>
+    </section>
+
+    <!-- 3. A real book, made by Redworm -->
+    <section class="pb-16 space-y-6">
+      <div class="flex flex-col sm:flex-row gap-6 sm:items-center">
+        <img src="books/jekyll-and-hyde/jekyll-and-hyde-cover.jpg" alt="Cover of The Strange Case of Dr. Jekyll and Mr. Hyde" class="w-28 rounded shadow-md">
+        <div class="space-y-1.5">
+          <p class="text-xs uppercase tracking-wider text-slateMuted">Made with Redworm</p>
+          <h2 class="text-2xl font-bold tracking-tight">The Strange Case of Dr. Jekyll and Mr. Hyde</h2>
+          <p class="text-slateMuted">Robert Louis Stevenson · 98 pages · paperback and ebook</p>
+        </div>
+      </div>
+
+      <div class="inline-flex flex-wrap bg-subtleSurface p-1 rounded-lg text-sm" id="tool-tabs">
+        <button data-tool="import" class="px-3 py-1.5 rounded-md">1 Import</button>
+        <button data-tool="proof" class="px-3 py-1.5 rounded-md">2 Proofread</button>
+        <button data-tool="pages" class="px-3 py-1.5 rounded-md">3 Pages</button>
+        <button data-tool="cover" class="px-3 py-1.5 rounded-md">4 Cover</button>
+        <button data-tool="download" class="px-3 py-1.5 rounded-md">5 Download</button>
+      </div>
+
+      <div data-panel="import" class="tool-panel space-y-4">
+        <p class="text-lg">Found <strong>10 chapters</strong>, the title and the author, in a Word file with no heading styles at all.</p>
+        <ol class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5 text-sm text-slateMuted list-decimal ml-5">
+          <li>Story of the Door</li><li>Search for Mr. Hyde</li><li>Dr. Jekyll Was Quite at Ease</li><li>The Carew Murder Case</li><li>Incident of the Letter</li>
+          <li>Remarkable Incident of Dr. Lanyon</li><li>Incident at the Window</li><li>The Last Night</li><li>Dr. Lanyon’s Narrative</li><li>Henry Jekyll’s Full Statement of the Case</li>
+        </ol>
+        <p class="text-sm text-slateMuted">Set aside, not printed: the earlier ebook’s <em>Imprint</em>, <em>Colophon</em> and <em>Uncopyright</em> pages.</p>
+      </div>
+
+      <div data-panel="proof" class="tool-panel hidden space-y-4">
+        <p class="text-lg"><strong>2 things to check.</strong> Nothing was changed. Redworm never rewrites your words by itself.</p>
+        <div class="space-y-3 text-sm">
+          <div class="rounded-xl border border-borderCrisp p-4"><p class="text-xs text-slateMuted mb-1">Remarkable Incident of Dr. Lanyon · “that” twice in a row</p><p>…Now <mark class="bg-claret/10 text-claret px-0.5 rounded">that that</mark> evil influence had been withdrawn…</p></div>
+          <div class="rounded-xl border border-borderCrisp p-4"><p class="text-xs text-slateMuted mb-1">Henry Jekyll’s Full Statement · “that” twice in a row</p><p>…And this again, <mark class="bg-claret/10 text-claret px-0.5 rounded">that that</mark> insurgent horror was knit to him…</p></div>
+        </div>
+        <p class="text-sm text-slateMuted">Both are correct as Stevenson wrote them.</p>
+        <a href="proofread.html" class="inline-block px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Open the proofread tool →</a>
+        <p class="text-xs text-slateMuted">Includes a practice text with English and Hindi mistakes, so you can see every kind of check.</p>
+      </div>
+
+      <div data-panel="pages" class="tool-panel hidden space-y-4">
+        <div class="inline-flex bg-subtleSurface p-1 rounded-lg text-sm" id="spread-tabs">
+          <button data-img="books/jekyll-and-hyde/spread-opening.jpg" class="px-3 py-1.5 rounded-md">Opening pages</button>
+          <button data-img="books/jekyll-and-hyde/spread-chapter.jpg" class="px-3 py-1.5 rounded-md">Chapter start</button>
+          <button data-img="books/jekyll-and-hyde/spread-pages.jpg" class="px-3 py-1.5 rounded-md">Pages</button>
+        </div>
+        <img id="spread-img" src="books/jekyll-and-hyde/spread-opening.jpg" alt="Two facing pages from the book" class="w-full rounded-lg border border-hairline shadow-sm">
+        <p class="text-sm"><span class="font-semibold">✓ Ready for the printer</span> <span class="text-slateMuted">· 5.5 × 8.5 inch · contents with page numbers · chapters start on a right-hand page</span></p>
+        <div class="rounded-xl bg-subtleSurface p-4 flex flex-wrap items-center justify-between gap-3">
+          <p class="text-sm"><span class="font-semibold">Index (optional)</span> <span class="text-slateMuted">· pick names and terms; Redworm finds every page.</span></p>
+          <a href="index-maker.html" class="px-4 py-2 rounded-lg border border-borderCrisp hover:border-ink text-sm font-semibold">Make an index →</a>
+        </div>
+      </div>
+
+      <div data-panel="cover" class="tool-panel hidden space-y-4">
+        <img src="books/jekyll-and-hyde/jekyll-and-hyde-cover-wrap.jpg" alt="Full cover: back, spine and front" class="w-full rounded-lg shadow-sm">
+        <p class="text-sm"><span class="font-semibold">✓ Ready for the printer</span> <span class="text-slateMuted">· back, spine and front in one sheet · spine 5.6 mm, wide enough for the title. The red dashes only show where it is trimmed and folded.</span></p>
+<div class="rounded-xl bg-subtleSurface p-4 flex flex-wrap items-center justify-between gap-3">
+          <p class="text-sm"><span class="font-semibold">The author chooses the cover.</span> <span class="text-slateMuted">5 layouts × 6 colour sets. Nothing is printed until you pick one.</span></p>
+          <a href="cover-picker.html" class="px-4 py-2 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Choose your cover →</a>
+        </div>
+      </div>
+
+      <div data-panel="download" class="tool-panel hidden space-y-5">
+        <div class="grid sm:grid-cols-2 gap-3 text-sm">
+          <a href="books/jekyll-and-hyde/jekyll-and-hyde-complete-book.pdf" target="_blank" class="rounded-xl border border-borderCrisp hover:border-ink p-4"><div class="font-semibold">Complete book</div><div class="text-slateMuted text-xs mt-1">Cover, title page, copyright page and every chapter in one PDF, to read</div></a>
+          <a href="books/jekyll-and-hyde/jekyll-and-hyde.epub" class="rounded-xl border border-borderCrisp hover:border-ink p-4"><div class="font-semibold">Ebook</div><div class="text-slateMuted text-xs mt-1">EPUB · checked, no errors</div></a>
+        </div>
+        <div class="rounded-xl bg-subtleSurface p-5 space-y-3">
+          <a href="books/jekyll-and-hyde/jekyll-and-hyde-all-files.zip" class="inline-block px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Download everything (.zip)</a>
+          <ul class="text-sm text-slateMuted space-y-1">
+            <li><span class="text-ink">Complete book</span> and <span class="text-ink">ebook</span></li>
+            <li><span class="text-ink">For your printer</span>: book pages and cover, with 3 mm bleed</li>
+            <li><span class="text-ink">For Amazon KDP</span>: paperback pages and cover in Amazon’s sizes, Kindle ebook and cover, and a details sheet to copy into the forms</li>
+          </ul>
+          <p class="text-xs text-slateMuted">No ISBN was given for this book, so no barcode was added. Amazon can add its own.</p>
+        </div>
+      </div>
+
+      <details class="text-sm text-slateMuted">
+        <summary class="inline-flex items-center gap-1.5 hover:text-ink"><span class="chev transition">›</span> What “ready for the printer” means</summary>
+        <ul class="mt-3 ml-5 space-y-1.5 list-disc">
+          <li>Every font is included in the file</li>
+          <li>Page size and the 3 mm trim edge are right on every page</li>
+          <li>Colours are print colours (CMYK), with no screen colours</li>
+          <li>Nothing is see-through, which printers can't handle</li>
+          <li>Pictures are sharp enough to print (300 DPI)</li>
+          <li>The file is marked as the PDF/X-1a print standard</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 4. Spine calculator -->
+    <section class="pb-24">
+      <div class="rounded-2xl border border-borderCrisp p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-12 gap-8 items-center">
+        <div class="sm:col-span-7 space-y-5">
+          <h2 class="text-2xl font-bold tracking-tight">How thick will my book be?</h2>
+          <label class="block space-y-1.5"><span class="text-sm text-slateMuted">Pages</span>
+            <input id="pages-n" type="number" min="4" max="2000" step="2" value="120" class="w-full px-3 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface text-lg"></label>
+          <label class="block space-y-1.5"><span class="text-sm text-slateMuted">Paper</span>
+            <select id="paper" class="w-full px-3 py-2.5 rounded-lg border border-borderCrisp bg-subtleSurface"></select></label>
+          <div class="inline-flex bg-subtleSurface p-1 rounded-lg text-sm" id="binding-tabs">
+            <button data-v="0.5" class="px-4 py-1.5 rounded-md">Paperback</button>
+            <button data-v="6.0" class="px-4 py-1.5 rounded-md">Hardcover</button>
+          </div>
+        </div>
+        <div class="sm:col-span-5 text-center space-y-3">
+          <div class="flex items-stretch justify-center h-44">
+            <div class="w-20 rounded-l-sm" style="background:#182844"></div>
+            <div id="spine-vis" class="flex items-center justify-center transition-all" style="background:#0F1B30;color:#fff">
+              <span id="spine-text" class="[writing-mode:vertical-rl] text-[9px] font-bold tracking-[0.16em] uppercase">My Book</span>
+            </div>
+            <div class="w-20 rounded-r-sm" style="background:#182844"></div>
+          </div>
+          <div id="spine-mm" class="font-mono text-3xl"></div>
+          <p id="spine-msg" class="text-sm"></p>
+        </div>
+      </div>
+
+      <details class="mt-4 text-sm">
+        <summary class="inline-flex items-center gap-1.5 text-slateMuted hover:text-ink"><span class="chev transition">›</span> Use my printer's numbers</summary>
+        <div class="mt-4 rounded-xl border border-borderCrisp p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <label class="space-y-1.5 block"><span class="text-slateMuted">Paper weight (GSM)</span><input id="gsm" type="number" min="20" max="400" placeholder="e.g. 70" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-subtleSurface"></label>
+          <label class="space-y-1.5 block"><span class="text-slateMuted">Bulk</span><input id="bulk" type="number" min="0.6" max="2.5" step="0.05" placeholder="e.g. 1.4" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-subtleSurface"></label>
+          <label class="space-y-1.5 block"><span class="text-slateMuted">or Pages per inch</span><input id="ppi" type="number" min="200" max="1500" placeholder="e.g. 444" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-subtleSurface"></label>
+          <p class="sm:col-span-3 text-xs text-slateMuted">Fill in weight + bulk, <em>or</em> pages per inch. Your printer can give you either. Leave empty to use the paper above.</p>
+        </div>
+      </details>
+      <details class="mt-3 text-sm">
+        <summary class="inline-flex items-center gap-1.5 text-slateMuted hover:text-ink"><span class="chev transition">›</span> Compare all papers</summary>
+        <div id="compare" class="mt-4 rounded-xl border border-borderCrisp divide-y divide-hairline"></div>
+      </details>
+    </section>
+  </main>
+
+  <script src="paper-stocks.js"></script>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const P = window.REDWORM_PAPERS;
+    const MIN = 5.0;
+    const GROUPS = { thin: 'Thin', uncoated: 'Everyday (maplitho)', book: 'Book paper', premium: 'Premium', coated: 'Glossy / art paper' };
+    let allowance = 0.5;
+
+    el('paper').innerHTML = Object.entries(GROUPS).map(([c, label]) =>
+      `<optgroup label="${label}">` + P.filter(p => p.category === c).map(p =>
+        `<option value="${p.id}" ${p.id === 'cream_bookwove_80' ? 'selected' : ''}>${p.label}</option>`).join('') + '</optgroup>').join('');
+
+    function tabs(boxId, pick) {
+      document.querySelectorAll(`#${boxId} button`).forEach(b => {
+        const pad = boxId === 'binding-tabs' ? 'px-4' : 'px-3';
+        b.className = `${pad} py-1.5 rounded-md ` + (pick(b) ? 'bg-white shadow-sm font-semibold text-ink' : 'text-slateMuted hover:text-ink');
+      });
+    }
+    function caliper() {
+      const g = +el('gsm').value, b = +el('bulk').value, ppi = +el('ppi').value;
+      if (ppi >= 200 && ppi <= 1500) return 50.8 / ppi;
+      if (g >= 20 && g <= 400 && b >= 0.6 && b <= 2.5) return g * b / 1000;
+      return P.find(p => p.id === el('paper').value).caliper_mm;
+    }
+    function update() {
+      const pages = Math.max(4, Math.min(2000, parseInt(el('pages-n').value, 10) || 4));
+      const leaves = Math.ceil(pages / 2);
+      const mm = leaves * caliper() + allowance;
+      const ok = mm >= MIN - 1e-9;
+      el('spine-mm').textContent = mm.toFixed(1) + ' mm';
+      el('spine-vis').style.width = Math.max(4, mm * 4) + 'px';
+      el('spine-text').style.visibility = ok ? 'visible' : 'hidden';
+      el('spine-msg').innerHTML = ok
+        ? '<span class="text-slateMuted">Thick enough to print the title on the spine.</span>'
+        : '<span class="text-claret">Too thin for spine text, so the spine stays plain.</span>';
+      el('compare').innerHTML = P.map(p => {
+        const s = leaves * p.caliper_mm + allowance;
+        return `<div class="px-4 py-2 flex justify-between"><span>${p.label}</span><span class="font-mono ${s >= MIN - 1e-9 ? '' : 'text-claret'}">${s.toFixed(1)} mm</span></div>`;
+      }).join('');
+    }
+    document.querySelectorAll('#binding-tabs button').forEach(b => b.onclick = () => {
+      allowance = parseFloat(b.dataset.v); tabs('binding-tabs', x => x === b); update();
+    });
+    document.querySelectorAll('#spread-tabs button').forEach(b => b.onclick = () => {
+      el('spread-img').src = b.dataset.img; tabs('spread-tabs', x => x === b);
+    });
+    function showTool(t) {
+      document.querySelectorAll('.tool-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== t));
+      tabs('tool-tabs', b => b.dataset.tool === t);
+    }
+    document.querySelectorAll('#tool-tabs button').forEach(b => b.onclick = () => showTool(b.dataset.tool));
+    showTool('import');
+    ['pages-n', 'paper', 'gsm', 'bulk', 'ppi'].forEach(id => el(id).addEventListener('input', update));
+    tabs('binding-tabs', b => b.dataset.v === '0.5');
+    tabs('spread-tabs', b => b.dataset.img.includes('opening'));
+    update();
+  </script>
+</body>
+</html>

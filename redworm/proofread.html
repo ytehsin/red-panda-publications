@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proofread — Redworm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Noto+Serif+Devanagari:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
+      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'], reader:['"Newsreader"','"Noto Serif Devanagari"','Georgia','serif'] } } } };
+  </script>
+  <style> html, body { -webkit-font-smoothing: antialiased; } </style>
+</head>
+<body class="bg-pureWhite text-ink font-sans">
+  <header class="border-b border-hairline">
+    <div class="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-claret"></span><span class="font-bold tracking-tight">Redworm</span><span class="text-slateMuted">· Proofread</span></a>
+      <a href="index.html" class="text-sm text-slateMuted hover:text-ink">← All tools</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-12 space-y-8">
+    <div class="space-y-3">
+      <div class="inline-flex bg-subtleSurface p-1 rounded-lg text-sm" id="source-tabs">
+        <button data-src="book" class="px-3 py-1.5 rounded-md">Jekyll and Hyde</button>
+        <button data-src="practice" class="px-3 py-1.5 rounded-md">Practice text (with mistakes)</button>
+      </div>
+      <h1 id="summary" class="text-2xl font-bold tracking-tight"></h1>
+      <p class="text-slateMuted">Nothing in your book changes until you choose <b class="text-ink">Change</b>. Redworm never rewrites words by itself.</p>
+      <p id="auto-note" class="text-sm text-slateMuted"></p>
+    </div>
+
+    <div id="filters" class="flex flex-wrap gap-2 text-sm"></div>
+    <div id="cards" class="space-y-3"></div>
+
+    <div class="pt-4 border-t border-hairline flex flex-wrap items-center justify-between gap-4">
+      <p id="progress" class="text-sm text-slateMuted"></p>
+      <button id="download" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Save my choices</button>
+    </div>
+  </main>
+
+  <script src="books/jekyll-and-hyde/proofread.js"></script>
+  <script src="tools/proofread-practice.js"></script>
+  <script>
+    const el = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const SOURCES = { book: window.PROOF_BOOK, practice: window.PROOF_PRACTICE };
+    const ORDER = ['Spelling', 'Grammar', 'Punctuation & spacing'];
+    let src = 'book', filter = 'All';
+    const choices = { book: {}, practice: {} };
+    try { Object.assign(choices, JSON.parse(localStorage.getItem('rw-proof-choices') || '{}')); } catch (e) {}
+    const save = () => { try { localStorage.setItem('rw-proof-choices', JSON.stringify(choices)); } catch (e) {} };
+
+    function tabs(boxId, pick) {
+      document.querySelectorAll(`#${boxId} button`).forEach(b => b.className = 'px-3 py-1.5 rounded-md ' + (pick(b) ? 'bg-white shadow-sm font-semibold text-ink' : 'text-slateMuted hover:text-ink'));
+    }
+
+    function render() {
+      const data = SOURCES[src];
+      const items = data.items;
+      const mine = choices[src];
+      const open = items.filter(i => !mine[i.id]).length;
+      el('summary').textContent = items.length === 0 ? 'Nothing to check. Clean text.'
+        : `${items.length} ${items.length === 1 ? 'thing' : 'things'} to check` + (open < items.length ? ` · ${open} left` : '');
+      el('auto-note').textContent = data.auto_applied ? `${data.auto_applied} invisible tidy-ups (stray hidden characters, double spaces) were done automatically.` : '';
+
+      const counts = {};
+      items.forEach(i => counts[i.category] = (counts[i.category] || 0) + 1);
+      const cats = ORDER.filter(c => counts[c]);
+      if (filter !== 'All' && !counts[filter]) filter = 'All';
+      el('filters').innerHTML = ['All', ...cats].map(c => {
+        const n = c === 'All' ? items.length : counts[c];
+        const on = c === filter;
+        return `<button data-f="${esc(c)}" class="px-3 py-1.5 rounded-full border ${on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink'}">${esc(c)} <span class="opacity-70">${n}</span></button>`;
+      }).join('') + (filter !== 'All' && items.some(i => i.category === filter && i.replacement !== null && !mine[i.id])
+        ? `<button id="change-all" class="ml-auto px-3 py-1.5 rounded-full border border-borderCrisp hover:border-ink">Change all ${esc(filter.toLowerCase())}</button>` : '');
+
+      const shown = items.filter(i => filter === 'All' || i.category === filter);
+      el('cards').innerHTML = shown.map(i => {
+        const choice = mine[i.id];
+        const fixed = choice === 'change' && i.replacement !== null;
+        const word = fixed
+          ? `<span class="line-through text-slateMuted">${esc(i.original)}</span><span class="px-0.5 rounded bg-ink/5 text-ink font-semibold">${esc(i.replacement)}</span>`
+          : `<mark class="bg-claret/10 text-claret px-0.5 rounded">${esc(i.original)}</mark>`;
+        const buttons = choice
+          ? `<span class="text-xs text-slateMuted">${choice === 'change' ? 'Will change' : 'Kept as written'}</span><button data-undo="${i.id}" class="text-xs underline text-slateMuted hover:text-ink">Undo</button>`
+          : (i.replacement !== null
+              ? `<button data-keep="${i.id}" class="px-3 py-1.5 rounded-md border border-borderCrisp hover:border-ink text-sm">Keep</button><button data-change="${i.id}" class="px-3 py-1.5 rounded-md bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Change to “${esc(i.replacement.trim() || '(remove)')}”</button>`
+              : `<button data-keep="${i.id}" class="px-3 py-1.5 rounded-md border border-borderCrisp hover:border-ink text-sm">Looks right</button>`);
+        return `<div class="rounded-xl border ${choice ? 'border-hairline opacity-70' : 'border-borderCrisp'} p-5 space-y-3">
+          <div class="flex justify-between gap-4 text-xs text-slateMuted"><span>${esc(i.category)} · ${esc(i.message)}</span><span class="shrink-0">${esc(i.section)}</span></div>
+          <p class="font-reader text-[17px] leading-relaxed">${esc(i.before)}${word}${esc(i.after)}</p>
+          <div class="flex items-center justify-end gap-3">${buttons}</div>
+        </div>`;
+      }).join('') || '<p class="text-slateMuted">Nothing here.</p>';
+
+      const done = items.length - open;
+      el('progress').textContent = items.length ? `${done} of ${items.length} decided.` : '';
+      tabs('source-tabs', b => b.dataset.src === src);
+    }
+
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('button'); if (!t) return;
+      const mine = choices[src];
+      if (t.dataset.src) { src = t.dataset.src; filter = 'All'; }
+      else if (t.dataset.f) filter = t.dataset.f;
+      else if (t.dataset.keep) mine[t.dataset.keep] = 'keep';
+      else if (t.dataset.change) mine[t.dataset.change] = 'change';
+      else if (t.dataset.undo) delete mine[t.dataset.undo];
+      else if (t.id === 'change-all') SOURCES[src].items.forEach(i => { if (i.category === filter && i.replacement !== null && !mine[i.id]) mine[i.id] = 'change'; });
+      else if (t.id === 'download') {
+        const data = SOURCES[src];
+        const out = { title: data.title, text_version: data.text_version, decisions: mine };
+        const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'proofreading-choices.json'; document.body.appendChild(a); a.click(); a.remove();
+        return;
+      } else return;
+      save(); render();
+    });
+    render();
+  </script>
+</body>
+</html>
