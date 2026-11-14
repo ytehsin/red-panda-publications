@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Make your book — Redworm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
+      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'] } } } };
+  </script>
+  <style> html, body { -webkit-font-smoothing: antialiased; } .step[aria-disabled="true"] { opacity: .45; pointer-events: none; } </style>
+</head>
+<body class="bg-pureWhite text-ink font-sans">
+  <header class="border-b border-hairline">
+    <div class="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5"><span class="w-2 h-2 rounded-full bg-claret"></span><span class="font-bold tracking-tight">Redworm</span><span class="text-slateMuted">· Make your book</span></a>
+      <a href="index.html" class="text-sm text-slateMuted hover:text-ink">← About Redworm</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-12 space-y-10">
+    <div class="space-y-2">
+      <h1 class="text-2xl font-bold tracking-tight">Make your book</h1>
+      <p class="text-slateMuted">Upload a Word or text file (English or Hindi, up to 35,000 words). You make every choice; Redworm does the rest. Your manuscript is deleted when you leave this page.</p>
+      <p id="wake" class="hidden text-sm text-slateMuted">Waking Redworm up… the first visit after a quiet spell takes about a minute.</p>
+    </div>
+
+    <!-- 1 Upload -->
+    <section class="step space-y-4" id="s-upload">
+      <h2 class="font-semibold">1 · Your manuscript</h2>
+      <label id="drop" class="block rounded-xl border-2 border-dashed border-borderCrisp hover:border-ink p-10 text-center cursor-pointer">
+        <input id="file" type="file" accept=".docx,.txt" class="sr-only">
+        <span class="font-semibold">Choose a .docx or .txt file</span><span class="text-slateMuted"> or drop it here</span>
+      </label>
+      <p id="upload-msg" class="text-sm"></p>
+      <div id="found" class="hidden rounded-xl bg-subtleSurface p-5 space-y-3 text-sm">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <label class="space-y-1"><span class="text-slateMuted">Title</span><input id="title" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white"></label>
+          <label class="space-y-1"><span class="text-slateMuted">Author</span><input id="author" class="w-full px-3 py-2 rounded-lg border border-borderCrisp bg-white"></label>
+        </div>
+        <p id="found-line"></p>
+        <details><summary class="cursor-pointer text-slateMuted">Chapters found</summary><ol id="chapters" class="mt-2 list-decimal pl-6 space-y-0.5"></ol></details>
+      </div>
+    </section>
+
+    <!-- 2 Proofread -->
+    <section class="step space-y-4" id="s-proof" aria-disabled="true">
+      <h2 class="font-semibold">2 · Proofreading</h2>
+      <p id="proof-line" class="text-sm text-slateMuted">Nothing changes unless you choose <b class="text-ink">Change</b>.</p>
+      <div id="proof" class="space-y-2"></div>
+    </section>
+
+    <!-- 3 Cover -->
+    <section class="step space-y-4" id="s-cover" aria-disabled="true">
+      <h2 class="font-semibold">3 · Your cover <span class="font-normal text-slateMuted">(your choice is required)</span></h2>
+      <div class="flex flex-wrap gap-2 text-sm" id="layouts"></div>
+      <div class="flex flex-wrap gap-2 text-sm" id="colours"></div>
+      <div class="flex gap-5 items-start">
+        <div class="w-48 shrink-0 aspect-[2/3] rounded-md bg-subtleSurface overflow-hidden shadow-sm grid place-items-center text-xs text-slateMuted" id="preview-box">Pick a layout and colours</div>
+        <div class="space-y-3 text-sm">
+          <p id="cover-name" class="font-semibold"></p>
+          <button id="use-cover" class="hidden px-4 py-2 rounded-lg bg-ink hover:bg-inkHover text-pureWhite font-semibold">Use this cover</button>
+          <p id="cover-chosen" class="hidden text-claret font-semibold">✓ This is your cover</p>
+          <label class="block space-y-1"><span class="text-slateMuted">Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900" class="w-72 max-w-full px-3 py-2 rounded-lg border border-borderCrisp"></textarea></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Extras -->
+    <section class="step space-y-3" id="s-extra" aria-disabled="true">
+      <h2 class="font-semibold">4 · Optional</h2>
+      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">Index at the back <span class="text-slateMuted font-normal">— tick names and terms</span></summary><div id="index" class="mt-3 grid sm:grid-cols-2 gap-1"></div></details>
+      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">ISBN <span class="text-slateMuted font-normal">— adds a barcode; skip if you don't have one</span></summary>
+        <div class="mt-3 grid sm:grid-cols-2 gap-3"><input id="isbn" placeholder="Paperback ISBN" class="px-3 py-2 rounded-lg border border-borderCrisp"><input id="eisbn" placeholder="Ebook ISBN" class="px-3 py-2 rounded-lg border border-borderCrisp"></div></details>
+      <details class="rounded-xl border border-borderCrisp p-4 text-sm"><summary class="cursor-pointer font-medium">Public domain book <span class="text-slateMuted font-normal">— an old text you didn't write</span></summary>
+        <input id="pd" type="number" min="1400" max="2100" placeholder="Year first published, e.g. 1886" class="mt-3 px-3 py-2 rounded-lg border border-borderCrisp w-72"></details>
+    </section>
+
+    <!-- 5 Make -->
+    <section class="step space-y-4" id="s-make" aria-disabled="true">
+      <h2 class="font-semibold">5 · Make the book</h2>
+      <button id="make" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold disabled:opacity-40" disabled>Make my book</button>
+      <p id="make-msg" class="text-sm"></p>
+      <div id="done" class="hidden rounded-xl bg-subtleSurface p-5 space-y-3 text-sm">
+        <p class="font-semibold">Your book is ready.</p>
+        <p id="done-line" class="text-slateMuted"></p>
+        <a id="download" class="inline-block px-5 py-2.5 rounded-lg bg-claret text-pureWhite font-semibold" href="#">Download everything (.zip)</a>
+        <p class="text-xs text-slateMuted">Inside: the complete book to read, the ebook, files for your printer and a ready set for Amazon KDP. Download now: nothing is kept after you leave.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    const API = window.RW_API;
+    const el = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const cap = (s) => s[0].toUpperCase() + s.slice(1);
+    let S = null, layout = null, colour = null, chosen = null, beat = null;
+    const choices = {}, picked = new Set();
+
+    const enable = (id, on = true) => el(id).setAttribute('aria-disabled', on ? 'false' : 'true');
+    async function call(path, opts = {}) {
+      const r = await fetch(API + path, opts);
+      if (!r.ok) { let m = 'Something went wrong.'; try { m = (await r.json()).detail || m; } catch (e) {} throw new Error(typeof m === 'string' ? m : 'Please check your choices.'); }
+      return r;
+    }
+
+    // Wake the free server early so the upload doesn't wait.
+    const wakeTimer = setTimeout(() => el('wake').classList.remove('hidden'), 2500);
+    fetch(API + '/api/health').then(() => { clearTimeout(wakeTimer); el('wake').classList.add('hidden'); }).catch(() => {});
+
+    async function upload(file) {
+      el('upload-msg').textContent = 'Reading your manuscript…';
+      const fd = new FormData(); fd.append('file', file);
+      try {
+        S = await (await call('/api/sessions', { method: 'POST', body: fd })).json();
+      } catch (e) { el('upload-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; return; }
+      clearInterval(beat);
+      beat = setInterval(() => fetch(`${API}/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
+      el('upload-msg').textContent = '';
+      el('found').classList.remove('hidden');
+      el('title').value = S.title; el('author').value = (S.authors || []).join(', ');
+      el('found-line').textContent = `${S.words.toLocaleString()} words · ${S.chapters.length} chapters` + (S.set_aside.length ? ` · set aside: ${S.set_aside.join(', ')}` : '');
+      el('chapters').innerHTML = S.chapters.map(c => `<li>${esc(c)}</li>`).join('');
+      renderProof(); renderCovers(); renderIndex();
+      ['s-proof', 's-cover', 's-extra', 's-make'].forEach(id => enable(id));
+    }
+
+    function renderProof() {
+      const items = S.proofreading.items;
+      const auto = S.proofreading.auto_applied;
+      el('proof-line').innerHTML = (items.length ? `${items.length} ${items.length === 1 ? 'thing' : 'things'} to check. ` : 'Nothing to check. ')
+        + (auto ? `${auto} invisible tidy-ups (stray spaces, hidden characters) done automatically. ` : '') + 'Nothing else changes unless you choose <b class="text-ink">Change</b>.';
+      el('proof').innerHTML = items.map(i => `<div class="rounded-lg border border-borderCrisp p-3 text-sm space-y-2">
+        <p class="text-slateMuted">${esc(i.section)} · ${esc(i.message)}</p>
+        <p>${esc(i.before)}<mark class="bg-amber-100 px-0.5">${esc(i.original)}</mark>${esc(i.after)}</p>
+        <div class="flex gap-2">${i.replacement !== null ? `<button data-c="${i.id}" data-v="change" class="px-3 py-1 rounded-md border">Change to “${esc(i.replacement)}”</button>` : ''}
+        <button data-c="${i.id}" data-v="keep" class="px-3 py-1 rounded-md border">Keep</button></div></div>`).join('');
+      paintProof();
+    }
+    function paintProof() {
+      document.querySelectorAll('[data-c]').forEach(b => {
+        const on = choices[b.dataset.c] === b.dataset.v || (!choices[b.dataset.c] && b.dataset.v === 'keep');
+        b.className = 'px-3 py-1 rounded-md border ' + (on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink');
+      });
+    }
+    el('proof').addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) { choices[b.dataset.c] = b.dataset.v; paintProof(); } });
+
+    function renderCovers() {
+      const chip = (kind, v, on) => `<button data-${kind}="${v}" class="px-3 py-1.5 rounded-full border ${on ? 'bg-ink text-pureWhite border-ink' : 'border-borderCrisp text-slateMuted hover:text-ink'}">${cap(v)}</button>`;
+      el('layouts').innerHTML = '<span class="text-slateMuted self-center mr-1">Layout</span>' + Object.keys(S.covers.layouts).map(k => chip('l', k, k === layout)).join('');
+      el('colours').innerHTML = '<span class="text-slateMuted self-center mr-1">Colours</span>' + S.covers.colours.map(k => chip('k', k, k === colour)).join('');
+    }
+    async function preview() {
+      if (!layout || !colour) return;
+      const choice = `${layout}/${colour}`;
+      el('cover-name').textContent = `${cap(layout)} layout · ${cap(colour)} colours`;
+      el('preview-box').innerHTML = 'Drawing…';
+      el('use-cover').classList.toggle('hidden', choice === chosen);
+      el('cover-chosen').classList.toggle('hidden', choice !== chosen);
+      const q = new URLSearchParams({ choice, title: el('title').value, author: el('author').value });
+      try {
+        const blob = await (await call(`/api/sessions/${S.id}/cover-preview?${q}`)).blob();
+        if (`${layout}/${colour}` === choice) el('preview-box').innerHTML = `<img src="${URL.createObjectURL(blob)}" class="w-full h-full object-cover" alt="Cover preview">`;
+      } catch (e) { el('preview-box').textContent = e.message; }
+    }
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b || !S) return;
+      if (b.dataset.l) { layout = b.dataset.l; renderCovers(); preview(); }
+      if (b.dataset.k) { colour = b.dataset.k; renderCovers(); preview(); }
+    });
+    el('use-cover').onclick = () => { chosen = `${layout}/${colour}`; el('use-cover').classList.add('hidden'); el('cover-chosen').classList.remove('hidden'); el('make').disabled = false; el('make-msg').textContent = ''; };
+
+    function renderIndex() {
+      el('index').innerHTML = S.index_suggestions.length ? S.index_suggestions.map((t, i) => `<label class="flex gap-2 items-center"><input type="checkbox" data-ix="${i}"> ${esc(t.heading)} <span class="text-slateMuted">${t.count}×</span></label>`).join('')
+        : '<p class="text-slateMuted">No names or repeated terms found.</p>';
+    }
+    el('index').addEventListener('change', (e) => { const i = e.target.dataset.ix; if (i !== undefined) e.target.checked ? picked.add(+i) : picked.delete(+i); });
+
+    el('make').onclick = async () => {
+      if (!chosen) { el('make-msg').textContent = 'Choose your cover first.'; return; }
+      const body = {
+        cover: chosen, title: el('title').value.trim() || null, author: el('author').value.trim() || null,
+        blurb: el('blurb').value.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).slice(0, 6),
+        isbn: el('isbn').value.trim() || null, ebook_isbn: el('eisbn').value.trim() || null,
+        public_domain_year: el('pd').value ? +el('pd').value : null,
+        proof_choices: choices,
+        index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
+      };
+      el('make').disabled = true; el('done').classList.add('hidden');
+      try { await call(`/api/sessions/${S.id}/make`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+      catch (e) { el('make-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; el('make').disabled = false; return; }
+      const t0 = Date.now();
+      const poll = setInterval(async () => {
+        try {
+          const st = await (await call(`/api/sessions/${S.id}`)).json();
+          el('make-msg').textContent = st.step + (st.state === 'making' ? ` (${Math.round((Date.now() - t0) / 1000)} s — usually a few minutes)` : '');
+          if (st.state === 'done') {
+            clearInterval(poll); el('make-msg').textContent = ''; el('make').disabled = false; el('make').textContent = 'Make it again';
+            const s = st.summary;
+            el('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ready for the printer' : '');
+            el('download').href = `${API}/api/sessions/${S.id}/download`;
+            el('done').classList.remove('hidden');
+          } else if (st.state === 'failed') {
+            clearInterval(poll); el('make').disabled = false;
+            el('make-msg').innerHTML = `<span class="text-claret">${esc(st.error)}</span>`;
+          }
+        } catch (e) { clearInterval(poll); el('make').disabled = false; el('make-msg').innerHTML = `<span class="text-claret">${esc(e.message)}</span>`; }
+      }, 3000);
+    };
+
+    el('file').onchange = () => el('file').files[0] && upload(el('file').files[0]);
+    const drop = el('drop');
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('border-ink'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('border-ink'));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('border-ink'); e.dataTransfer.files[0] && upload(e.dataTransfer.files[0]); });
+    window.addEventListener('pagehide', () => { if (S) navigator.sendBeacon && fetch(`${API}/api/sessions/${S.id}`, { method: 'DELETE', keepalive: true }).catch(() => {}); });
+  </script>
+</body>
+</html>
