@@ -323,7 +323,7 @@ function wormFrame(now) {  // a slow earthworm: a wave runs down the body and it
     if (w.x > width + 10) w.x = -L - 20;
     for (let i = 0; i <= N; i++) {
       const u = i / N, x = u * L * stretch;
-      const y = 26 - 2.6 * Math.sin(u * Math.PI) - 1.8 * Math.sin(u * 7 - t * 1.6) * Math.sin(u * Math.PI);
+      const y = 33 - 2.6 * Math.sin(u * Math.PI) - 1.8 * Math.sin(u * 7 - t * 1.6) * Math.sin(u * Math.PI);
       pts.push([x, y]);
     }
     const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
@@ -342,7 +342,7 @@ function makeWorm(track) {
   svg.innerHTML = `<defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E06A78"/><stop offset=".55" stop-color="#C93A4E"/><stop offset="1" stop-color="#9E2236"/></linearGradient></defs>
     <path class="b" fill="none" stroke="url(#wg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
     <path class="r" fill="none" stroke="#8E1D30" stroke-opacity=".35" stroke-width="9" stroke-dasharray="0.8 3.6"/>
-    <path class="c" fill="none" stroke="#EE9AA3" stroke-width="10.5" stroke-linecap="round"/>
+    <path class="c" fill="none" stroke="#D9707F" stroke-opacity=".85" stroke-width="9.6" stroke-linecap="round"/>
     <g class="h"><ellipse cx="1" cy="0" rx="5.6" ry="4.6" fill="#C93A4E"/><ellipse cx="2.4" cy="-1.6" rx="2.2" ry="1.2" fill="#fff" opacity=".35"/></g>`;
   track.appendChild(svg);
   const w = { svg, body: svg.querySelector('.b'), rings: svg.querySelector('.r'), band: svg.querySelector('.c'), head: svg.querySelector('.h'),
