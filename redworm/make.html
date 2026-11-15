@@ -110,21 +110,12 @@ details[open] > summary::before { transform: rotate(90deg); }
 .preview { width: 220px; aspect-ratio: 2 / 3.1; border-radius: 6px 12px 12px 6px; background: linear-gradient(135deg,#F3ECE1,#EBE2D4); box-shadow: inset 6px 0 10px -6px rgba(0,0,0,.25), 0 14px 30px rgba(60,40,20,.18); overflow: hidden; display: grid; place-items: center; text-align: center; color: var(--soft); font-size: 14px; padding: 0; }
 .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .load { margin: 14px 0; text-align: center; }
-.track { position: relative; height: 34px; max-width: 260px; margin: 0 auto; overflow: hidden; border-bottom: 2px dotted #E3D6D3; }
-.worm { position: absolute; bottom: 3px; left: 0; display: flex; align-items: flex-end; gap: 1px; animation: crawl 5.5s linear infinite; }
-.worm i { width: 11px; height: 11px; border-radius: 50%; background: #C8102E; display: block; animation: hump 0.9s ease-in-out infinite; }
-.worm i:nth-child(1) { width: 8px; height: 8px; background: #E0475E; animation-delay: -.6s; }
-.worm i:nth-child(2) { width: 9px; height: 9px; background: #D93049; animation-delay: -.5s; }
-.worm i:nth-child(3) { animation-delay: -.4s; } .worm i:nth-child(4) { animation-delay: -.3s; }
-.worm i:nth-child(5) { animation-delay: -.2s; } .worm i:nth-child(6) { animation-delay: -.1s; }
-.worm i:nth-child(7) { width: 14px; height: 13px; background: #A50D25; position: relative; }
-.worm i:nth-child(7)::after { content: ""; position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; top: 3px; right: 3px; }
-@keyframes hump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-@keyframes crawl { from { transform: translateX(-90px); } to { transform: translateX(270px); } }
+.track { position: relative; height: 40px; max-width: 300px; margin: 0 auto; overflow: hidden; border-bottom: 2px solid #E9E2DA; }
+.track svg { position: absolute; bottom: 0; left: 0; overflow: visible; }
 .load .msg { margin-top: 8px; font-size: 14px; color: var(--soft); min-height: 1.4em; }
 .load.ok .track { display: none; } .load.ok .msg { color: var(--green); font-weight: 700; }
 .load.bad .track { display: none; } .load.bad .msg { color: #B00020; font-weight: 700; }
-@media (prefers-reduced-motion: reduce) { .worm, .worm i { animation-duration: 0s; } .worm { left: 40%; } }
+
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
 .tile { border: 2px solid transparent; background: none; border-radius: 10px; padding: 4px; text-align: center; cursor: pointer; }
 .tile b { font-size: 12.5px; margin-top: 5px; }
@@ -321,8 +312,47 @@ async function call(path, opts = {}) {
   return r;
 }
 
-function Term(el) {  // a little red worm crawls while the engine works; one line says what it's doing
-  el.innerHTML = '<div class="load"><div class="track"><div class="worm"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="msg"></div></div>';
+const WORMS = new Set();
+function wormFrame(now) {  // a slow earthworm: a wave runs down the body and it inches forward
+  WORMS.forEach(w => {
+    if (!w.svg.isConnected) { WORMS.delete(w); return; }
+    const t = now / 1000, L = 78, N = 26, pts = [];
+    const stretch = 1 + 0.10 * Math.sin(t * 1.6);           // body lengthens and shortens
+    w.x += (0.18 + 0.22 * Math.max(0, Math.sin(t * 1.6))) * (w.reduce ? 0 : 1);  // moves while stretching
+    const width = w.svg.parentNode.clientWidth || 300;
+    if (w.x > width + 10) w.x = -L - 20;
+    for (let i = 0; i <= N; i++) {
+      const u = i / N, x = u * L * stretch;
+      const y = 26 - 2.6 * Math.sin(u * Math.PI) - 1.8 * Math.sin(u * 7 - t * 1.6) * Math.sin(u * Math.PI);
+      pts.push([x, y]);
+    }
+    const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+    w.body.setAttribute('d', d); w.rings.setAttribute('d', d);
+    const s0 = Math.round(N * 0.64), s1 = Math.round(N * 0.78);
+    w.band.setAttribute('d', 'M' + pts.slice(s0, s1).map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L'));
+    const h = pts[N], h2 = pts[N - 1], ang = Math.atan2(h[1] - h2[1], h[0] - h2[0]) * 180 / Math.PI;
+    w.head.setAttribute('transform', `translate(${h[0].toFixed(1)} ${h[1].toFixed(1)}) rotate(${ang.toFixed(1)})`);
+    w.svg.style.transform = `translateX(${w.x.toFixed(1)}px)`;
+  });
+  if (WORMS.size) requestAnimationFrame(wormFrame); else wormFrame.on = false;
+}
+function makeWorm(track) {
+  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('width', '100'); svg.setAttribute('height', '40'); svg.setAttribute('aria-hidden', 'true');
+  svg.innerHTML = `<defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E06A78"/><stop offset=".55" stop-color="#C93A4E"/><stop offset="1" stop-color="#9E2236"/></linearGradient></defs>
+    <path class="b" fill="none" stroke="url(#wg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="r" fill="none" stroke="#8E1D30" stroke-opacity=".35" stroke-width="9" stroke-dasharray="0.8 3.6"/>
+    <path class="c" fill="none" stroke="#EE9AA3" stroke-width="10.5" stroke-linecap="round"/>
+    <g class="h"><ellipse cx="1" cy="0" rx="5.6" ry="4.6" fill="#C93A4E"/><ellipse cx="2.4" cy="-1.6" rx="2.2" ry="1.2" fill="#fff" opacity=".35"/></g>`;
+  track.appendChild(svg);
+  const w = { svg, body: svg.querySelector('.b'), rings: svg.querySelector('.r'), band: svg.querySelector('.c'), head: svg.querySelector('.h'),
+    x: 20, reduce: matchMedia('(prefers-reduced-motion: reduce)').matches };
+  WORMS.add(w);
+  if (!wormFrame.on) { wormFrame.on = true; requestAnimationFrame(wormFrame); }
+}
+function Term(el) {  // a red worm crawls while the engine works; one line says what it's doing
+  el.innerHTML = '<div class="load"><div class="track"></div><div class="msg"></div></div>';
+  makeWorm(el.querySelector('.track'));
   const box = el.querySelector('.load'), msg = el.querySelector('.msg'); let timer = null;
   const say = (t) => { msg.textContent = t; };
   const api = {
@@ -330,8 +360,8 @@ function Term(el) {  // a little red worm crawls while the engine works; one lin
     log(t) { say(t); return api; },
     plan(steps, every = 2600) { let i = 0; clearInterval(timer); timer = setInterval(() => { if (i < steps.length) say(steps[i++]); }, every); return api; },
     tick() {},
-    ok(t) { clearInterval(timer); box.classList.add('ok'); say(t); return api; },
-    fail(t) { clearInterval(timer); box.classList.add('bad'); say(t); return api; },
+    ok(t) { clearInterval(timer); box.classList.add('ok'); box.querySelector('.track').innerHTML = ''; say(t); return api; },
+    fail(t) { clearInterval(timer); box.classList.add('bad'); box.querySelector('.track').innerHTML = ''; say(t); return api; },
     stop() { clearInterval(timer); },
   };
   return api;
