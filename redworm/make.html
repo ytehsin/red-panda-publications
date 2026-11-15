@@ -6,7 +6,7 @@
 <title>Make your book — Redworm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Noto+Sans+Devanagari:wght@400;600&family=Instrument+Serif&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --paper: #FBF7F1; --card: #FFFFFF; --ink: #22201D; --soft: #6F6A62; --line: #ECE5DA;
@@ -109,10 +109,22 @@ details[open] > summary::before { transform: rotate(90deg); }
 @media (max-width: 640px) { .cover-wrap { grid-template-columns: 1fr; } }
 .preview { width: 220px; aspect-ratio: 2 / 3.1; border-radius: 6px 12px 12px 6px; background: linear-gradient(135deg,#F3ECE1,#EBE2D4); box-shadow: inset 6px 0 10px -6px rgba(0,0,0,.25), 0 14px 30px rgba(60,40,20,.18); overflow: hidden; display: grid; place-items: center; text-align: center; color: var(--soft); font-size: 14px; padding: 0; }
 .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.tile { border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 10px; text-align: left; cursor: pointer; }
-.tile b { display: block; font-size: 15px; }
-.tile span { font-size: 12.5px; color: var(--soft); line-height: 1.35; display: block; margin-top: 2px; }
+.term { background: #012456; color: #EEEDF0; font: 12.5px/1.6 "JetBrains Mono", "Cascadia Mono", Consolas, monospace; border-radius: 10px; margin: 12px 0; box-shadow: 0 10px 30px rgba(1,36,86,.25); overflow: hidden; text-align: left; }
+.term .bar { background: #0B1F3F; color: #9FB3D1; font-size: 11px; padding: 6px 12px; display: flex; gap: 6px; align-items: center; }
+.term .bar i { width: 9px; height: 9px; border-radius: 50%; background: #2C4A78; display: inline-block; }
+.term .body { padding: 10px 14px 12px; max-height: 230px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+.term .cmd { color: #F9F1A5; } .term .ok { color: #16C60C; } .term .dim { color: #8FA3C0; } .term .bad { color: #F48771; }
+.term .cur::after { content: "█"; animation: blink 1s steps(1) infinite; color: #EEEDF0; }
+@keyframes blink { 50% { opacity: 0; } }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+.tile { border: 2px solid transparent; background: none; border-radius: 10px; padding: 4px; text-align: center; cursor: pointer; }
+.tile b { font-size: 12.5px; margin-top: 5px; }
+.mini { aspect-ratio: 2 / 3; position: relative; overflow: hidden; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 4px 10px rgba(0,0,0,.08); font-family: "Instrument Serif", Georgia, serif; text-align: left; }
+.mini * { position: absolute; }
+.mini .t { left: 9%; right: 9%; font-size: 12px; line-height: 1.02; }
+.mini .a { left: 9%; right: 9%; font: 700 5px/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+.tile b { display: block; }
+.tile > span { display: none; }
 .tile.on { border-color: var(--ink); box-shadow: 0 0 0 3px #EFE8DD; }
 .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
 .sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; position: relative; }
@@ -146,7 +158,7 @@ details[open] > summary::before { transform: rotate(90deg); }
       <li data-s="details"><span class="n">4</span>Details</li>
       <li data-s="make"><span class="n">5</span>Your book</li>
     </ul>
-    <p id="wake" class="small muted hidden"><span class="spinner"></span> Preparing tools for you…</p>
+    <div id="wake" class="hidden"></div>
   </section>
 
   <!-- 1 -->
@@ -159,7 +171,7 @@ details[open] > summary::before { transform: rotate(90deg); }
     </div>
     <label class="drop hidden" id="drop"><input id="file" type="file" accept=".docx,.txt,.epub" hidden>
       <strong>Choose your file</strong><span>or drop it here</span></label>
-    <p id="upload-msg" class="small"></p>
+    <div id="upload-msg" class="small"></div>
     <div id="found" class="stack hidden">
       <div class="chips" id="facts"></div>
       <div class="grid2">
@@ -244,7 +256,7 @@ details[open] > summary::before { transform: rotate(90deg); }
   <section class="card locked" id="c-make">
     <header><div class="badge">5</div><div><h2>Make your book</h2><p>Printer files, an Amazon KDP set, an ebook and a copy to read.</p></div></header>
     <button class="btn red" id="make" disabled>Make my book</button>
-    <p id="make-msg" class="small"></p>
+    <div id="make-msg" class="small"></div>
     <div id="done" class="done-box hidden">
       <h3>Your book is ready 🎉</h3>
       <p id="done-line" class="muted"></p>
@@ -261,8 +273,25 @@ const API = window.RW_API;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
-const COLOURS = { midnight:'#1F2A44', oxblood:'#6E1F24', forest:'#24443A', charcoal:'#3A3A3C', cream:'#F2EADB', saffron:'#E7A03A' };
-const LAYOUT_HINT = { classic:'Centred serif title, small ornament', modern:'Big bold title, accent bar', band:'Title in a colour band', frame:'Fine double border', minimal:'Small title, quiet space', picture:'Your picture, framed' };
+const PAL = { paper:['#FAF5E9','#1B1B1B','#F04D28'], ink:['#0B0C0D','#F7F2E5','#F04D28'], ultramarine:['#0D4799','#FFFFFF','#C1D4EC'], vermilion:['#F0542C','#111111','#FAF5E8'], sage:['#C8D9C9','#1E3A2A','#D97249'], ochre:['#F1B42F','#1C1C1C','#FDF7E8'], blush:['#FCDBD2','#7A1530','#1F5BB5'], concrete:['#D5D6D5','#111111','#FFDC1A'], plum:['#55274D','#FCE47B','#E8CBE6'] };
+const COLOURS = Object.fromEntries(Object.entries(PAL).map(([k, v]) => [k, v[0]]));
+function mini(l, k, title, author) {  // a tiny drawing of each layout, so authors can compare at a glance
+  const [bg, fg, ac] = PAL[k] || PAL.paper, T = esc(title || 'Your Title'), A = esc(author || 'Author');
+  const t = (css, txt = T) => `<div class="t" style="color:${fg};${css}">${txt}</div>`, a = (css) => `<div class="a" style="color:${fg};${css}">${A}</div>`;
+  const parts = {
+    field: t('top:26%;text-align:center;font-size:15px') + a('bottom:9%;text-align:center'),
+    grid: `<div style="left:9%;right:9%;top:9%;height:1px;background:${fg}"></div>` + t('top:13%;font-size:15px') + `<div style="left:9%;right:9%;bottom:15%;height:1px;background:${fg}"></div>` + a('bottom:8%') + `<div style="right:9%;bottom:7%;width:4px;height:4px;border-radius:50%;background:${ac}"></div>`,
+    monument: t('top:8%;font:800 13px/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:-.02em') + `<div style="left:9%;right:9%;top:50%;height:2px;background:${ac}"></div>` + a('bottom:8%'),
+    block: `<div style="left:0;right:0;top:0;height:60%;background:${fg}"></div>` + t(`top:44%;color:${bg};font:800 10px/1 system-ui,sans-serif`) + a('bottom:8%'),
+    split: `<div style="left:0;top:0;bottom:0;width:30%;background:${ac}"></div>` + t('left:36%;bottom:22%;font-size:13px') + a('left:36%;top:8%'),
+    orbit: `<div style="left:17%;top:12%;width:66%;aspect-ratio:1;border-radius:50%;background:${ac}"></div>` + t('top:64%;text-align:center;font-size:13px') + a('bottom:7%;text-align:center'),
+    initial: `<div style="right:-12%;bottom:-14%;font-size:120px;line-height:.8;color:${ac}">${esc((title || 'Y').trim().charAt(0))}</div>` + t('top:7%;font-size:9px') + a('top:20%'),
+    author: a('top:12%;text-align:center;font-size:8px') + `<div style="left:44%;width:12%;top:22%;height:1px;background:${ac}"></div>` + t('top:30%;text-align:center;font-size:15px'),
+    picture: `<div style="left:9%;top:7%;width:62%;aspect-ratio:1;background:repeating-linear-gradient(45deg,${ac},${ac} 4px,${bg} 4px,${bg} 8px);opacity:.8"></div>` + t('top:56%;font-size:12px') + a('bottom:8%'),
+  };
+  return `<div class="mini" style="background:${bg}">${parts[l] || ''}</div>`;
+}
+const LAYOUT_HINT = {};
 let S = null, H = {}, form = 'prose', layout = null, colour = null, chosen = null, beat = null, artVersion = 0;
 const choices = {}, aiChoices = {}, picked = new Set();
 
@@ -283,8 +312,44 @@ async function call(path, opts = {}) {
   return r;
 }
 
-const wake = setTimeout(() => $('wake').classList.remove('hidden'), 2500);
-fetch(API + '/api/health').then(r => r.json()).then(h => { H = h; clearTimeout(wake); $('wake').classList.add('hidden'); }).catch(() => {});
+function Term(el, title) {  // a PowerShell-style console that prints what the engine is doing
+  el.innerHTML = `<div class="term"><div class="bar"><i></i><i></i><i></i>&nbsp; ${esc(title)}</div><div class="body"></div></div>`;
+  const body = el.querySelector('.body'), q = []; let busy = false, live = null, timer = null;
+  const spin = '|/-\\'; let k = 0;
+  function line(text, cls = '') { const d = document.createElement('div'); d.className = cls; d.textContent = text; body.appendChild(d); body.scrollTop = body.scrollHeight; return d; }
+  async function pump() {
+    if (busy) return; busy = true;
+    while (q.length) {
+      const [text, cls, typed] = q.shift();
+      if (live) { live.classList.remove('cur'); live = null; }
+      const d = line('', cls + ' cur'); live = d;
+      if (typed) for (const ch of text) { d.textContent += ch; await new Promise(r => setTimeout(r, 14)); }
+      else d.textContent = text;
+      await new Promise(r => setTimeout(r, 160));
+    }
+    busy = false;
+  }
+  const api = {
+    cmd(t) { q.push(['PS C:\\redworm> ' + t, 'cmd', true]); pump(); return api; },
+    log(t, cls = '') { q.push([t, cls, false]); pump(); return api; },
+    plan(steps, every = 2600) { let i = 0; clearInterval(timer); timer = setInterval(() => { if (i < steps.length) api.log(steps[i++], 'dim'); }, every); return api; },
+    tick(t) { if (!live) return; live.textContent = live.textContent.replace(/ [|/\-\\]$/, '') + ' ' + spin[k++ % 4]; if (t) live.dataset.t = t; },
+    ok(t) { clearInterval(timer); q.push([t, 'ok', false]); pump(); return api; },
+    fail(t) { clearInterval(timer); q.push([t, 'bad', false]); pump(); return api; },
+    stop() { clearInterval(timer); },
+  };
+  return api;
+}
+let wakeTerm = null;
+const wake = setTimeout(() => {
+  $('wake').classList.remove('hidden');
+  wakeTerm = Term($('wake'), 'Redworm — engine').cmd('Start-RedwormEngine -Region singapore')
+    .log('Preparing tools for you…').plan(['Booting the server (it sleeps when nobody is using it)…', 'Loading the typesetting engine (WeasyPrint)…', 'Loading fonts: Newsreader · Instrument Serif · Noto Serif Devanagari…', 'Loading dictionaries: English 135,134 words · Hindi 392,554 words…', 'Warming up the cover and ebook makers…', 'Almost there…'], 7000);
+}, 1500);
+fetch(API + '/api/health').then(r => r.json()).then(h => {
+  H = h; clearTimeout(wake);
+  if (wakeTerm) { wakeTerm.ok('Engine ready. [OK]'); setTimeout(() => $('wake').classList.add('hidden'), 1800); }
+}).catch(() => { if (wakeTerm) wakeTerm.fail('Could not reach the engine. Please refresh in a minute.'); });
 if (PASS) call('/api/access/check').then(() => showGate(false)).catch(() => showGate(true)); else showGate(true);
 async function redeem() {
   const code = $('code').value.trim(); if (!code) return;
@@ -295,13 +360,14 @@ async function redeem() {
 $('code-go').onclick = redeem; $('code').onkeydown = (e) => { if (e.key === 'Enter') redeem(); };
 
 async function upload(file) {
-  $('upload-msg').innerHTML = '<span class="spinner"></span> Reading your manuscript…';
+  const tm = Term($('upload-msg'), 'Redworm — import').cmd(`Import-Manuscript "${file.name}"`)
+    .plan([`Reading ${Math.max(1, Math.round(file.size / 1024))} KB…`, 'Detecting format, encoding and script…', 'Finding the title, author and chapters…', 'Checking the 35,000-word limit…', 'Proofreading: rules · dictionary · names · dashes…', 'Preparing the reading view…'], 1300);
   const fd = new FormData(); fd.append('file', file);
   try { S = await (await call('/api/sessions', { method: 'POST', body: fd })).json(); }
-  catch (e) { $('upload-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; return; }
+  catch (e) { tm.fail('✗ ' + e.message); return; }
+  tm.ok(`✓ ${S.words.toLocaleString()} words · ${S.chapters.length} ${S.form === 'poetry' ? 'poems' : 'chapters'} · ${S.proofreading.items.length} things to look at`);
   clearInterval(beat);
   beat = setInterval(() => fetch(`${API}/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
-  $('upload-msg').textContent = '';
   $('found').classList.remove('hidden');
   $('title').value = S.title; $('author').value = (S.authors || []).join(', '); $('subtitle').value = S.subtitle || '';
   const lang = S.language === 'hi' ? 'Hindi' : 'English';
@@ -411,7 +477,8 @@ $('ai-go').onclick = async () => {
 };
 
 function renderCovers() {
-  $('tiles').innerHTML = Object.keys(S.covers.layouts).map(k => `<button class="tile ${k === layout ? 'on' : ''}" data-l="${k}"><b>${cap(k)}</b><span>${esc(LAYOUT_HINT[k] || '')}</span></button>`).join('');
+  const tt = $('title').value || S.title, au = $('author').value || (S.authors || []).join(', ');
+  $('tiles').innerHTML = Object.keys(S.covers.layouts).map(k => `<button class="tile ${k === layout ? 'on' : ''}" data-l="${k}" title="${esc(S.covers.layouts[k])}">${mini(k, colour || 'paper', tt, au)}<b>${cap(k)}</b></button>`).join('');
   $('swatches').innerHTML = S.covers.colours.map(k => `<div class="sw ${k === colour ? 'on' : ''}" data-k="${k}" style="background:${COLOURS[k] || '#ccc'}" title="${cap(k)}"><span>${cap(k)}</span></div>`).join('');
   $('pic').classList.toggle('hidden', layout !== 'picture');
 }
@@ -480,17 +547,20 @@ $('make').onclick = async () => {
   try { await call(`/api/sessions/${S.id}/make`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
   catch (e) { $('make-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; $('make').disabled = false; return; }
   const t0 = Date.now();
+  const mk = Term($('make-msg'), 'Redworm — make').cmd(`New-Book -Cover ${chosen} -Out print,kdp,epub`);
+  let lastStep = '';
+  mk.plan(['Applying your proofreading choices…', 'Setting type: margins, widows, page breaks…', 'Numbering pages · building contents…', 'Drawing the cover wrap in CMYK (spine from page count)…', 'Packing the ebook (EPUB 3)…', 'Preflight: fonts embedded · colours · bleed…', 'Zipping printer, Amazon KDP and reading copies…'], 9000);
   const poll = setInterval(async () => {
     try {
       const st = await (await call(`/api/sessions/${S.id}`)).json();
-      if (st.state === 'queued' || st.state === 'making') { $('make-msg').innerHTML = `<span class="spinner"></span> ${esc(st.step)} ${Math.round((Date.now() - t0) / 1000)} s — usually a few minutes.`; return; }
+      if (st.state === 'queued' || st.state === 'making') { if (st.step && st.step !== lastStep) { lastStep = st.step; mk.log('» ' + st.step); } mk.tick(); return; }
       clearInterval(poll); $('make').disabled = false;
       if (st.state === 'done') {
-        const s = st.summary; $('make-msg').textContent = ''; $('make').textContent = 'Make it again';
+        const s = st.summary; mk.ok(`✓ Done in ${Math.round((Date.now() - t0) / 1000)} s · ${s.pages} pages · spine ${s.spine_mm} mm`); $('make').textContent = 'Make it again';
         $('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index && s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ✓ ready for the printer' : ' · ⚠ not yet ready for the printer: see “Read me first” in the download (often a character the fonts can’t print — check step 2)');
         $('download').href = `${API}/api/sessions/${S.id}/download`; $('done').classList.remove('hidden'); done('make');
-      } else { $('make-msg').innerHTML = `<span class="err">${esc(st.error || 'Something went wrong.')}</span>`; }
-    } catch (e) { clearInterval(poll); $('make').disabled = false; $('make-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+      } else { mk.fail('✗ ' + (st.error || 'Something went wrong.')); }
+    } catch (e) { clearInterval(poll); $('make').disabled = false; mk.fail('✗ ' + e.message); }
   }, 3000);
 };
 
