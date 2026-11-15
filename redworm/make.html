@@ -74,6 +74,31 @@ details[open] > summary::before { transform: rotate(90deg); }
 .soon { opacity: .6; display: flex; gap: 8px; align-items: center; }
 .err { color: var(--red-deep); font-weight: 700; }
 .proof-item { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; }
+.book { margin-top: 12px; max-height: 72vh; overflow: auto; background: #FFFDF8; border: 1px solid var(--line); border-radius: 14px; padding: 34px 26px; position: relative; }
+.book .inner { max-width: 33em; margin: 0 auto; font: 17px/1.62 "Iowan Old Style", "Palatino Linotype", Georgia, "Noto Serif Devanagari", serif; color: #1F1B17; }
+.book h3 { font: 600 19px/1.3 Fraunces, Georgia, serif; text-align: center; margin: 34px 0 18px; }
+.book h3:first-child { margin-top: 0; }
+.book p { margin: 0; text-align: justify; hyphens: auto; text-indent: 1.4em; position: relative; border-radius: 6px; }
+.book h3 + p, .book p.first { text-indent: 0; }
+.book p.verse { text-align: left; text-indent: 0; white-space: pre-line; margin: 0 0 .7em; }
+.book p:hover { background: #FBF4E8; }
+.book p.edited { background: #EEF6F0; box-shadow: -10px 0 0 #EEF6F0, 10px 0 0 #EEF6F0; }
+.book .pen { position: absolute; right: -30px; top: 0; border: 0; background: none; cursor: pointer; opacity: 0; font-size: 15px; }
+.book p:hover .pen { opacity: .7; }
+.book textarea { width: 100%; font: inherit; line-height: 1.55; min-height: 6em; }
+.sg { cursor: pointer; border-radius: 3px; }
+.sg.open { text-decoration: underline wavy #D24A3A; text-underline-offset: 3px; background: #FDEBE6; }
+.sg.open.check { text-decoration-color: #D69A00; background: #FFF4D6; }
+.sg.open.ai { text-decoration-color: #6A4FC9; background: #F0ECFB; }
+.sg.keep { text-decoration: underline dotted #B9B0A4; text-underline-offset: 3px; }
+.sg del { color: #A2453B; opacity: .75; }
+.sg ins { text-decoration: none; color: var(--green); font-weight: 600; }
+.pop { position: absolute; z-index: 5; width: min(320px, 86%); background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 12px 14px; font: 14px/1.45 system-ui, sans-serif; }
+.pop .where { color: var(--soft); font-size: 12.5px; margin-bottom: 4px; }
+.pop .row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.pop button { border: 1px solid var(--line); background: #FBF7F1; border-radius: 10px; padding: 6px 10px; cursor: pointer; font: inherit; }
+.pop button.go { background: var(--green); color: #fff; border-color: var(--green); }
+.proofbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
 .proof-item .where { font-size: 13px; color: var(--soft); }
 .proof-item mark { background: #FFE3A3; border-radius: 4px; padding: 0 2px; }
 .proof-item .tag { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--red-deep); background: var(--red-tint); padding: 2px 7px; border-radius: 6px; margin-right: 6px; }
@@ -152,7 +177,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 
   <!-- 2 -->
   <section class="card locked" id="c-proof">
-    <header><div class="badge">2</div><div><h2>Proofreading</h2><p>Nothing in your text changes unless you choose <b>Change</b>.</p></div></header>
+    <header><div class="badge">2</div><div><h2>Proofreading</h2><p>Your book as it will read. Click a marked word to change or keep it, or ✎ to edit a paragraph yourself.</p></div></header>
     <p id="proof-line" class="muted"></p>
     <div id="ai-box" class="picbox hidden">
       <b>Ask the AI to check too</b> <span class="small muted">(Google Gemini, free)</span>
@@ -160,7 +185,8 @@ details[open] > summary::before { transform: rotate(90deg); }
       <label class="small" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="ai-consent"> I agree to send my text to Google's Gemini for checking.</label>
       <p style="margin:10px 0 0"><button class="btn ghost" id="ai-go" disabled>Check with AI</button> <span id="ai-msg" class="small muted"></span></p>
     </div>
-    <div id="proof"></div>
+    <div class="proofbar"><button class="btn ghost" id="next-sg" style="padding:6px 12px">Next to look at ↓</button><label class="small" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="only-sg"> Show only paragraphs with suggestions</label></div>
+    <div class="book" id="proof"><div class="inner" id="book"></div></div>
   </section>
 
   <!-- 3 -->
@@ -285,7 +311,7 @@ async function upload(file) {
   setForm(S.form);
   if (S.found_isbn) { $('isbn-found').classList.remove('hidden'); $('isbn-found').innerHTML = `Your file mentions ISBN <b>${esc(S.found_isbn)}</b>. <button class="btn ghost" style="padding:5px 10px" id="use-isbn">Use it</button>`; $('use-isbn').onclick = () => { $('isbn').value = S.found_isbn; $('isbn-found').classList.add('hidden'); }; }
   if (S.found_publisher && S.found_publisher !== 'Red Panda Publications') $('pub').placeholder = S.found_publisher;
-  renderProof(); renderCovers(); renderIndex();
+  BOOK = null; edits = {}; editing = null; renderProof(); loadText().catch(() => {}); renderCovers(); renderIndex();
   ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
   done('upload'); done('proof'); done('details');
   if (H.ai_proofreading) $('ai-box').classList.remove('hidden');
@@ -294,20 +320,80 @@ async function upload(file) {
 function setForm(f) { form = f; document.querySelectorAll('#form button').forEach(b => b.classList.toggle('on', b.dataset.f === f)); $('form-hint').textContent = f === 'poetry' ? '— line breaks kept, each poem on its own page' : ''; }
 $('form').onclick = (e) => { const b = e.target.closest('button'); if (b) setForm(b.dataset.f); };
 
-function proofCard(i, ai) {
-  const map = ai ? aiChoices : choices, cur = map[i.id] || 'keep';
-  return `<div class="proof-item"><div class="where">${ai ? '<span class="tag">AI</span>' : ''}${esc(i.section)} · ${esc(i.message)}</div>
-    <div style="margin-top:6px">${esc(i.before)}<mark>${esc(i.original)}</mark>${esc(i.after)}</div>
-    <div class="choice">${i.replacement !== null ? `<button data-c="${i.id}" data-ai="${ai ? 1 : ''}" data-v="change" class="${cur === 'change' ? 'on' : ''}">Change to “${esc(i.replacement)}”</button>` : ''}
-    <button data-c="${i.id}" data-ai="${ai ? 1 : ''}" data-v="keep" class="${cur === 'keep' ? 'on' : ''}">Keep as is</button></div></div>`;
+let aiItems = [], BOOK = null, edits = {}, editing = null;
+const decided = (id, ai) => (ai ? aiChoices : choices)[id];
+function allItems() {
+  const out = S.proofreading.items.map(i => ({ ...i, ai: false })), taken = {};
+  out.forEach(i => (taken[i.block_id] = taken[i.block_id] || []).push([i.start, i.end]));
+  aiItems.forEach(i => { if (!(taken[i.block_id] || []).some(([a, b]) => a < i.end && i.start < b)) out.push({ ...i, ai: true }); });
+  return out;
 }
-let aiItems = [];
+function paraHtml(p, items) {
+  if (edits[p.id] !== undefined) return esc(edits[p.id]);
+  let h = '', at = 0;
+  items.sort((a, b) => a.start - b.start).forEach(i => {
+    if (i.start < at) return;
+    const d = decided(i.id, i.ai), cls = d === 'change' ? 'sg chg' : d === 'keep' ? 'sg keep' : `sg open ${i.ai ? 'ai' : i.kind === 'check' ? 'check' : ''}`;
+    const inner = d === 'change' && i.replacement !== null ? (i.replacement ? `<ins>${esc(i.replacement)}</ins>` : `<del>${esc(p.text.slice(i.start, i.end))}</del>`) : esc(p.text.slice(i.start, i.end));
+    h += esc(p.text.slice(at, i.start)) + `<span class="${cls}" data-i="${esc(i.id)}" data-ai="${i.ai ? 1 : ''}">${inner || '¶'}</span>`;
+    at = i.end;
+  });
+  return h + esc(p.text.slice(at));
+}
+function currentText(p, items) {  // the paragraph with the author's accepted changes, for editing
+  if (edits[p.id] !== undefined) return edits[p.id];
+  let t = p.text;
+  items.filter(i => decided(i.id, i.ai) === 'change' && i.replacement !== null).sort((a, b) => b.start - a.start)
+    .forEach(i => { t = t.slice(0, i.start) + i.replacement + t.slice(i.end); });
+  return t;
+}
 function renderProof() {
-  const items = S.proofreading.items, auto = S.proofreading.auto_applied;
-  $('proof-line').innerHTML = (items.length ? `<b>${items.length}</b> ${items.length === 1 ? 'thing' : 'things'} to look at.` : '✓ Nothing to look at.') + (auto ? ` ${auto} invisible tidy-ups (extra spaces, hidden characters) were done for you.` : '');
-  $('proof').innerHTML = items.map(i => proofCard(i, false)).join('') + aiItems.map(i => proofCard(i, true)).join('');
+  const items = allItems(), open = items.filter(i => !decided(i.id, i.ai) && edits[i.block_id] === undefined).length, auto = S.proofreading.auto_applied;
+  $('proof-line').innerHTML = (items.length ? `<b>${open}</b> of ${items.length} still to look at.` : '✓ Nothing to look at.') + (auto ? ` ${auto} invisible tidy-ups (extra spaces, hidden characters) were done for you.` : '');
+  if (!BOOK) { $('book').innerHTML = '<p class="muted"><span class="spinner"></span> Laying out your text…</p>'; return; }
+  const by = {}; items.forEach(i => (by[i.block_id] = by[i.block_id] || []).push(i));
+  const only = $('only-sg').checked;
+  $('book').innerHTML = BOOK.sections.map(sec => {
+    const ps = sec.paras.filter(p => !only || by[p.id] || edits[p.id] !== undefined);
+    if (!ps.length) return '';
+    return (sec.title ? `<h3>${esc(sec.title)}</h3>` : '') + ps.map((p, k) => editing === p.id
+      ? `<p class="first"><textarea id="ed" lang="${p.lang}">${esc(currentText(p, by[p.id] || []))}</textarea><span class="row" style="display:flex;gap:6px;margin:6px 0 12px"><button class="btn red" style="padding:6px 12px" data-save="${p.id}">Save paragraph</button><button class="btn ghost" style="padding:6px 12px" data-cancel="1">Cancel</button>${edits[p.id] !== undefined ? `<button class="btn ghost" style="padding:6px 12px" data-undo="${p.id}">Undo my edit</button>` : ''}</span></p>`
+      : `<p data-p="${p.id}" lang="${p.lang}" class="${p.verse ? 'verse' : ''}${k === 0 ? ' first' : ''}${edits[p.id] !== undefined ? ' edited' : ''}">${paraHtml(p, by[p.id] || [])}<button class="pen" title="Edit this paragraph" data-edit="${p.id}">✎</button></p>`).join('');
+  }).join('') || '<p class="muted">Nothing to show.</p>';
 }
-$('proof').onclick = (e) => { const b = e.target.closest('[data-c]'); if (!b) return; (b.dataset.ai ? aiChoices : choices)[b.dataset.c] = b.dataset.v; renderProof(); };
+async function loadText() { BOOK = await (await call(`/api/sessions/${S.id}/text`)).json(); renderProof(); }
+function closePop() { const o = document.querySelector('.pop'); if (o) o.remove(); }
+function setAll(it, v) {  // same word and same fix everywhere in the book
+  allItems().filter(x => x.ai === it.ai && x.original === it.original && x.replacement === it.replacement).forEach(x => ((x.ai ? aiChoices : choices)[x.id] = v));
+}
+$('proof').onclick = (e) => {
+  const t = e.target, box = $('proof');
+  if (t.closest('.pop')) {
+    const b = t.closest('button'); if (!b) return;
+    const it = allItems().find(x => x.id === b.dataset.id);
+    if (b.dataset.v) (it.ai ? aiChoices : choices)[it.id] = b.dataset.v; else setAll(it, b.dataset.all);
+    closePop(); renderProof(); return;
+  }
+  closePop();
+  if (t.dataset.edit) { editing = t.dataset.edit; renderProof(); const ed = $('ed'); if (ed) { ed.style.height = ed.scrollHeight + 8 + 'px'; ed.focus(); } return; }
+  if (t.dataset.save) { const v = $('ed').value.trim(); const p = BOOK.sections.flatMap(x => x.paras).find(x => x.id === t.dataset.save); if (v && v !== p.text) edits[p.id] = v; else delete edits[p.id]; editing = null; renderProof(); return; }
+  if (t.dataset.undo) { delete edits[t.dataset.undo]; editing = null; renderProof(); return; }
+  if (t.dataset.cancel) { editing = null; renderProof(); return; }
+  const sp = t.closest('.sg'); if (!sp) return;
+  const it = allItems().find(x => x.id === sp.dataset.i), d = decided(it.id, it.ai);
+  const same = allItems().filter(x => x.ai === it.ai && x.original === it.original && x.replacement === it.replacement).length;
+  const pop = document.createElement('div'); pop.className = 'pop';
+  pop.innerHTML = `<div class="where">${it.ai ? 'AI · ' : ''}${esc(it.category || '')}</div><div>${esc(it.message)}</div>
+    <div class="row">${it.replacement !== null ? `<button class="go" data-id="${esc(it.id)}" data-v="change">${it.replacement ? `Change to “${esc(it.replacement)}”` : 'Remove it'}</button>` : ''}
+    <button data-id="${esc(it.id)}" data-v="keep">${d === 'change' ? 'Undo — keep original' : 'Keep as is'}</button></div>
+    ${same > 1 ? `<div class="row">${it.replacement !== null ? `<button data-id="${esc(it.id)}" data-all="change">Change all ${same}</button>` : ''}<button data-id="${esc(it.id)}" data-all="keep">Keep all ${same}</button></div>` : ''}`;
+  const r = sp.getBoundingClientRect(), br = box.getBoundingClientRect();
+  pop.style.top = (r.bottom - br.top + box.scrollTop + 6) + 'px';
+  pop.style.left = Math.max(8, Math.min(r.left - br.left, br.width - 330)) + 'px';
+  box.appendChild(pop);
+};
+$('only-sg').onchange = renderProof;
+$('next-sg').onclick = () => { const n = $('book').querySelector('.sg.open'); if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.click(); } else $('proof-line').innerHTML = '✓ Everything has been looked at.'; };
 $('ai-consent').onchange = () => { $('ai-go').disabled = !$('ai-consent').checked; };
 $('ai-go').onclick = async () => {
   $('ai-go').disabled = true; $('ai-msg').innerHTML = '<span class="spinner"></span> Starting…';
@@ -387,7 +473,7 @@ $('make').onclick = async () => {
     publisher: $('pubmode').value === 'self' ? '' : ($('pub').value.trim() || 'Red Panda Publications'),
     publisher_city: $('pubmode').value === 'self' ? '' : $('pubcity').value.trim(),
     publisher_page: $('pubmode').value !== 'self' && $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
-    proof_choices: choices, ai_choices: aiChoices,
+    proof_choices: choices, ai_choices: aiChoices, text_edits: edits,
     index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
   };
   $('make').disabled = true; $('done').classList.add('hidden');
