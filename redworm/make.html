@@ -50,7 +50,7 @@ main { max-width: 860px; margin: 0 auto; padding: 8px 24px 80px; }
 @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } .card { padding: 20px; } }
 label.field { display: block; }
 label.field > span { display: block; font-size: 13px; font-weight: 700; color: var(--soft); margin-bottom: 5px; }
-input[type=text], input[type=number], textarea { width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid #E2D9CC; background: #FFFDF9; outline: none; }
+input[type=text], input[type=number], input[type=password], textarea, select { width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid #E2D9CC; background: #FFFDF9; outline: none; }
 input:focus, textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-tint); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-size: 14px; font-weight: 700; }
@@ -68,6 +68,10 @@ details[open] > summary::before { transform: rotate(90deg); }
 .btn:disabled { opacity: .4; cursor: default; transform: none; }
 .note { padding: 12px 14px; border-radius: 12px; background: var(--amber); font-size: 15px; }
 .note.green { background: var(--green-tint); }
+.beta { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--red, #C8102E); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+.gate { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.gate input { flex: 1 1 200px; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; }
+.soon { opacity: .6; display: flex; gap: 8px; align-items: center; }
 .err { color: var(--red-deep); font-weight: 700; }
 .proof-item { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; }
 .proof-item .where { font-size: 13px; color: var(--soft); }
@@ -102,7 +106,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 </head>
 <body>
 <div class="top">
-  <a class="brand" href="index.html"><span class="dot"></span>Redworm <span class="muted" style="font-weight:600">by Red Panda</span></a>
+  <a class="brand" href="index.html"><span class="dot"></span>Redworm <span class="beta">Beta</span> <span class="muted" style="font-weight:600">by Red Panda</span></a>
   <a class="back" href="index.html">About Redworm</a>
 </div>
 
@@ -123,7 +127,12 @@ details[open] > summary::before { transform: rotate(90deg); }
   <!-- 1 -->
   <section class="card" id="c-upload">
     <header><div class="badge">1</div><div><h2>Your manuscript</h2><p>Word (.docx), text (.txt) or ebook (.epub), up to 35,000 words.</p></div></header>
-    <label class="drop" id="drop"><input id="file" type="file" accept=".docx,.txt,.epub" hidden>
+    <div id="gate" class="stack hidden">
+      <p class="note">Redworm is in private beta. Enter your access code — <b>each code works for one day</b> from the moment you first use it.</p>
+      <div class="gate"><input type="text" id="code" placeholder="RP-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn red" id="code-go">Open Redworm</button></div>
+      <p id="code-msg" class="small"></p>
+    </div>
+    <label class="drop hidden" id="drop"><input id="file" type="file" accept=".docx,.txt,.epub" hidden>
       <strong>Choose your file</strong><span>or drop it here</span></label>
     <p id="upload-msg" class="small"></p>
     <div id="found" class="stack hidden">
@@ -186,10 +195,14 @@ details[open] > summary::before { transform: rotate(90deg); }
     <header><div class="badge">4</div><div><h2>Publisher & details</h2><p>Sensible defaults are filled in. Change only what you need.</p></div></header>
     <div class="stack">
       <div class="grid2">
-        <label class="field"><span>Publisher</span><input type="text" id="pub" value="Red Panda Publications"></label>
-        <label class="field"><span>City</span><input type="text" id="pubcity" value="New Delhi"></label>
+        <label class="field"><span>Publish as</span><select id="pubmode">
+          <option value="rp">Red Panda Publications</option>
+          <option value="own">My own publisher name</option>
+          <option value="self">Self-published (no publisher)</option></select></label>
+        <label class="field" id="pub-wrap"><span>Publisher name</span><input type="text" id="pub" value="Red Panda Publications" readonly></label>
       </div>
-      <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pubpage" checked> Add an “About the publisher” page at the back</label>
+      <label class="field" id="pubcity-wrap"><span>City</span><input type="text" id="pubcity" value="New Delhi"></label>
+      <label class="small" id="pubpage-wrap" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pubpage" checked> Add an “About the publisher” page at the back</label>
       <label class="field" id="pubabout-wrap"><span>About the publisher (leave empty to use Red Panda's own text)</span><textarea id="pubabout" rows="3" maxlength="1500"></textarea></label>
       <div id="isbn-found" class="note hidden"></div>
       <div class="grid2">
@@ -211,6 +224,7 @@ details[open] > summary::before { transform: rotate(90deg); }
       <p id="done-line" class="muted"></p>
       <p><a class="btn red" id="download" href="#">Download everything (.zip)</a></p>
       <p class="small muted">Download now — nothing is kept after you leave this page.</p>
+      <label class="small soon"><input type="checkbox" disabled> List this book in the Red Panda showroom <span class="chip">Coming soon</span></label>
     </div>
   </section>
 </main>
@@ -231,14 +245,28 @@ function done(step, on = true) {
   $('c-' + step).classList.toggle('complete', on);
 }
 function unlock(id) { $(id).classList.remove('locked'); }
+let PASS = null;
+try { PASS = localStorage.getItem('rw_pass'); } catch (e) {}
+function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
+function showGate(on) { $('gate').classList.toggle('hidden', !on); $('drop').classList.toggle('hidden', on); }
 async function call(path, opts = {}) {
+  if (PASS) opts.headers = Object.assign({ Authorization: 'Bearer ' + PASS }, opts.headers || {});
   const r = await fetch(API + path, opts);
+  if (r.status === 401) { setPass(null); showGate(true); }
   if (!r.ok) { let m = 'Something went wrong. Please try again.'; try { const d = (await r.json()).detail; if (typeof d === 'string') m = d; } catch (e) {} throw new Error(m); }
   return r;
 }
 
 const wake = setTimeout(() => $('wake').classList.remove('hidden'), 2500);
 fetch(API + '/api/health').then(r => r.json()).then(h => { H = h; clearTimeout(wake); $('wake').classList.add('hidden'); }).catch(() => {});
+if (PASS) call('/api/access/check').then(() => showGate(false)).catch(() => showGate(true)); else showGate(true);
+async function redeem() {
+  const code = $('code').value.trim(); if (!code) return;
+  $('code-msg').innerHTML = '<span class="spinner"></span> Checking…';
+  try { const d = await (await call('/api/access/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })).json(); setPass(d.pass); $('code-msg').textContent = ''; showGate(false); }
+  catch (e) { $('code-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+}
+$('code-go').onclick = redeem; $('code').onkeydown = (e) => { if (e.key === 'Enter') redeem(); };
 
 async function upload(file) {
   $('upload-msg').innerHTML = '<span class="spinner"></span> Reading your manuscript…';
@@ -339,6 +367,14 @@ function renderIndex() {
 }
 $('index').onchange = (e) => { const i = e.target.dataset.ix; if (i !== undefined) e.target.checked ? picked.add(+i) : picked.delete(+i); };
 $('pubpage').onchange = () => $('pubabout-wrap').classList.toggle('hidden', !$('pubpage').checked);
+$('pubmode').onchange = () => {
+  const m = $('pubmode').value, self = m === 'self';
+  $('pub').readOnly = m === 'rp';
+  if (m === 'rp') { $('pub').value = 'Red Panda Publications'; if (!$('pubcity').value) $('pubcity').value = 'New Delhi'; }
+  if (m === 'own' && $('pub').value === 'Red Panda Publications') { $('pub').value = S && S.found_publisher && S.found_publisher !== 'Red Panda Publications' ? S.found_publisher : ''; $('pub').focus(); }
+  ['pub-wrap', 'pubcity-wrap', 'pubpage-wrap'].forEach(id => $(id).classList.toggle('hidden', self));
+  $('pubabout-wrap').classList.toggle('hidden', self || !$('pubpage').checked);
+};
 
 $('make').onclick = async () => {
   if (!chosen) { $('make-msg').innerHTML = '<span class="err">Choose your cover first (step 3).</span>'; return; }
@@ -348,8 +384,9 @@ $('make').onclick = async () => {
     blurb: $('blurb').value.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean).slice(0, 6),
     isbn: $('isbn').value.trim() || null, ebook_isbn: $('eisbn').value.trim() || null,
     public_domain_year: $('pd').value ? +$('pd').value : null,
-    publisher: $('pub').value.trim() || 'Red Panda Publications', publisher_city: $('pubcity').value.trim(),
-    publisher_page: $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
+    publisher: $('pubmode').value === 'self' ? '' : ($('pub').value.trim() || 'Red Panda Publications'),
+    publisher_city: $('pubmode').value === 'self' ? '' : $('pubcity').value.trim(),
+    publisher_page: $('pubmode').value !== 'self' && $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
     proof_choices: choices, ai_choices: aiChoices,
     index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
   };
