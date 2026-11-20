@@ -573,6 +573,77 @@ window.SHOWROOM_BOOKS = [
       }
     ],
     "rights": null
+  },
+  {
+    "slug": "the-salt-roads",
+    "title": "The Salt Roads",
+    "subtitle": null,
+    "credits": [
+      {
+        "name": "Mira Das",
+        "slug": "mira-das",
+        "role": "author"
+      }
+    ],
+    "genre": "Fiction",
+    "languages": [
+      "en"
+    ],
+    "synopsis": "A customs clerk, a dead man's ledger and three caravans nobody recorded.",
+    "isbn13": null,
+    "pages": 8,
+    "trim": "demy_5_5x8_5",
+    "paper": "cream_bookwove_80",
+    "editions": [
+      {
+        "format": "paperback",
+        "price_inr": null,
+        "available": true
+      },
+      {
+        "format": "ebook",
+        "price_inr": null,
+        "available": true
+      }
+    ],
+    "published_on": "2026-11-20",
+    "origin": "house",
+    "status": "published",
+    "featured": false,
+    "sort_weight": 210,
+    "look": {
+      "binding": "paperback",
+      "texture": "matte",
+      "cloth": "#C9EBC4",
+      "spine_cloth": "#AED8AA",
+      "ink": "#13361F",
+      "foil": "#E0553F",
+      "foil_finish": "gold",
+      "headband": null,
+      "page_edge": "white",
+      "sprayed_edge": null,
+      "motif": "rule",
+      "title_style": "classic_serif",
+      "cover_image": "covers/the-salt-roads.jpg"
+    },
+    "excerpt": [
+      {
+        "left": [
+          "The harbour below the fort smelled of wet rope and coal smoke long before the sun cleared the ridge."
+        ],
+        "right": [
+          "The harbour below the fort smelled of wet rope and coal smoke long before the sun cleared the ridge."
+        ]
+      },
+      {
+        "left": [
+          "The harbour below the fort smelled of wet rope and coal smoke long before the sun cleared the ridge."
+        ],
+        "right": [
+          "The harbour below the fort smelled of wet rope and coal smoke long before the sun cleared the ridge."
+        ]
+      }
+    ]
   }
 ];
 window.SHOWROOM_AUTHORS = [
@@ -631,6 +702,14 @@ window.SHOWROOM_AUTHORS = [
     "bio": "Scottish novelist, poet and travel writer, author of Treasure Island and Kidnapped.",
     "note": "Robert Louis Stevenson (1850–1894) wrote Jekyll and Hyde in a few feverish weeks in Bournemouth.",
     "book": "jekyll-and-hyde"
+  },
+  {
+    "name": "Mira Das",
+    "slug": "mira-das",
+    "city": "",
+    "bio": "",
+    "note": "",
+    "book": "the-salt-roads"
   }
 ];
 window.PAPER_STOCKS = {
