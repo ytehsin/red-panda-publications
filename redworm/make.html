@@ -35,6 +35,27 @@ main { max-width: 860px; margin: 0 auto; padding: 8px 24px 80px; }
 .rail li.done .n { background: var(--green); color: #fff; }
 .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); padding: 26px; margin: 18px 0; transition: opacity .2s; }
 .card.locked { opacity: .5; pointer-events: none; }
+.card { transition: opacity .35s ease, transform .35s ease, box-shadow .2s ease; }
+.card.locked { transform: translateY(6px); }
+.card.reveal { animation: rise .5s ease both; }
+@keyframes rise { from { opacity: .4; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.btn { transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+.btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.10); }
+.btn:not(:disabled):active { transform: translateY(0) scale(.98); }
+.tile { transition: transform .18s ease; } .tile:hover { transform: translateY(-3px); }
+.tile .mini { transition: box-shadow .18s ease; } .tile:hover .mini { box-shadow: 0 8px 20px rgba(0,0,0,.16); }
+.sw { transition: transform .15s ease, box-shadow .15s ease; } .sw:hover { transform: scale(1.08); }
+.rail li { transition: background .3s ease, color .3s ease; }
+.rail li.done .n { animation: pop .45s ease; }
+@keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+.pop { animation: fadein .16s ease both; } @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.sg { transition: background .2s ease, color .2s ease; }
+.rights.nudge { animation: nudge .5s ease; } @keyframes nudge { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+.rights { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; background: #FAFBFC; }
+.rights label { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0 4px; line-height: 1.45; }
+.rights input { margin-top: 3px; width: 17px; height: 17px; flex: none; }
 .card > header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .card > header .badge { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--red-tint); color: var(--red-deep); font-weight: 800; flex: none; }
 .card.complete > header .badge { background: var(--green); color: #fff; }
@@ -110,10 +131,12 @@ details[open] > summary::before { transform: rotate(90deg); }
 .preview { width: 220px; aspect-ratio: 2 / 3.1; border-radius: 6px 12px 12px 6px; background: linear-gradient(135deg,#F3ECE1,#EBE2D4); box-shadow: inset 6px 0 10px -6px rgba(0,0,0,.25), 0 14px 30px rgba(60,40,20,.18); overflow: hidden; display: grid; place-items: center; text-align: center; color: var(--soft); font-size: 14px; padding: 0; }
 .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .load { margin: 14px 0; text-align: center; }
-.track { position: relative; height: 40px; max-width: 300px; margin: 0 auto; overflow: hidden; border-bottom: 2px solid #E9E2DA; }
-.track svg { position: absolute; bottom: 0; left: 0; overflow: visible; }
+.track { position: relative; height: 30px; max-width: 220px; margin: 0 auto; overflow: hidden; }
+.track::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 2px; border-radius: 2px; background: #E6E8EC; }
+.ball { position: absolute; bottom: 5px; left: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #C8102E; border-top-color: transparent; box-sizing: border-box; animation: roll 2.6s cubic-bezier(.45,.05,.55,.95) infinite alternate; }
+@keyframes roll { from { transform: translateX(0) rotate(0deg); } to { transform: translateX(202px) rotate(720deg); } }
 .load .msg { margin-top: 8px; font-size: 14px; color: var(--soft); min-height: 1.4em; }
-.load.ok .track { display: none; } .load.ok .msg { color: var(--green); font-weight: 700; }
+.load.ok .track, .load.bad .track { display: none; } .load.ok .msg { color: var(--green); font-weight: 700; }
 .load.bad .track { display: none; } .load.bad .msg { color: #B00020; font-weight: 700; }
 
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
@@ -163,7 +186,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 
   <!-- 1 -->
   <section class="card" id="c-upload">
-    <header><div class="badge">1</div><div><h2>Your manuscript</h2><p>Word (.docx), text (.txt) or ebook (.epub), up to 35,000 words.</p></div></header>
+    <header><div class="badge">1</div><div><h2>Your manuscript</h2><p>Word (.docx), text (.txt) or ebook (.epub), up to 50,000 words.</p></div></header>
     <div id="gate" class="stack hidden">
       <p class="note">Redworm is in private beta. Enter your access code — <b>each code works for one day</b> from the moment you first use it.</p>
       <div class="gate"><input type="text" id="code" placeholder="RP-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn red" id="code-go">Open Redworm</button></div>
@@ -197,7 +220,8 @@ details[open] > summary::before { transform: rotate(90deg); }
       <label class="small" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="ai-consent"> I agree to send my text to Google's Gemini for checking.</label>
       <p style="margin:10px 0 0"><button class="btn ghost" id="ai-go" disabled>Check with AI</button> <span id="ai-msg" class="small muted"></span></p>
     </div>
-    <div class="proofbar"><button class="btn ghost" id="next-sg" style="padding:6px 12px">Next to look at ↓</button><label class="small" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="only-sg"> Show only paragraphs with suggestions</label></div>
+    <div class="proofbar"><button class="btn ghost" id="next-sg" style="padding:6px 12px">Next to look at ↓</button><label class="small" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="only-sg"> Show only paragraphs with suggestions</label>
+      <label class="small" style="display:flex;gap:6px;align-items:center;margin-left:auto">Spelling <select id="spell" style="width:auto;padding:5px 9px"><option value="auto">Follow my book</option><option value="uk">UK (colour)</option><option value="us">US (color)</option></select></label></div>
     <div class="book" id="proof"><div class="inner" id="book"></div></div>
   </section>
 
@@ -248,6 +272,9 @@ details[open] > summary::before { transform: rotate(90deg); }
         <label class="field"><span>Ebook ISBN (optional)</span><input type="text" id="eisbn"></label>
       </div>
       <label class="field"><span>Classic book? Year first published (optional)</span><input type="number" id="pd" min="1400" max="2100" placeholder="e.g. 1886 — leave empty for your own work"></label>
+      <label class="field"><span>In the printed book, chapters start on</span><select id="chstart">
+        <option value="any">The next page (fewest blank pages)</option>
+        <option value="right">A right-hand page (traditional; adds some blank pages)</option></select></label>
       <details><summary>Index at the back (for non-fiction)</summary><div class="idx" id="index"></div></details>
     </div>
   </section>
@@ -255,6 +282,11 @@ details[open] > summary::before { transform: rotate(90deg); }
   <!-- 5 -->
   <section class="card locked" id="c-make">
     <header><div class="badge">5</div><div><h2>Make your book</h2><p>Printer files, an Amazon KDP set, an ebook and a copy to read.</p></div></header>
+    <div class="rights">
+      <b>Your rights</b>
+      <label class="small"><input type="checkbox" id="rights"> I confirm I own the rights to this text, or that it is in the public domain, and that I may publish it as a book.</label>
+      <p class="small muted">This confirmation, with the date, is written into “Read me first” in your download.</p>
+    </div>
     <button class="btn red" id="make" disabled>Make my book</button>
     <div id="make-msg" class="small"></div>
     <div id="done" class="done-box hidden">
@@ -299,7 +331,7 @@ function done(step, on = true) {
   document.querySelector(`#rail [data-s="${step}"]`).classList.toggle('done', on);
   $('c-' + step).classList.toggle('complete', on);
 }
-function unlock(id) { $(id).classList.remove('locked'); }
+function unlock(id) { const c = $(id); if (c.classList.contains('locked')) { c.classList.remove('locked'); c.classList.add('reveal'); } }
 let PASS = null;
 try { PASS = localStorage.getItem('rw_pass'); } catch (e) {}
 function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
@@ -312,44 +344,8 @@ async function call(path, opts = {}) {
   return r;
 }
 
-const WORMS = new Set();
-function wormFrame(now) {  // a slow earthworm: a wave runs down the body and it inches forward
-  WORMS.forEach(w => {
-    if (!w.svg.isConnected) { WORMS.delete(w); return; }
-    const t = now / 1000, L = 78, N = 26, pts = [];
-    const stretch = 1 + 0.10 * Math.sin(t * 1.6);           // body lengthens and shortens
-    w.x += (0.18 + 0.22 * Math.max(0, Math.sin(t * 1.6))) * (w.reduce ? 0 : 1);  // moves while stretching
-    const width = w.svg.parentNode.clientWidth || 300;
-    if (w.x > width + 10) w.x = -L - 20;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N, x = u * L * stretch;
-      const y = 33 - 2.6 * Math.sin(u * Math.PI) - 1.8 * Math.sin(u * 7 - t * 1.6) * Math.sin(u * Math.PI);
-      pts.push([x, y]);
-    }
-    const d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
-    w.body.setAttribute('d', d); w.rings.setAttribute('d', d);
-    const h = pts[N], h2 = pts[N - 1], ang = Math.atan2(h[1] - h2[1], h[0] - h2[0]) * 180 / Math.PI;
-    w.head.setAttribute('transform', `translate(${h[0].toFixed(1)} ${h[1].toFixed(1)}) rotate(${ang.toFixed(1)})`);
-    w.svg.style.transform = `translateX(${w.x.toFixed(1)}px)`;
-  });
-  if (WORMS.size) requestAnimationFrame(wormFrame); else wormFrame.on = false;
-}
-function makeWorm(track) {
-  const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('width', '100'); svg.setAttribute('height', '40'); svg.setAttribute('aria-hidden', 'true');
-  svg.innerHTML = `<defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E06A78"/><stop offset=".55" stop-color="#C93A4E"/><stop offset="1" stop-color="#9E2236"/></linearGradient></defs>
-    <path class="b" fill="none" stroke="url(#wg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <path class="r" fill="none" stroke="#8E1D30" stroke-opacity=".35" stroke-width="9" stroke-dasharray="0.8 3.6"/>
-    <g class="h"><ellipse cx="1" cy="0" rx="5.6" ry="4.6" fill="#C93A4E"/><ellipse cx="2.4" cy="-1.6" rx="2.2" ry="1.2" fill="#fff" opacity=".35"/></g>`;
-  track.appendChild(svg);
-  const w = { svg, body: svg.querySelector('.b'), rings: svg.querySelector('.r'), head: svg.querySelector('.h'),
-    x: 20, reduce: matchMedia('(prefers-reduced-motion: reduce)').matches };
-  WORMS.add(w);
-  if (!wormFrame.on) { wormFrame.on = true; requestAnimationFrame(wormFrame); }
-}
 function Term(el) {  // a red worm crawls while the engine works; one line says what it's doing
-  el.innerHTML = '<div class="load"><div class="track"></div><div class="msg"></div></div>';
-  makeWorm(el.querySelector('.track'));
+  el.innerHTML = '<div class="load"><div class="track"><span class="ball"></span></div><div class="msg"></div></div>';
   const box = el.querySelector('.load'), msg = el.querySelector('.msg'); let timer = null;
   const say = (t) => { msg.textContent = t; };
   const api = {
@@ -384,7 +380,7 @@ $('code-go').onclick = redeem; $('code').onkeydown = (e) => { if (e.key === 'Ent
 
 async function upload(file) {
   const tm = Term($('upload-msg'), 'Redworm — import').cmd(`Import-Manuscript "${file.name}"`)
-    .plan([`Reading ${Math.max(1, Math.round(file.size / 1024))} KB…`, 'Detecting format, encoding and script…', 'Finding the title, author and chapters…', 'Checking the 35,000-word limit…', 'Proofreading: rules · dictionary · names · dashes…', 'Preparing the reading view…'], 1300);
+    .plan([`Reading ${Math.max(1, Math.round(file.size / 1024))} KB…`, 'Detecting format, encoding and script…', 'Finding the title, author and chapters…', 'Checking the 50,000-word limit…', 'Proofreading: rules · dictionary · names · dashes…', 'Preparing the reading view…'], 1300);
   const fd = new FormData(); fd.append('file', file);
   try { S = await (await call('/api/sessions', { method: 'POST', body: fd })).json(); }
   catch (e) { tm.fail('✗ ' + e.message); return; }
@@ -482,6 +478,16 @@ $('proof').onclick = (e) => {
   box.appendChild(pop);
 };
 $('only-sg').onchange = renderProof;
+$('spell').onchange = async () => {
+  const style = $('spell').value, auto = S.proofreading.auto_applied;
+  $('proof-line').textContent = 'Checking spelling…';
+  try {
+    const d = await (await call(`/api/sessions/${S.id}/spelling`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ style }) })).json();
+    S.proofreading = { ...d.proofreading, auto_applied: auto };
+    Object.keys(choices).forEach(k => delete choices[k]);
+  } catch (e) { $('proof-line').textContent = e.message; }
+  renderProof();
+};
 $('next-sg').onclick = () => { const n = $('book').querySelector('.sg.open'); if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.click(); } else $('proof-line').innerHTML = '✓ Everything has been looked at.'; };
 $('ai-consent').onchange = () => { $('ai-go').disabled = !$('ai-consent').checked; };
 $('ai-go').onclick = async () => {
@@ -554,6 +560,7 @@ $('pubmode').onchange = () => {
 
 $('make').onclick = async () => {
   if (!chosen) { $('make-msg').innerHTML = '<span class="err">Choose your cover first (step 3).</span>'; return; }
+  if (!$('rights').checked) { $('make-msg').innerHTML = '<span class="err">Please tick the rights confirmation above.</span>'; $('rights').closest('.rights').classList.add('nudge'); setTimeout(() => $('rights').closest('.rights').classList.remove('nudge'), 600); return; }
   const body = {
     cover: chosen, title: $('title').value.trim() || null, author: $('author').value.trim() || null,
     subtitle: $('subtitle').value.trim(), form,
@@ -564,6 +571,7 @@ $('make').onclick = async () => {
     publisher_city: $('pubmode').value === 'self' ? '' : $('pubcity').value.trim(),
     publisher_page: $('pubmode').value !== 'self' && $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
     proof_choices: choices, ai_choices: aiChoices, text_edits: edits,
+    chapter_start: $('chstart').value, spelling: $('spell').value, rights_confirmed: $('rights').checked,
     index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,
   };
   $('make').disabled = true; $('done').classList.add('hidden');
