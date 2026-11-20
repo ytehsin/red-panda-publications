@@ -315,7 +315,7 @@ details[open] > summary::before { transform: rotate(90deg); }
       <p><a class="btn red" id="download" href="#">Download everything (.zip)</a></p>
       <p class="small muted">Download now — nothing is kept after you leave this page.</p>
       <label class="small soon" id="soon"><input type="checkbox" disabled> List this book in the Red Panda showroom <span class="chip">Coming soon</span></label>
-      <div id="pub" class="pubbox hidden stack">
+      <div id="pubpanel" class="pubbox hidden stack">
         <b>Publish on your website <span class="chip">Owner</span></b>
         <div class="grid2">
           <label class="field"><span>Shelf</span><select id="pub-genre"><option>Fiction</option><option>Poetry &amp; Ghazals</option><option>Essays</option><option>Translations</option><option>Classics</option></select></label>
@@ -664,7 +664,7 @@ $('make').onclick = async () => {
         const s = st.summary; mk.ok(`✓ Done in ${Math.round((Date.now() - t0) / 1000)} s · ${s.pages} pages · spine ${s.spine_mm} mm`); $('make').textContent = 'Make it again';
         $('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index && s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ✓ ready for the printer' : ' · ⚠ not yet ready for the printer: see “Read me first” in the download (often a character the fonts can’t print — check step 2)');
         $('download').href = `${API}/api/sessions/${S.id}/download`; $('done').classList.remove('hidden'); done('make');
-        if (IS_OWNER && H.publishing) { $('soon').classList.add('hidden'); $('pub').classList.remove('hidden'); if (!$('pub-syn').value) $('pub-syn').value = $('blurb').value.trim(); }
+        if (IS_OWNER && H.publishing) { $('soon').classList.add('hidden'); $('pubpanel').classList.remove('hidden'); if (!$('pub-syn').value) $('pub-syn').value = $('blurb').value.trim(); }
       } else { mk.fail('✗ ' + (st.error || 'Something went wrong.')); }
     } catch (e) { clearInterval(poll); $('make').disabled = false; mk.fail('✗ ' + e.message); }
   }, 3000);
