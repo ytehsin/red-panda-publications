@@ -190,6 +190,18 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 .sw span { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); font-size: 11.5px; color: var(--soft); white-space: nowrap; }
 .pictabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .pictabs button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.pictabs button:disabled { opacity: .55; cursor: default; }
+.makes { margin: 4px 0 18px; }
+@media (max-width: 480px) { .by-rp { display: none; } }
+.makes-h { font: 600 15px/1.3 inherit; margin: 0 0 10px; color: var(--soft); }
+.makes-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.make-opt { text-align: left; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 14px 16px; font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.make-opt b { font-size: 15.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.make-opt span:not(.chip) { font-size: 13.5px; color: var(--soft); }
+.make-opt.on { border-color: var(--ink); }
+.make-opt.soon-opt { cursor: default; opacity: .62; }
+#ai-box.is-soon { opacity: .6; }
+.make-opt .chip, .pictabs .chip, #ai-box .chip, #soon .chip { padding: 2px 8px; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
 .pictabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 .stockgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; max-height: 340px; overflow: auto; }
 .sp { position: relative; border: 0; padding: 0; background: #E6E8EC; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 3 / 4; }
@@ -212,7 +224,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 </head>
 <body>
 <div class="top">
-  <a class="brand" href="index.html"><span class="dot"></span>Redworm <span class="beta">Beta</span> <span class="muted" style="font-weight:600">by Red Panda</span></a>
+  <a class="brand" href="index.html"><span class="dot"></span>Redworm <span class="beta">Beta</span> <span class="muted by-rp" style="font-weight:600">by Red Panda</span></a>
   <a class="back" href="index.html">About Redworm</a>
 </div>
 
@@ -231,6 +243,15 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
   </section>
 
   <!-- 1 -->
+  <section class="makes" aria-label="What are you making?">
+    <h2 class="makes-h">What are you making?</h2>
+    <div class="makes-row">
+      <button type="button" class="make-opt on" aria-pressed="true"><b>A book</b><span>From your Word file, text or ebook</span></button>
+      <button type="button" class="make-opt soon-opt" disabled><b>A colouring book <span class="chip">Coming soon</span></b><span>Type what to draw, page by page</span></button>
+      <button type="button" class="make-opt soon-opt" disabled><b>A sketchbook <span class="chip">Coming soon</span></b><span>Blank, dotted or framed pages to draw in</span></button>
+    </div>
+  </section>
+
   <section class="card" id="c-upload">
     <header><div class="badge">1</div><div><h2>Your manuscript</h2><p>Word (.docx), text (.txt) or ebook (.epub), up to 50,000 words.</p></div></header>
     <div id="gate" class="stack hidden">
@@ -283,7 +304,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
         <div><div class="small muted" style="font-weight:700;margin-bottom:8px">Colours</div><div class="swatches" id="swatches"></div></div>
         <div id="pic" class="picbox hidden stack" style="margin-top:34px">
           <b>Your picture</b>
-          <div class="pictabs"><button data-pt="stock" id="tab-stock">Search photos</button><button data-pt="own">Your own picture</button><button data-pt="ai" id="tab-ai" class="hidden">AI picture</button></div>
+          <div class="pictabs"><button data-pt="stock" id="tab-stock">Search photos</button><button data-pt="own">Your own picture</button><button data-pt="ai" id="tab-ai">AI picture</button></div>
           <div id="pt-stock" class="stack">
             <div class="gate"><input type="text" id="stock-q" placeholder="e.g. monsoon sea, old Delhi street, mountains at dusk"><button class="btn ghost" id="stock-go">Search</button></div>
             <div id="stock-grid" class="stockgrid"></div>
@@ -347,7 +368,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
       <p id="done-line" class="muted"></p>
       <p><a class="btn red" id="download" href="#">Download everything (.zip)</a></p>
       <p class="small muted">Download now — nothing is kept after you leave this page.</p>
-      <label class="small soon" id="soon"><input type="checkbox" disabled> List this book in the Red Panda showroom <span class="chip">Coming soon</span></label>
+      <p class="small soon" id="soon">Request to be featured on Red Panda Publications <span class="chip">Coming soon</span></p>
       <div id="pubpanel" class="pubbox hidden stack">
         <b>Publish on your website <span class="chip">Owner</span></b>
         <div class="grid2">
@@ -483,8 +504,12 @@ async function upload(file) {
   BOOK = null; edits = {}; editing = null; cur = null; filter = 'all'; undoStack = []; renderProof(); loadText().catch(() => {}); renderCovers(); renderIndex();
   ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
   done('upload'); done('proof'); done('details');
-  if (H.ai_proofreading) $('ai-box').classList.remove('hidden');
-  if (H.ai_pictures) $('tab-ai').classList.remove('hidden');
+  $('ai-box').classList.remove('hidden');
+  if (!H.ai_proofreading) {  // shown, but switched off until the Gemini key is added
+    $('ai-box').classList.add('is-soon'); $('ai-consent').disabled = true;
+    $('ai-box').querySelector('b').insertAdjacentHTML('beforeend', ' <span class="chip">Coming soon</span>');
+  }
+  if (!H.ai_pictures) { $('tab-ai').disabled = true; $('tab-ai').innerHTML = 'AI picture <span class="chip">Coming soon</span>'; }
   if (!H.stock_photos) { $('tab-stock').classList.add('hidden'); picTab('own'); }
 }
 function setForm(f) { form = f; document.querySelectorAll('#form button').forEach(b => b.classList.toggle('on', b.dataset.f === f)); $('form-hint').textContent = f === 'poetry' ? '— line breaks kept, each poem on its own page' : ''; }

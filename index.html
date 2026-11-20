@@ -69,6 +69,12 @@
       transition: transform 0.09s linear;
     }
 
+    /* Phones: two books per row, so each 3D book is drawn smaller (lettering scales with it) */
+    @media (max-width: 639px) {
+      #home-books-grid .book-stage-3d, #full-books-grid .book-stage-3d { zoom: 0.68; }
+      .hero-book-scale { zoom: 0.85; }
+    }
+
     /* Larger Hero Scale for Featured Hardcover */
     .hero-book-scale {
       width: 254px;
@@ -386,7 +392,7 @@
 
     <!-- Minimal Literary Sticky Header (No Theme Dots, No Bag, No Loud Buttons) -->
     <header class="sticky top-0 z-40 bg-white/[0.94] backdrop-blur-md border-b border-hairline">
-      <div class="max-w-6xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+      <div class="relative max-w-6xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
         <!-- Left: Understated Brand Seal + Mixed-Weight Wordmark -->
         <button onclick="switchSiteTab('home')" class="flex items-center gap-3 text-left group focus:outline-none">
           <span class="w-7 h-7 rounded-full border border-claret/35 flex items-center justify-center text-claret group-hover:bg-claret group-hover:text-white transition duration-300 shrink-0">
@@ -403,11 +409,15 @@
         </button>
 
         <!-- Right: Clean Text Navigation Links ONLY -->
-        <nav class="flex items-center gap-6 sm:gap-9 text-[13.5px] font-medium">
-          <button onclick="switchSiteTab('books')" data-sitetab="books" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Books</button>
-          <button onclick="switchSiteTab('authors')" data-sitetab="authors" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Authors</button>
-          <button onclick="switchSiteTab('journal')" data-sitetab="journal" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">Journal</button>
-          <button onclick="switchSiteTab('about')" data-sitetab="about" class="site-nav-btn text-slateMuted hover:text-ink py-1 transition">About</button>
+        <button id="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" onclick="toggleMenu()" class="md:hidden inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-hairline text-[13.5px] font-medium text-ink">
+          <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
+        </button>
+        <nav id="site-nav" aria-label="Main" class="hidden md:flex absolute md:static top-20 inset-x-0 md:inset-auto flex-col md:flex-row items-stretch md:items-center gap-1 md:gap-9 bg-white md:bg-transparent border-b md:border-0 border-hairline px-6 py-3 md:p-0 text-[15px] md:text-[13.5px] font-medium shadow-sm md:shadow-none">
+          <button onclick="switchSiteTab('books'); closeMenu()" data-sitetab="books" class="site-nav-btn text-left text-slateMuted hover:text-ink py-3 md:py-1 transition">Books</button>
+          <button onclick="switchSiteTab('authors'); closeMenu()" data-sitetab="authors" class="site-nav-btn text-left text-slateMuted hover:text-ink py-3 md:py-1 transition">Authors</button>
+          <button onclick="switchSiteTab('journal'); closeMenu()" data-sitetab="journal" class="site-nav-btn text-left text-slateMuted hover:text-ink py-3 md:py-1 transition">Journal</button>
+          <button onclick="switchSiteTab('about'); closeMenu()" data-sitetab="about" class="site-nav-btn text-left text-slateMuted hover:text-ink py-3 md:py-1 transition">About</button>
+          <a href="/redworm/" class="text-ink hover:text-claret py-3 md:py-1 transition inline-flex items-center gap-1.5">Redworm <span class="px-1.5 py-0.5 rounded bg-claret text-white text-[10px] font-bold uppercase tracking-wider">Beta</span></a>
         </nav>
       </div>
     </header>
@@ -474,7 +484,7 @@
         </div>
 
         <!-- 6 Tactile Clothbound Hardcovers Sitting Directly on Pure #FFFFFF -->
-        <div id="home-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+        <div id="home-books-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 sm:gap-x-12 gap-y-12 sm:gap-y-20">
           <!-- Populated dynamically -->
         </div>
       </section>
@@ -566,7 +576,7 @@
         </div>
       </div>
 
-      <div id="full-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20"></div>
+      <div id="full-books-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 sm:gap-x-12 gap-y-12 sm:gap-y-20"></div>
     </section>
 
     <!-- ================================================================= -->
@@ -2526,5 +2536,9 @@
       window.openStudio = function () { window.location.href = 'redworm/index.html'; };
     });
   </script>
+<script>
+function toggleMenu() { const n = document.getElementById('site-nav'), b = document.getElementById('menu-btn'), open = n.classList.toggle('hidden') === false; n.classList.toggle('flex', open); b.setAttribute('aria-expanded', String(open)); }
+function closeMenu() { if (window.matchMedia('(min-width: 768px)').matches) return; const n = document.getElementById('site-nav'); n.classList.add('hidden'); n.classList.remove('flex'); document.getElementById('menu-btn').setAttribute('aria-expanded', 'false'); }
+</script>
 </body>
 </html>
