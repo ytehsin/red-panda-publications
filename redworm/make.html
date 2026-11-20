@@ -617,7 +617,7 @@ $('proof').addEventListener('focusout', (e) => {
   renderProof();
 });
 document.addEventListener('keydown', (e) => {
-  if (!studioOpen() || e.target.closest('p[data-p], input, select, textarea')) return;
+  if (!studioOpen() || (e.target.closest && e.target.closest('p[data-p], input, select, textarea, [contenteditable]'))) return;
   if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); step(1); }
   else if (e.key === 'ArrowUp' || e.key === 'k') { e.preventDefault(); step(-1); }
   else if (e.key === 'Enter' && cur) { e.preventDefault(); const it = allItems().find(i => i.id === cur); if (it && it.replacement !== null) act([cur], 'change'); }
