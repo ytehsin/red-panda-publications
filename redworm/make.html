@@ -103,7 +103,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 .sfig { margin: 14px auto; text-align: center; position: relative; border-radius: 6px; padding: 8px; outline: 1px solid transparent; }
 .sfig:hover { outline-color: #D5DAE1; }
 .sfig img { max-width: 100%; max-height: 340px; display: block; margin: 0 auto; filter: grayscale(1); }
-.sfig.half img { max-width: 50%; } .sfig.full_rotated img { transform: rotate(90deg); max-height: 260px; margin: 50px auto; }
+.sfig.f-half img { max-width: 50%; } .sfig.f-full_rotated img { transform: rotate(90deg); max-height: 260px; margin: 50px auto; }
 .sfig figcaption { font-size: 14px; font-style: italic; margin-top: 6px; }
 .sfig .tag { position: absolute; left: 8px; top: 8px; background: rgba(28,31,36,.82); color: #fff; font: 700 11px Inter, sans-serif; padding: 3px 8px; border-radius: 999px; }
 .sfig .sf-tools { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; opacity: 0; transition: opacity .15s ease; }
@@ -789,7 +789,7 @@ const FRAME_NAMES = { inline: 'In the text', half: 'Half width', top: 'Top of a 
 const slot = (after) => `<div class="slot" contenteditable="false"><button type="button" data-addpic="${esc(after)}">+ Picture</button></div>`;
 const picUrl = (id) => `${API}/api/sessions/${S.id}/pictures/${id}`;
 function figsAfter(anchor) {
-  return pics.filter(x => x.after === anchor).map(x => `<figure class="sfig ${x.frame}" contenteditable="false" data-pic="${x.id}">
+  return pics.filter(x => x.after === anchor).map(x => `<figure class="sfig f-${x.frame}" contenteditable="false" data-pic="${x.id}">
     <span class="tag">${FRAME_NAMES[x.frame]}</span>
     <span class="sf-tools"><button type="button" data-editpic="${x.id}">Change</button><button type="button" data-delpic="${x.id}">Remove</button></span>
     <img src="${picUrl(x.id)}" alt="${esc(x.caption)}">${x.caption ? `<figcaption>${esc(x.caption)}</figcaption>` : ''}</figure>`).join('');
