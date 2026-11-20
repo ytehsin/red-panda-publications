@@ -499,10 +499,37 @@ function allItems() {
   aiItems.forEach(i => { if (!(taken[i.block_id] || []).some(([a, b]) => a < i.end && i.start < b)) out.push({ ...i, ai: true, category: 'AI suggestion' }); });
   return out;
 }
-const isOpen = (i) => !decided(i.id, i.ai) && edits[i.block_id] === undefined;
+let PARA = {};
+function locate(p, items) {  // in a paragraph the author rewrote, find each suggestion's words again
+  const text = edits[p.id], out = {}, used = [];
+  items.filter(i => !decided(i.id, i.ai)).sort((a, b) => a.start - b.start).forEach(i => {
+    if (!i.original) return;
+    let best = -1, k = text.indexOf(i.original);
+    while (k >= 0) {
+      const clash = used.some(([a, b]) => a < k + i.original.length && k < b);
+      if (!clash && (best < 0 || Math.abs(k - i.start) < Math.abs(best - i.start))) best = k;
+      k = text.indexOf(i.original, k + 1);
+    }
+    if (best >= 0) { out[i.id] = [best, best + i.original.length]; used.push(out[i.id]); }
+  });
+  return out;
+}
+const isOpen = (i) => {
+  if (decided(i.id, i.ai)) return false;
+  if (edits[i.block_id] === undefined) return true;
+  const p = PARA[i.block_id]; return !!(p && locate(p, [i])[i.id]);  // gone if the author rewrote those words
+};
 const kindOf = (i) => (i.ai ? 'ai' : i.kind === 'check' ? 'check' : '');
 function paraHtml(p, items) {  // text content always equals the paragraph as it now reads
-  if (edits[p.id] !== undefined) return esc(edits[p.id]);
+  if (edits[p.id] !== undefined) {
+    const text = edits[p.id], pos = locate(p, items); let h = '', at = 0;
+    items.filter(i => pos[i.id]).sort((a, b) => pos[a.id][0] - pos[b.id][0]).forEach(i => {
+      const [a, b] = pos[i.id];
+      h += esc(text.slice(at, a)) + `<span class="sg open ${kindOf(i)}${cur === i.id ? ' cur' : ''}" data-i="${esc(i.id)}">${esc(text.slice(a, b))}</span>`;
+      at = b;
+    });
+    return h + esc(text.slice(at));
+  }
   let h = '', at = 0;
   items.sort((a, b) => a.start - b.start).forEach(i => {
     if (i.start < at) return;
@@ -574,18 +601,32 @@ function step(dir) {
 function act(ids, v) {  // accept or ignore, remember it for Undo, then move on
   const all = allItems(), next = visibleOpen().find(i => !ids.includes(i.id) && i.id !== cur) || null;
   const items = ids.map(id => all.find(x => x.id === id)).filter(Boolean);
-  undoStack.push(items.map(it => [it, decided(it.id, it.ai)]));
+  undoStack.push({ choices: items.map(it => [it, decided(it.id, it.ai)]), edits: { ...edits } });
+  // In a paragraph the author rewrote, an accepted fix changes their text directly (last first).
+  const inEdited = items.filter(it => v === 'change' && it.replacement !== null && edits[it.block_id] !== undefined);
+  const groups = byBlock(inEdited);
+  Object.entries(groups).forEach(([bid, its]) => {
+    const pos = locate(PARA[bid], its);
+    its.filter(i => pos[i.id]).sort((a, b) => pos[b.id][0] - pos[a.id][0]).forEach(i => {
+      const [a, b] = pos[i.id]; edits[bid] = edits[bid].slice(0, a) + i.replacement + edits[bid].slice(b);
+    });
+  });
   items.forEach(it => setChoice(it, v));
   renderProof(); if (next) select(next.id);
 }
-async function loadText() { BOOK = await (await call(`/api/sessions/${S.id}/text`)).json(); renderProof(); }
+async function loadText() { BOOK = await (await call(`/api/sessions/${S.id}/text`)).json(); PARA = Object.fromEntries(BOOK.sections.flatMap(x => x.paras).map(p => [p.id, p])); renderProof(); }
 function openStudio() {
   $('studio').classList.remove('hidden'); document.body.classList.add('studio-open'); renderProof();
   const first = visibleOpen()[0]; if (first) select(first.id);
 }
 function closeStudio() { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); $('studio').classList.add('hidden'); document.body.classList.remove('studio-open'); renderProof(); }
 $('open-studio').onclick = openStudio; $('st-done').onclick = closeStudio;
-$('st-undo').onclick = () => { const last = undoStack.pop(); if (!last) return; last.forEach(([it, v]) => { if (v) setChoice(it, v); else delete (it.ai ? aiChoices : choices)[it.id]; }); renderProof(); if (last[0]) select(last[0][0].id); };
+$('st-undo').onclick = () => {
+  const last = undoStack.pop(); if (!last) return;
+  last.choices.forEach(([it, v]) => { if (v) setChoice(it, v); else delete (it.ai ? aiChoices : choices)[it.id]; });
+  Object.keys(edits).forEach(k => delete edits[k]); Object.assign(edits, last.edits);
+  renderProof(); if (last.choices[0]) select(last.choices[0][0].id);
+};
 $('st-filters').onclick = (e) => { const b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; renderSide(); const f = visibleOpen()[0]; if (f) select(f.id); };
 $('st-bulk').onclick = (e) => { const b = e.target.closest('[data-bulk]'); if (!b) return; const vis = visibleOpen().filter(i => b.dataset.bulk === 'keep' || i.replacement !== null); act(vis.map(i => i.id), b.dataset.bulk); };
 $('st-cards').onclick = (e) => {
