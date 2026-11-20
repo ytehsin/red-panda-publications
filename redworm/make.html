@@ -153,6 +153,17 @@ details[open] > summary::before { transform: rotate(90deg); }
 .sw { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; position: relative; }
 .sw.on { box-shadow: 0 0 0 3px var(--ink); }
 .sw span { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); font-size: 11.5px; color: var(--soft); white-space: nowrap; }
+.pictabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.pictabs button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.pictabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.stockgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; max-height: 340px; overflow: auto; }
+.sp { position: relative; border: 0; padding: 0; background: #E6E8EC; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 3 / 4; }
+.sp img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .25s ease; }
+.sp:hover img { transform: scale(1.05); }
+.sp.on { outline: 3px solid var(--ink); outline-offset: 2px; }
+.sp .by { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 6px 4px; font-size: 10.5px; line-height: 1.2; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.65)); text-align: left; }
+.sp .by a { color: #fff; }
+.pubbox { border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-top: 14px; background: #fff; text-align: left; }
 .picbox { border: 1px dashed #CDD2DA; border-radius: 14px; padding: 14px; background: #FAFBFC; }
 .stack > * + * { margin-top: 14px; }
 .idx { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; margin-top: 10px; }
@@ -239,13 +250,22 @@ details[open] > summary::before { transform: rotate(90deg); }
         <div><div class="small muted" style="font-weight:700;margin-bottom:8px">Colours</div><div class="swatches" id="swatches"></div></div>
         <div id="pic" class="picbox hidden stack" style="margin-top:34px">
           <b>Your picture</b>
-          <div id="pic-ai" class="hidden">
+          <div class="pictabs"><button data-pt="stock" id="tab-stock">Search photos</button><button data-pt="own">Your own picture</button><button data-pt="ai" id="tab-ai" class="hidden">AI picture</button></div>
+          <div id="pt-stock" class="stack">
+            <div class="gate"><input type="text" id="stock-q" placeholder="e.g. monsoon sea, old Delhi street, mountains at dusk"><button class="btn ghost" id="stock-go">Search</button></div>
+            <div id="stock-grid" class="stockgrid"></div>
+            <p class="small muted" style="margin:0">Photos from <a href="https://unsplash.com/?utm_source=redworm&amp;utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, free to use on your cover. No credit is needed on the book.</p>
+          </div>
+          <div id="pt-own" class="hidden stack">
+            <p style="margin:0"><label class="btn ghost" style="cursor:pointer">Choose a picture<input type="file" id="pic-file" accept="image/jpeg,image/png" hidden></label></p>
+            <p class="small muted" style="margin:0">JPG or PNG. For a sharp print the photo should be at least 1700 × 2600 pixels for “Photo”, or 1000 × 1000 for “Picture”.</p>
+          </div>
+          <div id="pt-ai" class="hidden">
             <label class="field"><span>Describe it and the AI draws it (no words appear in the picture)</span>
               <textarea id="pic-prompt" rows="2" placeholder="e.g. a quiet harbour at dawn, fishing boats, watercolour"></textarea></label>
-            <p style="margin:8px 0 0"><button class="btn ghost" id="pic-make">Make picture</button> <span id="pic-msg" class="small muted"></span></p>
+            <p style="margin:8px 0 0"><button class="btn ghost" id="pic-make">Make picture</button></p>
           </div>
-          <p style="margin:0"><label class="btn ghost" style="cursor:pointer">Upload your own picture<input type="file" id="pic-file" accept="image/jpeg,image/png" hidden></label></p>
-          <p class="small muted" style="margin:0">Square pictures work best, at least 1000 pixels wide. It prints in a framed panel at full 300 dpi quality.</p>
+          <p id="pic-msg" class="small" style="margin:0"></p>
         </div>
         <label class="field" style="margin-top:34px"><span>Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900"></textarea></label>
       </div>
@@ -294,7 +314,17 @@ details[open] > summary::before { transform: rotate(90deg); }
       <p id="done-line" class="muted"></p>
       <p><a class="btn red" id="download" href="#">Download everything (.zip)</a></p>
       <p class="small muted">Download now — nothing is kept after you leave this page.</p>
-      <label class="small soon"><input type="checkbox" disabled> List this book in the Red Panda showroom <span class="chip">Coming soon</span></label>
+      <label class="small soon" id="soon"><input type="checkbox" disabled> List this book in the Red Panda showroom <span class="chip">Coming soon</span></label>
+      <div id="pub" class="pubbox hidden stack">
+        <b>Publish on your website <span class="chip">Owner</span></b>
+        <div class="grid2">
+          <label class="field"><span>Shelf</span><select id="pub-genre"><option>Fiction</option><option>Poetry &amp; Ghazals</option><option>Essays</option><option>Translations</option><option>Classics</option></select></label>
+          <label class="field"><span>Prices in ₹ (optional)</span><span style="display:flex;gap:8px"><input type="number" id="pub-pb" min="0" placeholder="Paperback"><input type="number" id="pub-eb" min="0" placeholder="Ebook"></span></label>
+        </div>
+        <label class="field"><span>Short description for the showroom</span><textarea id="pub-syn" rows="3" maxlength="900"></textarea></label>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pub-home"> Also feature it at the top of the homepage</label>
+        <p style="margin:0"><button class="btn red" id="pub-go">Publish to showroom</button> <span id="pub-msg" class="small"></span></p>
+      </div>
     </div>
   </section>
 </main>
@@ -319,6 +349,7 @@ function mini(l, k, title, author) {  // a tiny drawing of each layout, so autho
     orbit: `<div style="left:17%;top:12%;width:66%;aspect-ratio:1;border-radius:50%;background:${ac}"></div>` + t('top:64%;text-align:center;font-size:13px') + a('bottom:7%;text-align:center'),
     initial: `<div style="right:-12%;bottom:-14%;font-size:120px;line-height:.8;color:${ac}">${esc((title || 'Y').trim().charAt(0))}</div>` + t('top:7%;font-size:9px') + a('top:20%'),
     author: a('top:12%;text-align:center;font-size:8px') + `<div style="left:44%;width:12%;top:22%;height:1px;background:${ac}"></div>` + t('top:30%;text-align:center;font-size:15px'),
+    photo: `<div style="left:0;right:0;top:0;height:66%;background:linear-gradient(160deg,#7d93ad,#c9b48f 60%,#e8c88f)"></div>` + t('top:71%;font-size:12px') + a('bottom:7%'),
     picture: `<div style="left:9%;top:7%;width:62%;aspect-ratio:1;background:repeating-linear-gradient(45deg,${ac},${ac} 4px,${bg} 4px,${bg} 8px);opacity:.8"></div>` + t('top:56%;font-size:12px') + a('bottom:8%'),
   };
   return `<div class="mini" style="background:${bg}">${parts[l] || ''}</div>`;
@@ -400,7 +431,8 @@ async function upload(file) {
   ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
   done('upload'); done('proof'); done('details');
   if (H.ai_proofreading) $('ai-box').classList.remove('hidden');
-  if (H.ai_pictures) $('pic-ai').classList.remove('hidden');
+  if (H.ai_pictures) $('tab-ai').classList.remove('hidden');
+  if (!H.stock_photos) { $('tab-stock').classList.add('hidden'); picTab('own'); }
 }
 function setForm(f) { form = f; document.querySelectorAll('#form button').forEach(b => b.classList.toggle('on', b.dataset.f === f)); $('form-hint').textContent = f === 'poetry' ? '— line breaks kept, each poem on its own page' : ''; }
 $('form').onclick = (e) => { const b = e.target.closest('button'); if (b) setForm(b.dataset.f); };
@@ -509,13 +541,13 @@ function renderCovers() {
   const tt = $('title').value || S.title, au = $('author').value || (S.authors || []).join(', ');
   $('tiles').innerHTML = Object.keys(S.covers.layouts).map(k => `<button class="tile ${k === layout ? 'on' : ''}" data-l="${k}" title="${esc(S.covers.layouts[k])}">${mini(k, colour || 'paper', tt, au)}<b>${cap(k)}</b></button>`).join('');
   $('swatches').innerHTML = S.covers.colours.map(k => `<div class="sw ${k === colour ? 'on' : ''}" data-k="${k}" style="background:${COLOURS[k] || '#ccc'}" title="${cap(k)}"><span>${cap(k)}</span></div>`).join('');
-  $('pic').classList.toggle('hidden', layout !== 'picture');
+  $('pic').classList.toggle('hidden', layout !== 'picture' && layout !== 'photo');
 }
 async function preview() {
   if (!layout || !colour) { $('preview').textContent = layout ? 'Now pick the colours' : 'Pick a layout'; return; }
   const choice = `${layout}/${colour}`;
   $('use-cover').classList.toggle('hidden', choice === chosen); $('cover-chosen').classList.toggle('hidden', choice !== chosen);
-  if (layout === 'picture' && !artVersion) { $('preview').textContent = 'Make or upload your picture below'; $('use-cover').classList.add('hidden'); return; }
+  if ((layout === 'picture' || layout === 'photo') && !artVersion) { $('preview').textContent = 'Choose a photo or picture below'; $('use-cover').classList.add('hidden'); return; }
   $('preview').innerHTML = '<span><span class="spinner"></span><br>Drawing…</span>';
   const q = new URLSearchParams({ choice, title: $('title').value, author: $('author').value, v: artVersion });
   try {
@@ -537,10 +569,52 @@ $('pic-make').onclick = async () => {
   catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
   $('pic-make').disabled = false;
 };
+function picTab(t) {
+  document.querySelectorAll('.pictabs button').forEach(b => b.classList.toggle('on', b.dataset.pt === t));
+  ['stock', 'own', 'ai'].forEach(k => $('pt-' + k).classList.toggle('hidden', k !== t));
+}
+document.querySelectorAll('.pictabs button').forEach(b => b.onclick = () => picTab(b.dataset.pt));
+picTab('stock');
+function sharpness(dpi, ok) {
+  const d = +dpi || 0;
+  $('pic-msg').innerHTML = !d || d >= 240 ? `<span style="color:var(--green);font-weight:700">${ok} Sharp enough for print.</span>`
+    : `<span class="err">⚠ This picture will print a little soft (${d} dpi; 300 is ideal). Fine for the ebook. For print, choose a larger one.</span>`;
+}
+async function stockSearch() {
+  const q = $('stock-q').value.trim(); if (!q) return;
+  $('stock-grid').innerHTML = '<p class="small muted">Searching…</p>';
+  try {
+    const d = await (await call(`/api/sessions/${S.id}/stock?q=${encodeURIComponent(q)}`)).json();
+    $('stock-grid').innerHTML = d.photos.length ? d.photos.map(p => `<button class="sp" data-id="${esc(p.id)}" style="background:${esc(p.colour || '#E6E8EC')}" title="${esc(p.alt)}"><img src="${esc(p.thumb)}" alt="${esc(p.alt)}" loading="lazy"><span class="by">Photo by <a href="${esc(p.author_url)}" target="_blank" rel="noopener">${esc(p.author)}</a> on <a href="${esc(p.link)}" target="_blank" rel="noopener">Unsplash</a></span></button>`).join('') : '<p class="small muted">No photos found. Try other words.</p>';
+  } catch (e) { $('stock-grid').innerHTML = `<p class="small err">${esc(e.message)}</p>`; }
+}
+$('stock-go').onclick = stockSearch; $('stock-q').onkeydown = (e) => { if (e.key === 'Enter') stockSearch(); };
+$('stock-grid').onclick = async (e) => {
+  if (e.target.closest('a')) return;
+  const b = e.target.closest('.sp'); if (!b) return;
+  document.querySelectorAll('.sp').forEach(x => x.classList.toggle('on', x === b));
+  $('pic-msg').innerHTML = '<span class="spinner"></span> Getting the full-size photo…';
+  try { const r = await (await call(`/api/sessions/${S.id}/stock-pick`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json(); artVersion++; sharpness(r.dpi, '✓ Photo chosen.'); chosen = null; preview(); }
+  catch (err) { $('pic-msg').innerHTML = `<span class="err">${esc(err.message)}</span>`; }
+};
+let IS_OWNER = false;
+if (PASS) call('/api/access/check').then(r => r.json()).then(d => { IS_OWNER = d.kind === 'admin'; }).catch(() => {});
+$('pub-go').onclick = async () => {
+  const body = { genre: $('pub-genre').value, synopsis: $('pub-syn').value.trim(), homepage: $('pub-home').checked,
+    price_paperback: $('pub-pb').value ? +$('pub-pb').value : null, price_ebook: $('pub-eb').value ? +$('pub-eb').value : null };
+  if (body.synopsis.length < 10) { $('pub-msg').innerHTML = '<span class="err">Add a short description first.</span>'; return; }
+  $('pub-go').disabled = true; $('pub-msg').innerHTML = '<span class="spinner"></span> Publishing…';
+  try {
+    await call(`/api/sessions/${S.id}/publish`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    $('pub-msg').innerHTML = `<span style="color:var(--green);font-weight:700">✓ Published.</span> Your website updates in about 2 minutes. <a href="/" target="_blank">Open it</a>`;
+    $('pub-go').textContent = 'Publish again (updates it)';
+  } catch (e) { $('pub-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+  $('pub-go').disabled = false;
+};
 $('pic-file').onchange = async () => {
   const f = $('pic-file').files[0]; if (!f) return; const fd = new FormData(); fd.append('file', f);
   $('pic-msg').textContent = 'Uploading…';
-  try { await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: fd }); artVersion++; $('pic-msg').textContent = '✓ Picture added.'; chosen = null; preview(); }
+  try { const r = await (await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: fd })).json(); artVersion++; sharpness(r.dpi, '✓ Picture added.'); chosen = null; preview(); }
   catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
 };
 
@@ -590,6 +664,7 @@ $('make').onclick = async () => {
         const s = st.summary; mk.ok(`✓ Done in ${Math.round((Date.now() - t0) / 1000)} s · ${s.pages} pages · spine ${s.spine_mm} mm`); $('make').textContent = 'Make it again';
         $('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index && s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ✓ ready for the printer' : ' · ⚠ not yet ready for the printer: see “Read me first” in the download (often a character the fonts can’t print — check step 2)');
         $('download').href = `${API}/api/sessions/${S.id}/download`; $('done').classList.remove('hidden'); done('make');
+        if (IS_OWNER && H.publishing) { $('soon').classList.add('hidden'); $('pub').classList.remove('hidden'); if (!$('pub-syn').value) $('pub-syn').value = $('blurb').value.trim(); }
       } else { mk.fail('✗ ' + (st.error || 'Something went wrong.')); }
     } catch (e) { clearInterval(poll); $('make').disabled = false; mk.fail('✗ ' + e.message); }
   }, 3000);
