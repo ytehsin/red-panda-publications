@@ -192,6 +192,46 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 .pictabs button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .pictabs button:disabled { opacity: .55; cursor: default; }
 .makes { margin: 4px 0 18px; }
+/* Guided layout: one step at a time, a progress bar, and a side panel that can be hidden */
+.progress { position: sticky; top: 0; z-index: 20; background: rgba(244,245,247,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.pbar { height: 3px; background: #E6E8EC; } .pbar i { display: block; height: 3px; width: 20%; background: #C8102E; transition: width .4s ease; }
+.prow { max-width: 1240px; margin: 0 auto; padding: 9px 24px; display: flex; align-items: center; gap: 12px; }
+.plabel { font-size: 13.5px; font-weight: 700; color: var(--soft); }
+.panel-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.panel-btn[aria-expanded="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.shell { max-width: 1240px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: start; }
+.shell main { max-width: 820px; width: 100%; margin: 0 auto; padding: 8px 0 120px; }
+body.panel-open .shell { grid-template-columns: minmax(0, 1fr) 320px; }
+.panel { display: none; position: sticky; top: 70px; margin-top: 24px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+body.panel-open .panel { display: block; animation: rise .3s ease both; }
+.panel-head { display: flex; align-items: center; margin-bottom: 14px; } .panel-head b { font-size: 14px; }
+.panel-x { margin-left: auto; border: 0; background: none; font-size: 15px; cursor: pointer; color: var(--soft); width: 32px; height: 32px; border-radius: 8px; }
+.panel-x:hover { background: #F1F2F4; }
+.pv-cover { width: 150px; margin: 0 auto 14px; aspect-ratio: 2 / 3; border-radius: 3px; overflow: hidden; background: #E6E8EC; box-shadow: 0 14px 30px rgba(0,0,0,.14); display: grid; place-items: center; text-align: center; font: 600 15px/1.2 Fraunces, Georgia, serif; color: #646B76; padding: 0; }
+.pv-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-title { text-align: center; font: 600 17px/1.25 Fraunces, Georgia, serif; } .pv-author { text-align: center; font-size: 13.5px; color: var(--soft); margin-top: 2px; }
+.pv-list { margin: 16px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13.5px; }
+.pv-list dt { color: var(--soft); } .pv-list dd { margin: 0; font-weight: 600; text-align: right; }
+.pv-list dd.ok { color: var(--green); }
+.panel .btn { width: 100%; margin-top: 14px; }
+body.guided .card { display: none; }
+body.guided .card.current { display: block; animation: rise .35s ease both; opacity: 1; pointer-events: auto; transform: none; }
+body.guided:not(.step-0) .hero p, body.guided:not(.step-0) .makes, body.guided .hero h1 { display: none; }
+body.guided.step-0 .hero h1 { display: block; }
+body.guided .rail { margin-top: 18px; }
+body.guided .rail li { cursor: default; } body.guided .rail li.can { cursor: pointer; }
+body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
+.stepnav { position: sticky; bottom: 0; z-index: 15; display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 14px 0; background: linear-gradient(transparent, #F4F5F7 30%); }
+.stepnav #step-next { margin-left: auto; }
+.stepnav #step-hint { text-align: right; }
+@media (max-width: 1100px) {
+  body.panel-open .shell { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: fixed; top: auto; left: 0; right: 0; bottom: 0; margin: 0; z-index: 40; border-radius: 20px 20px 0 0; max-height: 72vh; overflow-y: auto; box-shadow: 0 -12px 40px rgba(0,0,0,.18); }
+  body.panel-open .panel { animation: sheetUp .28s ease both; }
+  @keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .pv-cover { width: 110px; }
+}
+@media (max-width: 560px) { .prow { padding: 8px 16px; } .shell { padding: 0 14px; } .plabel { font-size: 12.5px; } #step-hint { display: none; } }
 @media (max-width: 480px) { .by-rp { display: none; } }
 .makes-h { font: 600 15px/1.3 inherit; margin: 0 0 10px; color: var(--soft); }
 .makes-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
@@ -228,6 +268,12 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
   <a class="back" href="index.html">About Redworm</a>
 </div>
 
+<div class="progress" id="progress">
+  <div class="pbar" role="progressbar" aria-label="Your progress" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><i id="pbar"></i></div>
+  <div class="prow"><span id="plabel" class="plabel">Step 1 of 5 · Your manuscript</span>
+    <button type="button" class="panel-btn" id="panel-btn" aria-controls="panel" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>Your book</button></div>
+</div>
+<div class="shell" id="shell">
 <main>
   <section class="hero">
     <h1>Turn your manuscript into a <em>real book</em>.</h1>
@@ -381,7 +427,17 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
       </div>
     </div>
   </section>
+  <nav class="stepnav" id="stepnav" aria-label="Steps">
+    <button type="button" class="btn ghost" id="step-back">← Back</button>
+    <span class="small muted" id="step-hint"></span>
+    <button type="button" class="btn red" id="step-next">Continue</button>
+  </nav>
 </main>
+<aside class="panel" id="panel" aria-label="Your book so far">
+  <div class="panel-head"><b>Your book so far</b><button type="button" class="panel-x" id="panel-x" aria-label="Hide this panel">✕</button></div>
+  <div id="panel-body"></div>
+</aside>
+</div>
 
 <div id="studio" class="studio hidden" role="dialog" aria-modal="true" aria-label="Proofreading">
   <div class="st-top">
@@ -437,8 +493,75 @@ function done(step, on = true) {
   $('c-' + step).classList.toggle('complete', on);
 }
 function unlock(id) { const c = $(id); if (c.classList.contains('locked')) { c.classList.remove('locked'); c.classList.add('reveal'); } }
+// ── Guided layout: one curStep at a time ──────────────────────────────────────────
+const STEPS = ['upload', 'proof', 'cover', 'details', 'make'];
+const STEP_NAMES = ['Your manuscript', 'Proofreading', 'Your cover', 'Publisher & details', 'Make your book'];
+let curStep = 0, reached = 0;
+function blocker(i) {  // why the author can't move on yet (empty = they can)
+  if (i === 0 && !S) return 'Upload your manuscript to continue.';
+  if (i === 2 && !chosen) return 'Pick a layout and colours, then press “Use this cover”.';
+  return '';
+}
+function go(i, opts = {}) {
+  if (i < 0 || i >= STEPS.length || i > reached) return;
+  curStep = i; renderSteps();
+  if (!opts.stay) window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function renderSteps() {
+  document.body.classList.add('guided');
+  STEPS.forEach((k, i) => {
+    $('c-' + k).classList.toggle('current', i === curStep);
+    const li = document.querySelector(`#rail [data-s="${k}"]`);
+    li.classList.toggle('now', i === curStep); li.classList.toggle('can', i <= reached && i !== curStep);
+  });
+  document.body.className = document.body.className.replace(/\bstep-\d\b/g, '').trim() + ' step-' + curStep;
+  $('pbar').style.width = ((curStep + 1) / STEPS.length * 100) + '%';
+  document.querySelector('.pbar').setAttribute('aria-valuenow', String(curStep + 1));
+  $('plabel').textContent = `Step ${curStep + 1} of ${STEPS.length} · ${STEP_NAMES[curStep]}`;
+  $('stepnav').classList.toggle('hidden', curStep === 0);  // uploading moves you on by itself
+  $('step-back').style.visibility = curStep === 0 ? 'hidden' : 'visible';
+  const why = blocker(curStep), last = curStep === STEPS.length - 1;
+  $('step-next').classList.toggle('hidden', last);
+  $('step-next').disabled = !!why;
+  $('step-next').textContent = curStep === STEPS.length - 2 ? 'Continue to make the book' : `Continue: ${STEP_NAMES[curStep + 1]}`;
+  $('step-hint').textContent = why;
+  renderPanel();
+}
+$('step-back').onclick = () => go(curStep - 1);
+$('step-next').onclick = () => { if (blocker(curStep)) return; reached = Math.max(reached, curStep + 1); go(curStep + 1); };
+$('rail').addEventListener('click', (e) => { const li = e.target.closest('li.can'); if (li) go(STEPS.indexOf(li.dataset.s)); });
+// ── "Your book so far" panel ───────────────────────────────────────────────────
+function setPanel(open, remember = true) {
+  document.body.classList.toggle('panel-open', open);
+  $('panel-btn').setAttribute('aria-expanded', String(open));
+  if (remember) try { localStorage.setItem('rw_panel', open ? 'open' : 'closed'); } catch (e) {}
+  if (open) renderPanel();
+}
+$('panel-btn').onclick = () => setPanel(!document.body.classList.contains('panel-open'));
+$('panel-x').onclick = () => setPanel(false);
+function renderPanel() {
+  if (!document.body.classList.contains('panel-open')) return;
+  if (!S) { $('panel-body').innerHTML = '<div class="pv-cover">Your book</div><p class="small muted" style="text-align:center;margin:0">Upload your manuscript and your book will build up here as you go.</p>'; return; }
+  const img = document.querySelector('#preview img'), open = allItems().filter(isOpen).length, n = Object.keys(edits).length;
+  const title = $('title').value || S.title, author = $('author').value || (S.authors || []).join(', ');
+  $('panel-body').innerHTML = `<div class="pv-cover">${img ? `<img src="${img.src}" alt="Cover preview">` : esc(title)}</div>
+    <div class="pv-title">${esc(title)}</div><div class="pv-author">${esc(author)}</div>
+    <dl class="pv-list">
+      <dt>Words</dt><dd>${S.words.toLocaleString()}</dd>
+      <dt>${S.form === 'poetry' ? 'Poems' : 'Chapters'}</dt><dd>${S.chapters.length}</dd>
+      <dt>Proofreading</dt><dd class="${open ? '' : 'ok'}">${open ? `${open} to look at` : 'All done ✓'}${n ? ` · ${n} edited` : ''}</dd>
+      <dt>Cover</dt><dd class="${chosen ? 'ok' : ''}">${chosen ? esc(chosen.split('/').map(cap).join(', ')) + ' ✓' : 'Not chosen yet'}</dd>
+      <dt>Size</dt><dd>5.5 × 8.5 in</dd>
+    </dl>
+    ${curStep !== 1 ? '<button type="button" class="btn ghost" id="pv-proof">Open proofreading</button>' : ''}`;
+  const b = $('pv-proof'); if (b) b.onclick = () => { reached = Math.max(reached, 1); openStudio(); };
+}
 let PASS = null;
 try { PASS = localStorage.getItem('rw_pass'); } catch (e) {}
+document.addEventListener('DOMContentLoaded', () => {
+  let pref = null; try { pref = localStorage.getItem('rw_panel'); } catch (e) {}
+  setPanel(pref ? pref === 'open' : window.innerWidth >= 1100, false); renderSteps();
+});
 function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
 function showGate(on) { $('gate').classList.toggle('hidden', !on); $('drop').classList.toggle('hidden', on); }
 async function call(path, opts = {}) {
@@ -504,10 +627,11 @@ async function upload(file) {
   BOOK = null; edits = {}; editing = null; cur = null; filter = 'all'; undoStack = []; renderProof(); loadText().catch(() => {}); renderCovers(); renderIndex();
   ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
   done('upload'); done('proof'); done('details');
+  reached = Math.max(reached, 1); go(1);
   $('ai-box').classList.remove('hidden');
   if (!H.ai_proofreading) {  // shown, but switched off until the Gemini key is added
     $('ai-box').classList.add('is-soon'); $('ai-consent').disabled = true;
-    $('ai-box').querySelector('b').insertAdjacentHTML('beforeend', ' <span class="chip">Coming soon</span>');
+    if (!$('ai-box').querySelector('.chip')) $('ai-box').querySelector('b').insertAdjacentHTML('beforeend', ' <span class="chip">Coming soon</span>');
   }
   if (!H.ai_pictures) { $('tab-ai').disabled = true; $('tab-ai').innerHTML = 'AI picture <span class="chip">Coming soon</span>'; }
   if (!H.stock_photos) { $('tab-stock').classList.add('hidden'); picTab('own'); }
@@ -581,6 +705,7 @@ function renderProof() {  // the summary on step 2, and the studio when it's ope
   $('proof-line').innerHTML = (items.length ? `<b>${open}</b> of ${items.length} suggestions still to look at.` : '✓ Nothing to look at.')
     + (n ? ` You edited ${n} paragraph${n > 1 ? 's' : ''}.` : '') + (auto ? ` ${auto} invisible tidy-ups were done for you.` : '');
   if (studioOpen()) { renderSheet(); renderSide(); }
+  renderPanel();
 }
 function byBlock(items) { const by = {}; items.forEach(i => (by[i.block_id] = by[i.block_id] || []).push(i)); return by; }
 function renderSheet() {
@@ -732,7 +857,7 @@ async function preview() {
   const q = new URLSearchParams({ choice, title: $('title').value, author: $('author').value, v: artVersion });
   try {
     const blob = await (await call(`/api/sessions/${S.id}/cover-preview?${q}`)).blob();
-    if (`${layout}/${colour}` === choice) $('preview').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Cover preview">`;
+    if (`${layout}/${colour}` === choice) { $('preview').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Cover preview">`; renderPanel(); }
   } catch (e) { $('preview').innerHTML = `<span class="err" style="padding:12px">${esc(e.message)}</span>`; }
 }
 document.addEventListener('click', (e) => {
@@ -741,7 +866,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.l) layout = t.dataset.l; else colour = t.dataset.k;
   renderCovers(); preview();
 });
-$('use-cover').onclick = () => { if (!layout || !colour) return; chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; };
+$('use-cover').onclick = () => { if (!layout || !colour) return; chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; renderSteps(); };
 $('pic-make').onclick = async () => {
   $('pic-make').disabled = true; $('pic-msg').innerHTML = '<span class="spinner"></span> Drawing your picture (about 10 seconds)…';
   try { const r = await (await call(`/api/sessions/${S.id}/art`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: $('pic-prompt').value }) })).json();
