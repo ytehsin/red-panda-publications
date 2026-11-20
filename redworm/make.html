@@ -293,6 +293,59 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
 .spinner { width: 18px; height: 18px; border-radius: 50%; border: 3px solid #E7DCCD; border-top-color: var(--red); animation: spin 0.8s linear infinite; display: inline-block; vertical-align: -3px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .hidden { display: none !important; }
+
+/* ── Tool 3 look: a plain white page, one centred question per step ───────────────── */
+body { font-size: 15px; }
+.btn { font-weight: 600; font-size: 14.5px; padding: 11px 18px; border-radius: 10px; }
+.chip { font-weight: 600; font-size: 12.5px; padding: 4px 10px; }
+.field > span, label.field span { font-weight: 500; }
+b, strong { font-weight: 600; }
+body.guided .hero h1, body.guided.step-0 .hero h1, body.guided .hero > p, body.guided .rail { display: none; }
+body.guided .hero { margin: 0; padding: 0; }
+body.guided #wake { margin: 0; }
+.qhead { display: none; text-align: center; margin: 44px auto 30px; max-width: 640px; }
+body.guided .qhead { display: block; animation: rise .35s ease both; }
+.q-eye { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); }
+.q-title { margin: 10px 0 0; font: 400 40px/1.08 "Instrument Serif", "Noto Sans Devanagari", Georgia, serif; letter-spacing: -0.005em; }
+.q-sub { margin: 10px 0 0; font-size: 15.5px; color: var(--soft); line-height: 1.5; }
+body.guided .card { border: 0; box-shadow: none; background: transparent; padding: 0; margin: 0; }
+body.guided .card > header { display: none; }
+body.guided .makes { max-width: 640px; margin: 0 auto 22px; }
+body.guided .makes-h { display: none; }
+body.guided .stepnav { background: linear-gradient(rgba(255,255,255,0), #fff 35%); border-top: 0; }
+body.guided #step-back { background: none; color: var(--soft); padding: 8px 2px; text-decoration: underline; text-underline-offset: 3px; font-weight: 500; box-shadow: none; }
+body.guided #step-next { background: var(--ink); color: #fff; border-radius: 999px; padding: 12px 24px; }
+body.guided #c-proof { text-align: center; }
+body.guided #c-proof #ai-box { text-align: left; max-width: 620px; margin: 22px auto 0; }
+body.guided #c-upload { max-width: 640px; margin: 0 auto; }
+body.guided #c-details, body.guided #c-make { max-width: 680px; margin: 0 auto; }
+body.guided #use-cover, body.guided #cover-chosen { display: none !important; }
+/* Cover step: three big choices first, everything else under "See all designs" */
+.curated { display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; margin: 6px 0 22px; }
+.cur { border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; font: inherit; }
+.cur .mini { width: 168px; border-radius: 2px; box-shadow: 0 14px 34px rgba(0,0,0,.14); outline: 3px solid transparent; outline-offset: 6px; transition: outline-color .15s ease, transform .2s ease; }
+.cur .mini .t { font-size: 25px; } .cur .mini .a { font-size: 9px; }
+.cur:hover .mini { transform: translateY(-3px); }
+.cur[aria-checked="true"] .mini { outline-color: var(--ink); }
+.cur span.lbl { font-size: 14px; font-weight: 600; }
+.allcov { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+.allcov > summary { cursor: pointer; text-align: center; font-weight: 500; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; list-style: none; margin-bottom: 4px; }
+.allcov > summary::-webkit-details-marker { display: none; }
+.allcov[open] > summary { margin-bottom: 18px; }
+/* Photo results look like photos (square, small), not like more cover designs */
+#pic { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: #FAFBFC; }
+#pic .stockgrid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+#pic .sp, #pd-grid .sp { aspect-ratio: 1 / 1; border-radius: 8px; }
+.mini.has-art { background-size: cover !important; background-position: center !important; }
+/* "+ Picture" can be seen and tapped on every screen, not only on hover */
+.slot button { opacity: .55; }
+.slot:hover button, .slot button:focus-visible { opacity: 1; }
+@media (hover: none) { .slot button { opacity: .85; } }
+@media (max-width: 700px) {
+  .q-title { font-size: 31px; } .qhead { margin: 28px auto 22px; }
+  .cur .mini { width: 112px; } .cur .mini .t { font-size: 17px; } .curated { gap: 14px; }
+  #st-addpic { padding: 7px 11px; }
+}
 </style>
 </head>
 <body>
@@ -322,6 +375,8 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
   </section>
 
   <!-- 1 -->
+  <header class="qhead" id="qhead"><p class="q-eye" id="q-eye"></p><h1 class="q-title" id="q-title"></h1><p class="q-sub" id="q-sub"></p></header>
+
   <section class="makes" aria-label="What are you making?">
     <h2 class="makes-h">What are you making?</h2>
     <div class="makes-row">
@@ -372,6 +427,8 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
   <!-- 3 -->
   <section class="card locked" id="c-cover">
     <header><div class="badge">3</div><div><h2>Your cover</h2><p>Your decision: pick a layout and colours, then press <b>Use this cover</b>.</p></div></header>
+    <div class="curated" id="curated" role="radiogroup" aria-label="Cover style"></div>
+    <details class="allcov" id="allcov"><summary>See all designs and colours</summary>
     <div class="cover-wrap">
       <div>
         <div class="preview" id="preview">Your cover appears here</div>
@@ -400,14 +457,15 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
           </div>
           <p id="pic-msg" class="small" style="margin:0"></p>
         </div>
-        <label class="field" style="margin-top:34px"><span>Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900"></textarea></label>
       </div>
     </div>
+    </details>
   </section>
 
   <!-- 4 -->
   <section class="card locked" id="c-details">
     <header><div class="badge">4</div><div><h2>Publisher & details</h2><p>Sensible defaults are filled in. Change only what you need.</p></div></header>
+    <label class="field"><span>Back-cover description (optional)</span><textarea id="blurb" rows="4" maxlength="900"></textarea></label>
     <div class="stack">
       <div class="grid2">
         <label class="field"><span>Publish as</span><select id="pubmode">
@@ -510,6 +568,7 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
   <div class="st-top">
     <b class="st-title">Proofreading</b><span id="st-count" class="st-count"></span>
     <div class="st-tools">
+      <button class="btn ghost" id="st-addpic" type="button">+ Picture</button>
       <button class="btn ghost st-undo hidden" id="st-undo">↺ Undo</button>
       <label class="small st-spell">Spelling <select id="spell"><option value="auto">Follow my book</option><option value="uk">UK (colour)</option><option value="us">US (color)</option></select></label>
       <button class="btn red" id="st-done">Done</button>
@@ -550,6 +609,9 @@ function mini(l, k, title, author) {  // a tiny drawing of each layout, so autho
     photo: `<div style="left:0;right:0;top:0;height:66%;background:linear-gradient(160deg,#7d93ad,#c9b48f 60%,#e8c88f)"></div>` + t('top:71%;font-size:12px') + a('bottom:7%'),
     picture: `<div style="left:9%;top:7%;width:62%;aspect-ratio:1;background:repeating-linear-gradient(45deg,${ac},${ac} 4px,${bg} 4px,${bg} 8px);opacity:.8"></div>` + t('top:56%;font-size:12px') + a('bottom:8%'),
   };
+  const art = (l === 'photo' || l === 'picture') && artVersion && S ? `${API}/api/sessions/${S.id}/art?v=${artVersion}` : '';
+  if (art && l === 'photo') parts.photo = `<div style="left:0;right:0;top:0;height:66%;background:url('${art}') center/cover"></div>` + t('top:71%;font-size:12px') + a('bottom:7%');
+  if (art && l === 'picture') parts.picture = `<div style="left:9%;top:7%;width:62%;aspect-ratio:1;background:url('${art}') center/cover"></div>` + t('top:56%;font-size:12px') + a('bottom:8%');
   return `<div class="mini" style="background:${bg}">${parts[l] || ''}</div>`;
 }
 const LAYOUT_HINT = {};
@@ -564,10 +626,17 @@ function unlock(id) { const c = $(id); if (c.classList.contains('locked')) { c.c
 // ── Guided layout: one curStep at a time ──────────────────────────────────────────
 const STEPS = ['upload', 'proof', 'cover', 'details', 'make'];
 const STEP_NAMES = ['Your manuscript', 'Proofreading', 'Your cover', 'Publisher & details', 'Make your book'];
+const STEP_Q = [
+  ["Let’s make your book", 'Upload your manuscript: a Word file, text or ebook, up to 50,000 words. Your file is deleted when you leave.'],
+  ['Anything to fix before we print?', 'Open your book to read it, type changes, accept or ignore suggestions, and add pictures.'],
+  ['Which cover feels like your book?', 'Pick one. You can fine-tune the design and colours, or add a photo, below.'],
+  ['Who is publishing it?', 'Sensible defaults are filled in. Change only what you need.'],
+  ['Ready to make your book?', 'You’ll get printer files, an Amazon set, an ebook and a copy to read.'],
+];
 let curStep = 0, reached = 0;
 function blocker(i) {  // why the author can't move on yet (empty = they can)
   if (i === 0 && !S) return 'Upload your manuscript to continue.';
-  if (i === 2 && !chosen) return 'Pick a layout and colours, then press “Use this cover”.';
+  if (i === 2 && !chosen) return (layout === 'picture' || layout === 'photo') && !artVersion ? 'Choose a photo for your cover to continue.' : 'Pick a cover to continue.';
   return '';
 }
 function go(i, opts = {}) {
@@ -585,7 +654,9 @@ function renderSteps() {
   document.body.className = document.body.className.replace(/\bstep-\d\b/g, '').trim() + ' step-' + curStep;
   $('pbar').style.width = ((curStep + 1) / STEPS.length * 100) + '%';
   document.querySelector('.pbar').setAttribute('aria-valuenow', String(curStep + 1));
-  $('plabel').textContent = `Step ${curStep + 1} of ${STEPS.length} · ${STEP_NAMES[curStep]}`;
+  $('plabel').textContent = S ? ($('title').value || S.title) : '';
+  $('q-eye').textContent = `Step ${curStep + 1} of ${STEPS.length}`;
+  $('q-title').textContent = STEP_Q[curStep][0]; $('q-sub').textContent = STEP_Q[curStep][1];
   $('stepnav').classList.toggle('hidden', curStep === 0);  // uploading moves you on by itself
   $('step-back').style.visibility = curStep === 0 ? 'hidden' : 'visible';
   const why = blocker(curStep), last = curStep === STEPS.length - 1;
@@ -818,7 +889,7 @@ function renderSide() {
       <div class="acts">${i.replacement !== null ? `<button class="go" data-act="change">Accept</button>` : ''}<button data-act="keep">${i.replacement !== null ? 'Ignore' : 'Looks fine'}</button></div></div>`).join('')
     : '<div class="st-empty">✓ Nothing left to look at here.<br><br>You can still click anywhere in the text to change it.</div>';
   $('st-undo').classList.toggle('hidden', !undoStack.length);
-  $('st-pics').textContent = pics.length ? `${pics.length} picture${pics.length > 1 ? 's' : ''} in your book.` : 'To add a picture, point between two paragraphs and click “+ Picture”.';
+  $('st-pics').textContent = pics.length ? `${pics.length} picture${pics.length > 1 ? 's' : ''} in your book.` : 'To add a picture, click “+ Picture” between two paragraphs, or tap a paragraph and use “+ Picture” at the top.';
 }
 function select(id, from) {
   cur = id;
@@ -912,6 +983,15 @@ $('pd-add').onclick = () => {
   if (pd.edit) pics = pics.map(x => (x.id === pd.edit ? entry : x)); else pics.push(entry);
   closePicDlg(); renderProof();
 };
+let lastPara = null;
+$('proof').addEventListener('focusin', (e) => { const p = e.target.closest('p[data-p]'); if (p) lastPara = p.dataset.p; });
+$('proof').addEventListener('pointerdown', (e) => { const p = e.target.closest('p[data-p]'); if (p) lastPara = p.dataset.p; });
+$('st-addpic').onclick = () => {
+  if (!BOOK) return;
+  const sel = cur && allItems().find(i => i.id === cur);
+  const after = lastPara || (sel && sel.block_id) || (BOOK.sections[0] && BOOK.sections[0].id);
+  openPicDlg({ after });
+};
 $('open-studio').onclick = openStudio; $('st-done').onclick = closeStudio;
 $('st-undo').onclick = () => {
   const last = undoStack.pop(); if (!last) return;
@@ -988,15 +1068,32 @@ $('ai-go').onclick = async () => {
   }, 3000);
 };
 
+const CURATED = [['field', 'ultramarine', 'Quiet and literary'], ['monument', 'vermilion', 'Bold and modern'], ['photo', 'paper', 'With a photograph']];
+function renderCurated() {
+  const tt = $('title').value || S.title, au = $('author').value || (S.authors || []).join(', ');
+  $('curated').innerHTML = CURATED.filter(([l]) => S.covers.layouts[l]).map(([l, k, lbl]) => {
+    const on = layout === l && colour === k;
+    return `<button type="button" class="cur" role="radio" aria-checked="${on}" data-cl="${l}" data-ck="${k}">${mini(l, k, tt, au)}<span class="lbl">${lbl}</span></button>`;
+  }).join('');
+}
+$('curated').onclick = (e) => {
+  const b = e.target.closest('.cur'); if (!b) return;
+  layout = b.dataset.cl; colour = b.dataset.ck; renderCovers(); preview();
+  if (layout === 'photo' && !artVersion) { $('allcov').open = true; setTimeout(() => $('pic').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50); }
+};
 function renderCovers() {
   const tt = $('title').value || S.title, au = $('author').value || (S.authors || []).join(', ');
   $('tiles').innerHTML = Object.keys(S.covers.layouts).map(k => `<button class="tile ${k === layout ? 'on' : ''}" data-l="${k}" title="${esc(S.covers.layouts[k])}">${mini(k, colour || 'paper', tt, au)}<b>${cap(k)}</b></button>`).join('');
   $('swatches').innerHTML = S.covers.colours.map(k => `<div class="sw ${k === colour ? 'on' : ''}" data-k="${k}" style="background:${COLOURS[k] || '#ccc'}" title="${cap(k)}"><span>${cap(k)}</span></div>`).join('');
   $('pic').classList.toggle('hidden', layout !== 'picture' && layout !== 'photo');
+  renderCurated();
 }
 async function preview() {
   if (!layout || !colour) { $('preview').textContent = layout ? 'Now pick the colours' : 'Pick a layout'; return; }
   const choice = `${layout}/${colour}`;
+  if (!((layout === 'picture' || layout === 'photo') && !artVersion) && chosen !== choice) {  // the guided flow applies a choice straight away
+    chosen = choice; $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; renderSteps();
+  }
   $('use-cover').classList.toggle('hidden', choice === chosen); $('cover-chosen').classList.toggle('hidden', choice !== chosen);
   if ((layout === 'picture' || layout === 'photo') && !artVersion) { $('preview').textContent = 'Choose a photo or picture below'; $('use-cover').classList.add('hidden'); return; }
   $('preview').innerHTML = '<span><span class="spinner"></span><br>Drawing…</span>';
