@@ -561,7 +561,7 @@ document.addEventListener('click', (e) => {
   if (t.dataset.l) layout = t.dataset.l; else colour = t.dataset.k;
   renderCovers(); preview();
 });
-$('use-cover').onclick = () => { chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; };
+$('use-cover').onclick = () => { if (!layout || !colour) return; chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; };
 $('pic-make').onclick = async () => {
   $('pic-make').disabled = true; $('pic-msg').innerHTML = '<span class="spinner"></span> Drawing your picture (about 10 seconds)…';
   try { const r = await (await call(`/api/sessions/${S.id}/art`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: $('pic-prompt').value }) })).json();
