@@ -6,7 +6,7 @@
 <title>Make your book — Redworm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=Noto+Sans+Devanagari:wght@400;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --paper: #F4F5F7; --card: #FFFFFF; --ink: #1C1F24; --soft: #646B76; --line: #E6E8EC;
@@ -14,10 +14,10 @@
   --amber: #FFF1C9; --radius: 18px; --shadow: 0 1px 2px rgba(60,40,20,.05), 0 8px 24px rgba(60,40,20,.06);
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--paper); color: var(--ink);
-  font: 16px/1.55 "Nunito Sans", "Noto Sans Devanagari", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+html, body { margin: 0; background: #FFFFFF; color: var(--ink);
+  font: 16px/1.55 Inter, "Noto Sans Devanagari", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
-h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 650; letter-spacing: -0.01em; margin: 0; }
+h1, h2, h3 { font-family: "Instrument Serif", "Noto Sans Devanagari", Georgia, serif; font-weight: 400; letter-spacing: 0; margin: 0; }
 button, input, textarea, select { font: inherit; color: inherit; }
 .top { display: flex; align-items: center; justify-content: space-between; max-width: 860px; margin: 0 auto; padding: 22px 24px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; }
@@ -25,7 +25,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .top a.back { color: var(--soft); text-decoration: none; font-size: 15px; }
 main { max-width: 860px; margin: 0 auto; padding: 8px 24px 80px; }
 .hero { padding: 26px 0 30px; }
-.hero h1 { font-size: clamp(34px, 5vw, 48px); line-height: 1.08; }
+.hero h1 { font-size: clamp(40px, 6vw, 60px); line-height: 1.02; }
 .hero h1 em { font-style: normal; color: var(--red); }
 .hero p { color: var(--soft); font-size: 18px; max-width: 600px; margin: 14px 0 0; }
 .rail { display: flex; gap: 8px; flex-wrap: wrap; margin: 22px 0 0; padding: 0; list-style: none; }
@@ -59,7 +59,7 @@ html { scroll-behavior: smooth; }
 .card > header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .card > header .badge { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: var(--red-tint); color: var(--red-deep); font-weight: 800; flex: none; }
 .card.complete > header .badge { background: var(--green); color: #fff; }
-.card > header h2 { font-size: 22px; }
+.card > header h2 { font-size: 30px; line-height: 1.1; }
 .card > header p { margin: 2px 0 0; color: var(--soft); font-size: 15px; }
 .drop { display: block; border: 2px dashed #CDD2DA; border-radius: 16px; padding: 38px 20px; text-align: center; cursor: pointer; background: #FAFBFC; transition: .15s; }
 .drop:hover, .drop.over { border-color: var(--red); background: var(--red-tint); }
@@ -133,7 +133,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 .studio.hidden { display: none; }
 body.studio-open { overflow: hidden; }
 .st-top { display: flex; align-items: center; gap: 12px; padding: 10px 18px; background: #fff; border-bottom: 1px solid var(--line); }
-.st-title { font: 650 18px Fraunces, Georgia, serif; }
+.st-title { font: 400 21px "Instrument Serif", Georgia, serif; }
 .st-count { font-size: 13.5px; color: var(--soft); }
 .st-tools { margin-left: auto; display: flex; gap: 10px; align-items: center; }
 .st-tools .btn { padding: 7px 14px; }
@@ -142,7 +142,7 @@ body.studio-open { overflow: hidden; }
 .st-sheet { overflow-y: auto; overflow-x: hidden; padding: 36px 24px 120px; scroll-behavior: smooth; }
 .st-sheet .inner { max-width: 38em; margin: 0 auto; background: #fff; padding: 64px 72px; box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 12px 32px rgba(0,0,0,.06); border-radius: 4px;
   font: 18px/1.7 "Iowan Old Style", "Palatino Linotype", Georgia, "Noto Serif Devanagari", serif; color: #1F1B17; }
-.st-sheet h3 { font: 600 21px/1.3 Fraunces, Georgia, serif; text-align: center; margin: 46px 0 22px; }
+.st-sheet h3 { font: 400 24px/1.3 "Instrument Serif", Georgia, serif; text-align: center; margin: 46px 0 22px; }
 .st-sheet h3:first-child { margin-top: 0; }
 .st-sheet p { margin: 0; text-align: justify; hyphens: auto; text-indent: 1.4em; position: relative; border-radius: 4px; outline: none; transition: background .15s ease; }
 .st-sheet h3 + p, .st-sheet p.first { text-indent: 0; }
@@ -226,7 +226,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 .pictabs button:disabled { opacity: .55; cursor: default; }
 .makes { margin: 4px 0 18px; }
 /* Guided layout: one step at a time, a progress bar, and a side panel that can be hidden */
-.progress { position: sticky; top: 0; z-index: 20; background: rgba(244,245,247,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.progress { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
 .pbar { height: 3px; background: #E6E8EC; } .pbar i { display: block; height: 3px; width: 20%; background: #C8102E; transition: width .4s ease; }
 .prow { max-width: 1240px; margin: 0 auto; padding: 9px 24px; display: flex; align-items: center; gap: 12px; }
 .plabel { font-size: 13.5px; font-weight: 700; color: var(--soft); }
@@ -240,9 +240,9 @@ body.panel-open .panel { display: block; animation: rise .3s ease both; }
 .panel-head { display: flex; align-items: center; margin-bottom: 14px; } .panel-head b { font-size: 14px; }
 .panel-x { margin-left: auto; border: 0; background: none; font-size: 15px; cursor: pointer; color: var(--soft); width: 32px; height: 32px; border-radius: 8px; }
 .panel-x:hover { background: #F1F2F4; }
-.pv-cover { width: 150px; margin: 0 auto 14px; aspect-ratio: 2 / 3; border-radius: 3px; overflow: hidden; background: #E6E8EC; box-shadow: 0 14px 30px rgba(0,0,0,.14); display: grid; place-items: center; text-align: center; font: 600 15px/1.2 Fraunces, Georgia, serif; color: #646B76; padding: 0; }
+.pv-cover { width: 150px; margin: 0 auto 14px; aspect-ratio: 2 / 3; border-radius: 3px; overflow: hidden; background: #E6E8EC; box-shadow: 0 14px 30px rgba(0,0,0,.14); display: grid; place-items: center; text-align: center; font: 400 17px/1.2 "Instrument Serif", Georgia, serif; color: #646B76; padding: 0; }
 .pv-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.pv-title { text-align: center; font: 600 17px/1.25 Fraunces, Georgia, serif; } .pv-author { text-align: center; font-size: 13.5px; color: var(--soft); margin-top: 2px; }
+.pv-title { text-align: center; font: 400 20px/1.25 "Instrument Serif", Georgia, serif; } .pv-author { text-align: center; font-size: 13.5px; color: var(--soft); margin-top: 2px; }
 .pv-list { margin: 16px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; font-size: 13.5px; }
 .pv-list dt { color: var(--soft); } .pv-list dd { margin: 0; font-weight: 600; text-align: right; }
 .pv-list dd.ok { color: var(--green); }
@@ -254,7 +254,7 @@ body.guided.step-0 .hero h1 { display: block; }
 body.guided .rail { margin-top: 18px; }
 body.guided .rail li { cursor: default; } body.guided .rail li.can { cursor: pointer; }
 body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
-.stepnav { position: sticky; bottom: 0; z-index: 15; display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 14px 0; background: linear-gradient(transparent, #F4F5F7 30%); }
+.stepnav { position: sticky; bottom: 0; z-index: 15; display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 14px 0; background: linear-gradient(rgba(255,255,255,0), #FFFFFF 30%); }
 .stepnav #step-next { margin-left: auto; }
 .stepnav #step-hint { text-align: right; }
 @media (max-width: 1100px) {
@@ -266,7 +266,7 @@ body.guided .rail li.now { color: var(--ink); border-color: var(--ink); }
 }
 @media (max-width: 560px) { .prow { padding: 8px 16px; } .shell { padding: 0 14px; } .plabel { font-size: 12.5px; } #step-hint { display: none; } }
 @media (max-width: 480px) { .by-rp { display: none; } }
-.makes-h { font: 600 15px/1.3 inherit; margin: 0 0 10px; color: var(--soft); }
+.makes-h { font: 400 24px/1.2 "Instrument Serif", Georgia, serif; margin: 0 0 10px; color: var(--soft); }
 .makes-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
 .make-opt { text-align: left; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 14px 16px; font: inherit; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
 .make-opt b { font-size: 15.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
