@@ -48,6 +48,11 @@ main { max-width: 980px; margin: 0 auto; padding: 4px 24px 90px; }
 .pg .bar button { border: 0; background: transparent; cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 13px; color: var(--soft); }
 .pg .bar button:hover { background: var(--paper); color: var(--ink); }
 .pg .star { position: absolute; top: 8px; left: 8px; font-size: 11px; font-weight: 700; background: var(--ink); color: #fff; border-radius: 999px; padding: 2px 8px; }
+.ai-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.ai-row input { flex: 1 1 320px; border: 1px solid #CDD2DA; border-radius: 999px; padding: 10px 16px; }
+.ai-row.off { opacity: .55; }
+.soon-chip { font-size: 11px; font-weight: 700; background: var(--paper); color: var(--soft); border-radius: 999px; padding: 3px 9px; }
+.msg.ok { color: var(--soft); font-weight: 400; }
 .empty { border: 1px dashed #CDD2DA; border-radius: 12px; padding: 30px; text-align: center; color: var(--soft); }
 .note { font-size: 13.5px; color: var(--soft); margin: 12px 0 0; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -123,7 +128,13 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
 
     <section class="step">
       <h2>Your pages</h2>
-      <p class="sub">Every pattern is drawn new for your book: it's yours to publish and sell. Click ↻ on any page for a different drawing.</p>
+      <p class="sub">Type a topic for AI drawings, or add mandalas, patterns and photos. Everything drawn for your book is yours to publish and sell. Click ↻ on a pattern for a different one.</p>
+      <div class="ai-row" id="ai-row">
+        <input id="topic" maxlength="200" placeholder="Type what to draw: elephants in a jungle, a temple by a river…" aria-label="What to draw">
+        <button class="btn red small" data-draw="1">Draw 1 page</button>
+        <button class="btn ghost small" data-draw="4">Draw 4 pages</button>
+        <span class="soon-chip hidden" id="ai-soon">Coming soon</span>
+      </div>
       <div class="tools">
         <button class="btn ghost small" data-add="mandala">+ 5 mandalas</button>
         <button class="btn ghost small" data-add="geometric">+ 5 patterns</button>
@@ -158,7 +169,7 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
     <section class="step">
       <h2>Make it</h2>
       <label class="check"><input type="checkbox" id="rights"><span>I have the right to use every photo in this book (pattern pages are original and need nothing).</span></label>
-      <p class="small soon note">Request to be featured on Red Panda Publications <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span> · Type what to draw (AI pages) <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span></p>
+      <p class="small soon note">Request to be featured on Red Panda Publications <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span></p>
       <button class="btn red" id="make">Make my colouring book</button>
       <div id="making" class="load hidden"><div class="track"><div class="ball"></div></div><p class="msg" id="make-msg"></p></div>
       <div id="done" class="done hidden">
@@ -203,6 +214,7 @@ async function begin() {
   try {
     const d = await (await call('/api/colouring', { method: 'POST' })).json();
     C = d.id; minOne = d.min_drawings.one_sided; minTwo = d.min_drawings.two_sided; maxPhotos = d.max_photos;
+    if (!d.ai_pages) { $('ai-row').classList.add('off'); $('ai-soon').classList.remove('hidden'); $('topic').disabled = true; document.querySelectorAll('[data-draw]').forEach(b => b.disabled = true); }
     if (!d.stock_photos) { $('add-stock').disabled = true; $('add-stock').title = 'Photo search is not switched on yet'; }
     showGate(false); render();
   } catch (e) { if (PASS) { $('waking').querySelector('.msg').textContent = e.message; } }
@@ -218,7 +230,8 @@ if (PASS) begin(); else showGate(true);
 
 // ── Pages ───────────────────────────────────────────────────────────────────
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
-const imgFor = (p) => p.kind === 'photo'
+const imgFor = (p) => p.kind === 'ai' ? `${API}/api/colouring/${C}/ai/${p.photo}`
+  : p.kind === 'photo'
   ? `${API}/api/colouring/${C}/photos/${p.photo}?audience=${audience}`
   : `${API}/api/colouring/${C}/pattern?kind=${p.kind}&seed=${p.seed}&audience=${audience}`;
 function render() {
@@ -231,7 +244,7 @@ function render() {
       <div class="art"><img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}"></div>
       <div class="bar"><span class="n">${i + 1}</span>
         <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" onclick="coverPage=${i};render()">★</button>
-        ${p.kind !== 'photo' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
+        ${p.kind !== 'photo' && p.kind !== 'ai' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
         <button title="Move earlier" aria-label="Move page ${i + 1} earlier" onclick="move(${i},-1)" ${i ? '' : 'disabled'}>←</button>
         <button title="Move later" aria-label="Move page ${i + 1} later" onclick="move(${i},1)" ${i < pages.length - 1 ? '' : 'disabled'}>→</button>
         <button title="Remove" aria-label="Remove page ${i + 1}" onclick="removePage(${i})">✕</button>
@@ -247,6 +260,7 @@ function move(i, d) { const [p] = pages.splice(i, 1); pages.splice(i + d, 0, p);
 function removePage(i) {
   const [p] = pages.splice(i, 1);
   if (p.kind === 'photo' && !pages.some(q => q.photo === p.photo)) call(`/api/colouring/${C}/photos/${p.photo}`, { method: 'DELETE' }).catch(() => {});
+  if (p.kind === 'ai') call(`/api/colouring/${C}/ai/${p.photo}`, { method: 'DELETE' }).catch(() => {});
   if (coverPage >= pages.length) coverPage = Math.max(0, pages.length - 1); render();
 }
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
@@ -270,6 +284,25 @@ $('file').onchange = async () => {
   $('file').value = '';
 };
 function alertMsg(m) { $('make-msg').textContent = m; $('make-msg').className = 'msg bad'; $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.add('hidden'); }
+
+// ── AI pages from a typed topic ──────────────────────────────────────────────
+let drawing = false;
+document.querySelectorAll('[data-draw]').forEach(b => b.onclick = async () => {
+  const topic = $('topic').value.trim(), n = +b.dataset.draw, m = $('page-msg');
+  if (drawing) return;
+  if (topic.length < 3) { m.className = 'msg bad'; m.textContent = 'Type what to draw first, for example: elephants in a jungle.'; return; }
+  drawing = true; document.querySelectorAll('[data-draw]').forEach(x => x.disabled = true);
+  try {
+    for (let k = 1; k <= n; k++) {
+      m.className = 'msg ok'; m.textContent = `Drawing page ${k} of ${n}… (about 10 seconds each)`;
+      const d = await (await call(`/api/colouring/${C}/ai`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic, audience }) })).json();
+      pages.push({ kind: 'ai', seed: 0, photo: d.id, aud: audience }); render();
+    }
+    m.textContent = 'Done. AI pages keep the style (kids or adults) they were drawn in; draw again to change it.';
+  } catch (e) { m.className = 'msg bad'; m.textContent = e.message; }
+  drawing = false; document.querySelectorAll('[data-draw]').forEach(x => x.disabled = false);
+});
+$('topic').onkeydown = (e) => { if (e.key === 'Enter') document.querySelector('[data-draw="1"]').click(); };
 
 // ── Photo search (Unsplash) ─────────────────────────────────────────────────
 $('add-stock').onclick = () => { $('stock').showModal(); $('q').focus(); };
@@ -303,7 +336,7 @@ $('make').onclick = async () => {
   const body = {
     title: $('title').value.trim(), subtitle: $('subtitle').value.trim(), author: $('author').value.trim(),
     publisher: $('publisher').value.trim(), audience, trim: $('trim').value, one_sided: $('one-sided').checked,
-    colours, cover_page: coverPage, pages: pages.map(p => p.kind === 'photo' ? { kind: 'photo', photo: p.photo } : { kind: p.kind, seed: p.seed }),
+    colours, cover_page: coverPage, pages: pages.map(p => (p.kind === 'photo' || p.kind === 'ai') ? { kind: p.kind, photo: p.photo } : { kind: p.kind, seed: p.seed }),
     rights_confirmed: $('rights').checked,
   };
   const msg = $('make-msg'); msg.className = 'msg';
