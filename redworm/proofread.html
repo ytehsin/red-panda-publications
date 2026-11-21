@@ -4,16 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Proofread — Redworm</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Noto+Serif+Devanagari:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = { theme: { extend: {
-      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
-      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'], reader:['"Newsreader"','"Noto Serif Devanagari"','Georgia','serif'] } } } };
-  </script>
   <style> html, body { -webkit-font-smoothing: antialiased; } </style>
+  <!-- After the page's own styles, as Tailwind's script used to place it. -->
+  <link rel="stylesheet" href="../css/proofread.css">
 </head>
 <body class="bg-pureWhite text-ink font-sans">
   <header class="border-b border-hairline">

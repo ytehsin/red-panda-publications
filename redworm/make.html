@@ -10,7 +10,7 @@
 <style>
 :root {
   --paper: #F4F5F7; --card: #FFFFFF; --ink: #1C1F24; --soft: #646B76; --line: #E6E8EC;
-  --red: #B23A2E; --red-deep: #8B1E24; --red-tint: #FBEDEA; --green: #2F7D57; --green-tint: #E9F5EE;
+  --red: #8B1E24; --red-deep: #6F171C; --red-tint: #FBEDEA; --green: #2F7D57; --green-tint: #E9F5EE;
   --amber: #FFF1C9; --radius: 18px; --shadow: 0 1px 2px rgba(60,40,20,.05), 0 8px 24px rgba(60,40,20,.06);
 }
 * { box-sizing: border-box; }
@@ -89,7 +89,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 .btn:disabled { opacity: .4; cursor: default; transform: none; }
 .note { padding: 12px 14px; border-radius: 12px; background: var(--amber); font-size: 15px; }
 .note.green { background: var(--green-tint); }
-.beta { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--red, #C8102E); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+.beta { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
 .gate { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .gate input { flex: 1 1 200px; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; }
 .soon { opacity: .6; display: flex; gap: 8px; align-items: center; }
@@ -201,7 +201,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 .load { margin: 14px 0; text-align: center; }
 .track { position: relative; height: 30px; max-width: 220px; margin: 0 auto; overflow: hidden; }
 .track::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 2px; border-radius: 2px; background: #E6E8EC; }
-.ball { position: absolute; bottom: 5px; left: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #C8102E; border-top-color: transparent; box-sizing: border-box; animation: roll 2.6s cubic-bezier(.45,.05,.55,.95) infinite alternate; }
+.ball { position: absolute; bottom: 5px; left: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--red); border-top-color: transparent; box-sizing: border-box; animation: roll 2.6s cubic-bezier(.45,.05,.55,.95) infinite alternate; }
 @keyframes roll { from { transform: translateX(0) rotate(0deg); } to { transform: translateX(202px) rotate(720deg); } }
 .load .msg { margin-top: 8px; font-size: 14px; color: var(--soft); min-height: 1.4em; }
 .load.ok .track, .load.bad .track { display: none; } .load.ok .msg { color: var(--green); font-weight: 700; }
@@ -227,7 +227,7 @@ kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line
 .makes { margin: 4px 0 18px; }
 /* Guided layout: one step at a time, a progress bar, and a side panel that can be hidden */
 .progress { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-.pbar { height: 3px; background: #E6E8EC; } .pbar i { display: block; height: 3px; width: 20%; background: #C8102E; transition: width .4s ease; }
+.pbar { height: 3px; background: #E6E8EC; } .pbar i { display: block; height: 3px; width: 20%; background: var(--red); transition: width .4s ease; }
 .prow { max-width: 1240px; margin: 0 auto; padding: 9px 24px; display: flex; align-items: center; gap: 12px; }
 .plabel { font-size: 13.5px; font-weight: 700; color: var(--soft); }
 .panel-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }

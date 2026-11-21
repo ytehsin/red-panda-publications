@@ -4,21 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redworm Beta — Red Panda Publications</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = { theme: { extend: {
-      colors: { pureWhite:'#FFFFFF', subtleSurface:'#F7F7F8', ink:'#141414', inkHover:'#2C2C2E', slateMuted:'#6E6E73', claret:'#8B1E24', hairline:'#EFEFEF', borderCrisp:'#EAEAEA' },
-      fontFamily: { sans:['"Plus Jakarta Sans"','system-ui','sans-serif'], fraunces:['"Fraunces"','Georgia','serif'], mono:['"JetBrains Mono"','monospace'] } } } };
-  </script>
   <style>
     html, body { -webkit-font-smoothing: antialiased; }
     details > summary { list-style: none; cursor: pointer; }
     details > summary::-webkit-details-marker { display: none; }
     details[open] .chev { transform: rotate(90deg); }
   </style>
+  <!-- After the page's own styles, as Tailwind's script used to place it. -->
+  <link rel="stylesheet" href="../css/redworm-home.css">
 </head>
 <body class="bg-pureWhite text-ink font-sans">
 

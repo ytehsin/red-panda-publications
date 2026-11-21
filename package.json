@@ -1,0 +1,7 @@
+{
+  "name": "red-panda-publications-site",
+  "private": true,
+  "description": "Static site. Only the CSS build uses Node; Vercel serves the files as they are.",
+  "scripts": { "css": "node tools/build-css.js" },
+  "devDependencies": { "clean-css": "^5.3.3", "postcss": "^8.4.49", "tailwindcss": "^3.4.19" }
+}
