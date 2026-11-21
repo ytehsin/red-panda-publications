@@ -53,6 +53,8 @@ main { max-width: 980px; margin: 0 auto; padding: 4px 24px 90px; }
 .ai-row.off { opacity: .55; }
 .soon-chip { font-size: 11px; font-weight: 700; background: var(--paper); color: var(--soft); border-radius: 999px; padding: 3px 9px; }
 .msg.ok { color: var(--soft); font-weight: 400; }
+.pg .drawing { color: var(--soft); font-size: 13px; text-align: center; margin: 0; }
+.pg .drawing .btn { margin-top: 8px; }
 .empty { border: 1px dashed #CDD2DA; border-radius: 12px; padding: 30px; text-align: center; color: var(--soft); }
 .note { font-size: 13.5px; color: var(--soft); margin: 12px 0 0; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -145,7 +147,7 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
       </div>
       <p class="msg bad" id="page-msg" role="alert"></p>
       <div class="pages" id="pages"><div class="empty">Add mandalas, patterns or photos to begin.</div></div>
-      <p class="note">Photos work best with a clear subject and a plain background (a person, a pet with a smooth coat, a building, a cup). Busy, furry or grassy photos give busy pages.</p>
+      <p class="note">Photos are drawn by a line-art model right here in your browser (the first photo takes a little longer while the 30 MB drawing tool loads). A clear subject on a plain background gives the cleanest page.</p>
       <label class="check"><input type="checkbox" id="one-sided" checked><span><b>Print each drawing on its own sheet</b> (recommended). The back of every drawing becomes a "test your colours" page, so markers never spoil the next drawing.</span></label>
     </section>
 
@@ -232,7 +234,7 @@ if (PASS) begin(); else showGate(true);
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
 const imgFor = (p) => p.kind === 'ai' ? `${API}/api/colouring/${C}/ai/${p.photo}`
   : p.kind === 'photo'
-  ? `${API}/api/colouring/${C}/photos/${p.photo}?audience=${audience}`
+  ? `${API}/api/colouring/${C}/photos/${p.photo}?audience=${audience}&v=${(drawn[p.photo] || {})[audience] || 0}`
   : `${API}/api/colouring/${C}/pattern?kind=${p.kind}&seed=${p.seed}&audience=${audience}`;
 function render() {
   const box = $('pages');
@@ -241,7 +243,9 @@ function render() {
   else box.innerHTML = pages.map((p, i) => `
     <div class="pg">
       ${i === coverPage ? '<span class="star">★ Cover</span>' : ''}
-      <div class="art"><img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}"></div>
+      <div class="art">${p.kind === 'photo' && !(drawn[p.photo] || {})[audience]
+        ? `<p class="drawing">${(failed[p.photo] || {})[audience] ? `Couldn't draw this photo.<br><button class="btn ghost small" onclick="queueDraw('${p.photo}','${audience}')">Try again</button>` : 'Drawing this photo…'}</p>`
+        : `<img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}">`}</div>
       <div class="bar"><span class="n">${i + 1}</span>
         <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" onclick="coverPage=${i};render()">★</button>
         ${p.kind !== 'photo' && p.kind !== 'ai' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
@@ -271,6 +275,7 @@ $('one-sided').onchange = render;
 document.querySelectorAll('#aud button').forEach(b => b.onclick = () => {
   audience = b.dataset.aud;
   document.querySelectorAll('#aud button').forEach(x => x.classList.toggle('on', x === b));
+  new Set(pages.filter(p => p.kind === 'photo').map(p => p.photo)).forEach(pid => { if (!(drawn[pid] || {})[audience]) queueDraw(pid, audience); });
   render();
 });
 $('add-photo').onclick = () => $('file').click();
@@ -278,12 +283,59 @@ $('file').onchange = async () => {
   for (const f of $('file').files) {
     const fd = new FormData(); fd.append('file', f);
     $('page-msg').textContent = '';
-    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); }
+    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); }
     catch (e) { $('page-msg').textContent = `${f.name}: ${e.message}`; }
   }
   $('file').value = '';
 };
 function alertMsg(m) { $('make-msg').textContent = m; $('make-msg').className = 'msg bad'; $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.add('hidden'); }
+
+// ── Photos drawn by the line-art model, in this browser ───────────────────────
+// Informative Drawings (MIT) via onnxruntime-web (MIT); both are served from this site.
+// Kids' pages are drawn from a 512 px copy of the photo (big shapes only), adults' from 1024 px.
+const drawn = {}, failed = {};   // photo id → { kids: version, adults: version }
+let ortSession = null, drawChain = Promise.resolve();
+function loadModel() {
+  if (!ortSession) ortSession = new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = '/redworm/vendor/ort/ort.wasm.min.js';
+    sc.onload = () => {
+      ort.env.wasm.wasmPaths = '/redworm/vendor/ort/';
+      ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
+      ort.InferenceSession.create('/redworm/models/line-art.onnx', { executionProviders: ['wasm'] }).then(res, rej);
+    };
+    sc.onerror = () => rej(new Error('The drawing tool could not load.'));
+    document.head.appendChild(sc);
+  }).catch(e => { ortSession = null; throw e; });
+  return ortSession;
+}
+async function drawPhoto(pid, aud) {
+  const blob = await (await call(`/api/colouring/${C}/photos/${pid}/original`)).blob();
+  const bmp = await createImageBitmap(blob);
+  const L = aud === 'kids' ? 512 : 1024, k = L / Math.max(bmp.width, bmp.height);
+  const W = Math.max(8, Math.round(bmp.width * k / 8) * 8), H = Math.max(8, Math.round(bmp.height * k / 8) * 8);
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const cx = cv.getContext('2d'); cx.drawImage(bmp, 0, 0, W, H);
+  const px = cx.getImageData(0, 0, W, H).data, n = W * H, input = new Float32Array(3 * n);
+  for (let i = 0; i < n; i++) { input[i] = px[4 * i] / 255; input[n + i] = px[4 * i + 1] / 255; input[2 * n + i] = px[4 * i + 2] / 255; }
+  const session = await loadModel();
+  const out = await session.run({ [session.inputNames[0]]: new ort.Tensor('float32', input, [1, 3, H, W]) });
+  const y = out[session.outputNames[0]].data, img = cx.createImageData(W, H);
+  for (let i = 0; i < n; i++) { const v = Math.max(0, Math.min(255, Math.round(y[i] * 255))); img.data[4 * i] = img.data[4 * i + 1] = img.data[4 * i + 2] = v; img.data[4 * i + 3] = 255; }
+  cx.putImageData(img, 0, 0);
+  const png = await new Promise(r => cv.toBlob(r, 'image/png'));
+  const fd = new FormData(); fd.append('file', png, 'drawing.png');
+  await call(`/api/colouring/${C}/photos/${pid}/drawing?audience=${aud}`, { method: 'POST', body: fd });
+}
+function queueDraw(pid, aud) {
+  (failed[pid] = failed[pid] || {})[aud] = false; render();
+  drawChain = drawChain.then(async () => {
+    if (!pages.some(p => p.photo === pid)) return;   // removed meanwhile
+    try { await drawPhoto(pid, aud); (drawn[pid] = drawn[pid] || {})[aud] = Date.now(); }
+    catch (e) { failed[pid][aud] = true; $('page-msg').className = 'msg bad'; $('page-msg').textContent = e.message || 'A photo could not be drawn.'; }
+    render();
+  });
+}
 
 // ── AI pages from a typed topic ──────────────────────────────────────────────
 let drawing = false;
@@ -322,7 +374,7 @@ $('results').onclick = async (e) => {
   b.style.opacity = .4; $('q-msg').textContent = 'Adding…';
   try {
     const d = await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json();
-    pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); $('q-msg').textContent = 'Added. Pick another, or close.';
+    pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); $('q-msg').textContent = 'Added. Pick another, or close.';
   } catch (err) { $('q-msg').textContent = err.message; }
   b.style.opacity = 1;
 };
@@ -342,6 +394,7 @@ $('make').onclick = async () => {
   const msg = $('make-msg'); msg.className = 'msg';
   if (!body.title || !body.author) return alertMsg('Please add a title and an author.');
   if (!body.rights_confirmed) return alertMsg('Please tick the box to confirm you may use the photos.');
+  if (pages.some(p => p.kind === 'photo' && !(drawn[p.photo] || {})[audience])) return alertMsg('Some photos are still being drawn. Please wait a moment.');
   $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.remove('hidden');
   $('done').classList.add('hidden'); $('make').disabled = true; msg.textContent = 'Starting…';
   try {
