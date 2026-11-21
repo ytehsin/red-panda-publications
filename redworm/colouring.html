@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Make a colouring book — Redworm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root { --ink: #1C1F24; --soft: #646B76; --line: #E6E8EC; --paper: #F4F5F7; --red: #8B1E24; --red-tint: #FBEDEA; --green: #2F7D57; --green-tint: #E9F5EE; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: var(--ink); font: 15px/1.55 Inter, "Noto Sans Devanagari", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2 { font-family: "Instrument Serif", "Noto Sans Devanagari", Georgia, serif; font-weight: 400; margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+.top { display: flex; align-items: center; justify-content: space-between; max-width: 980px; margin: 0 auto; padding: 20px 24px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; color: inherit; }
+.brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px var(--red-tint); }
+.beta { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--red); border-radius: 999px; padding: 2px 8px; }
+.top a.back { color: var(--soft); text-decoration: none; font-size: 14px; }
+main { max-width: 980px; margin: 0 auto; padding: 4px 24px 90px; }
+.hero h1 { font-size: clamp(34px, 5vw, 50px); line-height: 1.05; }
+.hero p { color: var(--soft); margin: 10px 0 0; max-width: 620px; }
+.step { border-top: 1px solid var(--line); padding: 26px 0; }
+.step > h2 { font-size: 28px; margin-bottom: 4px; }
+.step > p.sub { color: var(--soft); margin: 0 0 16px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; background: var(--paper); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; border-radius: 9px; cursor: pointer; font-weight: 600; text-align: left; }
+.seg button small { display: block; font-weight: 400; color: var(--soft); font-size: 12.5px; }
+.seg button.on { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; border-radius: 999px; padding: 10px 18px; font-weight: 600; background: var(--ink); color: #fff; text-decoration: none; transition: transform .15s; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn.red { background: var(--red); }
+.btn.ghost { background: #fff; color: var(--ink); border: 1px solid #CDD2DA; }
+.btn.small { padding: 7px 13px; font-size: 13.5px; }
+.btn:disabled { opacity: .4; cursor: default; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.count { margin-left: auto; font-size: 13.5px; color: var(--soft); }
+.count b { color: var(--ink); }
+.count.short b { color: var(--red); }
+.pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.pg { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; position: relative; }
+.pg .art { aspect-ratio: 0.77; display: grid; place-items: center; padding: 10px; background: #fff; }
+.pg .art img { max-width: 100%; max-height: 100%; }
+.pg .art.wait img { opacity: .25; }
+.pg .bar { display: flex; align-items: center; gap: 2px; padding: 5px 6px; border-top: 1px solid var(--line); font-size: 12px; color: var(--soft); }
+.pg .bar .n { font-weight: 700; color: var(--ink); margin-right: auto; padding-left: 4px; }
+.pg .bar button { border: 0; background: transparent; cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 13px; color: var(--soft); }
+.pg .bar button:hover { background: var(--paper); color: var(--ink); }
+.pg .star { position: absolute; top: 8px; left: 8px; font-size: 11px; font-weight: 700; background: var(--ink); color: #fff; border-radius: 999px; padding: 2px 8px; }
+.empty { border: 1px dashed #CDD2DA; border-radius: 12px; padding: 30px; text-align: center; color: var(--soft); }
+.note { font-size: 13.5px; color: var(--soft); margin: 12px 0 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+label.f { display: flex; flex-direction: column; gap: 5px; font-size: 13.5px; font-weight: 600; }
+label.f input, label.f select { font-weight: 400; border: 1px solid #CDD2DA; border-radius: 10px; padding: 10px 12px; background: #fff; }
+.swatches { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.sw { width: 40px; height: 52px; border-radius: 6px; border: 2px solid transparent; cursor: pointer; position: relative; outline: 1px solid var(--line); }
+.sw i { position: absolute; left: 7px; right: 7px; height: 4px; bottom: 9px; border-radius: 2px; }
+.sw.on { border-color: var(--ink); outline-color: var(--ink); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; margin: 14px 0; }
+.check input { margin-top: 4px; }
+.load { margin: 16px 0; }
+.track { position: relative; height: 28px; max-width: 220px; overflow: hidden; }
+.track::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 2px; background: var(--line); }
+.ball { position: absolute; bottom: 5px; left: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--red); border-top-color: transparent; animation: roll 2.6s cubic-bezier(.45,.05,.55,.95) infinite alternate; }
+@keyframes roll { from { transform: translateX(0) rotate(0); } to { transform: translateX(202px) rotate(720deg); } }
+.msg { font-size: 14px; color: var(--soft); margin-top: 6px; }
+.msg.bad { color: #B00020; font-weight: 600; }
+.done { display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap; background: var(--green-tint); border-radius: 16px; padding: 20px; }
+.done img { width: 150px; border-radius: 4px; box-shadow: 0 8px 22px rgba(0,0,0,.15); }
+.done h2 { font-size: 28px; }
+.hidden { display: none !important; }
+dialog { border: 0; border-radius: 16px; padding: 0; width: min(760px, 94vw); box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+dialog::backdrop { background: rgba(20,22,26,.4); }
+.dlg-h { display: flex; gap: 8px; padding: 16px; border-bottom: 1px solid var(--line); }
+.dlg-h input { flex: 1; border: 1px solid #CDD2DA; border-radius: 10px; padding: 9px 12px; }
+.results { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; padding: 16px; max-height: 60vh; overflow: auto; }
+.results button { border: 0; padding: 0; cursor: pointer; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: var(--paper); }
+.results img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.results figure { margin: 0; } .results button { width: 100%; }
+.results figcaption { font-size: 11px; color: var(--soft); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .results figcaption a { color: inherit; }
+.dlg-f { padding: 10px 16px 16px; font-size: 12.5px; color: var(--soft); display: flex; justify-content: space-between; gap: 10px; }
+#gate { max-width: 460px; }
+#gate .row { display: flex; gap: 8px; margin-top: 10px; }
+#gate input { flex: 1; border: 1px solid #CDD2DA; border-radius: 10px; padding: 10px 12px; text-transform: uppercase; }
+@media (max-width: 640px) {
+  .grid2 { grid-template-columns: 1fr; }
+  .pages { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .count { margin-left: 0; width: 100%; }
+  .step > h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/redworm/"><span class="dot"></span>Redworm <span class="beta">Beta</span></a>
+  <a class="back" href="/redworm/make.html">← Make a book instead</a>
+</header>
+<main>
+  <section class="hero">
+    <h1>Make a colouring book</h1>
+    <p>Mandalas, patterns and your own photos turned into outlines, laid out as a printed book with a cover and every file Amazon KDP asks for. Free while in beta.</p>
+  </section>
+
+  <section class="step" id="gate-step">
+    <div id="gate" class="hidden">
+      <p>Redworm is in private beta. Enter your access code — <b>each code works for one day</b> from the moment you first use it.</p>
+      <div class="row"><input id="code" placeholder="RP-XXXX-XXXX" autocomplete="off" aria-label="Access code"><button class="btn red" id="code-go">Enter</button></div>
+      <p class="msg" id="code-msg"></p>
+    </div>
+    <div id="waking" class="load"><div class="track"><div class="ball"></div></div><p class="msg">Waking Redworm up (up to a minute the first time)…</p></div>
+  </section>
+
+  <div id="app" class="hidden">
+    <section class="step">
+      <h2>Who is it for?</h2>
+      <p class="sub">This sets how big the shapes are and how thick the lines.</p>
+      <div class="seg" id="aud" role="group" aria-label="Who is it for">
+        <button type="button" data-aud="kids">Kids<small>Big shapes, thick lines</small></button>
+        <button type="button" data-aud="adults" class="on">Adults<small>Fine, detailed patterns</small></button>
+      </div>
+    </section>
+
+    <section class="step">
+      <h2>Your pages</h2>
+      <p class="sub">Every pattern is drawn new for your book: it's yours to publish and sell. Click ↻ on any page for a different drawing.</p>
+      <div class="tools">
+        <button class="btn ghost small" data-add="mandala">+ 5 mandalas</button>
+        <button class="btn ghost small" data-add="geometric">+ 5 patterns</button>
+        <button class="btn ghost small" id="add-photo">+ Your photo</button>
+        <button class="btn ghost small" id="add-stock">+ Search photos</button>
+        <input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
+        <span class="count" id="count"></span>
+      </div>
+      <p class="msg bad" id="page-msg" role="alert"></p>
+      <div class="pages" id="pages"><div class="empty">Add mandalas, patterns or photos to begin.</div></div>
+      <p class="note">Photos work best with a clear subject and a plain background (a person, a pet with a smooth coat, a building, a cup). Busy, furry or grassy photos give busy pages.</p>
+      <label class="check"><input type="checkbox" id="one-sided" checked><span><b>Print each drawing on its own sheet</b> (recommended). The back of every drawing becomes a "test your colours" page, so markers never spoil the next drawing.</span></label>
+    </section>
+
+    <section class="step">
+      <h2>Cover and details</h2>
+      <p class="sub">The cover shows the drawing marked ★ (click ★ on any page to choose).</p>
+      <div class="grid2">
+        <label class="f">Title<input id="title" maxlength="120" placeholder="Calm Mandalas"></label>
+        <label class="f">Subtitle (optional)<input id="subtitle" maxlength="160" placeholder="A colouring book for slow evenings"></label>
+        <label class="f">Author or illustrator<input id="author" maxlength="120"></label>
+        <label class="f">Publisher (leave empty if self-published)<input id="publisher" maxlength="120"></label>
+        <label class="f">Page size<select id="trim">
+          <option value="8.5x11">8.5 × 11 in (most popular on Amazon)</option>
+          <option value="8x10">8 × 10 in</option>
+          <option value="a4">A4 (printers in India and Europe)</option>
+        </select></label>
+        <div class="f"><b style="font-size:13.5px">Cover colours</b><div class="swatches" id="swatches"></div></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <h2>Make it</h2>
+      <label class="check"><input type="checkbox" id="rights"><span>I have the right to use every photo in this book (pattern pages are original and need nothing).</span></label>
+      <p class="small soon note">Request to be featured on Red Panda Publications <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span> · Type what to draw (AI pages) <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span></p>
+      <button class="btn red" id="make">Make my colouring book</button>
+      <div id="making" class="load hidden"><div class="track"><div class="ball"></div></div><p class="msg" id="make-msg"></p></div>
+      <div id="done" class="done hidden">
+        <img id="done-cover" alt="Your cover">
+        <div>
+          <h2>Your colouring book is ready</h2>
+          <p id="done-sum"></p>
+          <p><a class="btn red" id="dl" href="#">Download all files (.zip)</a></p>
+          <p class="note">Inside: the book to look through, print-ready files for a printer, everything for Amazon KDP, cover pictures, mockups and each drawing on its own.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<dialog id="stock">
+  <div class="dlg-h"><input id="q" placeholder="Search free photos: elephant, temple, flowers…" aria-label="Search photos"><button class="btn small" id="q-go">Search</button><button class="btn ghost small" id="q-close">Close</button></div>
+  <div class="results" id="results"></div>
+  <div class="dlg-f"><span>Photos from Unsplash: free to use and change, no credit needed in the book.</span><span id="q-msg"></span></div>
+</dialog>
+
+<script src="config.js"></script>
+<script>
+const API = window.RW_API;
+const $ = (id) => document.getElementById(id);
+const PAL = { ochre:['#F1B42F','#1C1C1C'], sage:['#C8D9C9','#1E3A2A'], blush:['#FCDBD2','#7A1530'], ultramarine:['#0D4799','#FFFFFF'], vermilion:['#F0542C','#111111'], plum:['#55274D','#FCE47B'], paper:['#FAF5E9','#1B1B1B'], concrete:['#D5D6D5','#111111'] };
+let PASS = null; try { PASS = localStorage.getItem('rw_pass'); } catch (e) {}
+let C = null;              // the colouring session from the engine
+let pages = [];            // [{kind, seed, photo?}]
+let audience = 'adults', colours = 'ochre', coverPage = 0, minOne = 10, minTwo = 20, maxPhotos = 30;
+
+function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
+async function call(path, opts = {}) {
+  if (PASS) opts.headers = Object.assign({ Authorization: 'Bearer ' + PASS }, opts.headers || {});
+  const r = await fetch(API + path, opts);
+  if (r.status === 401) { setPass(null); showGate(true); throw new Error('Please enter your access code.'); }
+  if (!r.ok) { let m = 'Something went wrong. Please try again.'; try { m = (await r.json()).detail || m; } catch (e) {} throw new Error(typeof m === 'string' ? m : 'Please check your details.'); }
+  return r;
+}
+function showGate(on) { $('waking').classList.add('hidden'); $('gate-step').classList.toggle('hidden', !on); $('gate').classList.toggle('hidden', !on); $('app').classList.toggle('hidden', on); }
+async function begin() {
+  try {
+    const d = await (await call('/api/colouring', { method: 'POST' })).json();
+    C = d.id; minOne = d.min_drawings.one_sided; minTwo = d.min_drawings.two_sided; maxPhotos = d.max_photos;
+    if (!d.stock_photos) { $('add-stock').disabled = true; $('add-stock').title = 'Photo search is not switched on yet'; }
+    showGate(false); render();
+  } catch (e) { if (PASS) { $('waking').querySelector('.msg').textContent = e.message; } }
+}
+$('code-go').onclick = async () => {
+  const code = $('code').value.trim().toUpperCase();
+  try {
+    const d = await (await call('/api/access/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })).json();
+    setPass(d.pass); $('code-msg').textContent = ''; begin();
+  } catch (e) { $('code-msg').textContent = e.message; $('code-msg').className = 'msg bad'; }
+};
+if (PASS) begin(); else showGate(true);
+
+// ── Pages ───────────────────────────────────────────────────────────────────
+const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+const imgFor = (p) => p.kind === 'photo'
+  ? `${API}/api/colouring/${C}/photos/${p.photo}?audience=${audience}`
+  : `${API}/api/colouring/${C}/pattern?kind=${p.kind}&seed=${p.seed}&audience=${audience}`;
+function render() {
+  const box = $('pages');
+  const nPhotos = new Set(pages.filter(p => p.kind === 'photo').map(p => p.photo)).size;
+  if (!pages.length) box.innerHTML = '<div class="empty">Add mandalas, patterns or photos to begin.</div>';
+  else box.innerHTML = pages.map((p, i) => `
+    <div class="pg">
+      ${i === coverPage ? '<span class="star">★ Cover</span>' : ''}
+      <div class="art"><img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}"></div>
+      <div class="bar"><span class="n">${i + 1}</span>
+        <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" onclick="coverPage=${i};render()">★</button>
+        ${p.kind !== 'photo' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
+        <button title="Move earlier" aria-label="Move page ${i + 1} earlier" onclick="move(${i},-1)" ${i ? '' : 'disabled'}>←</button>
+        <button title="Move later" aria-label="Move page ${i + 1} later" onclick="move(${i},1)" ${i < pages.length - 1 ? '' : 'disabled'}>→</button>
+        <button title="Remove" aria-label="Remove page ${i + 1}" onclick="removePage(${i})">✕</button>
+      </div>
+    </div>`).join('');
+  const one = $('one-sided').checked, min = one ? minOne : minTwo;
+  const total = 4 + pages.length * (one ? 2 : 1);
+  const c = $('count');
+  c.className = 'count' + (pages.length < min ? ' short' : '');
+  c.innerHTML = `<b>${pages.length}</b> drawings · ${total + (total % 2)} pages` + (pages.length < min ? ` · Amazon needs at least ${min} drawings` : '') + (nPhotos ? ` · ${nPhotos}/${maxPhotos} photos` : '');
+}
+function move(i, d) { const [p] = pages.splice(i, 1); pages.splice(i + d, 0, p); if (coverPage === i) coverPage = i + d; else if (coverPage === i + d) coverPage = i; render(); }
+function removePage(i) {
+  const [p] = pages.splice(i, 1);
+  if (p.kind === 'photo' && !pages.some(q => q.photo === p.photo)) call(`/api/colouring/${C}/photos/${p.photo}`, { method: 'DELETE' }).catch(() => {});
+  if (coverPage >= pages.length) coverPage = Math.max(0, pages.length - 1); render();
+}
+document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+  for (let k = 0; k < 5 && pages.length < 60; k++) pages.push({ kind: b.dataset.add, seed: newSeed() });
+  render();
+});
+$('one-sided').onchange = render;
+document.querySelectorAll('#aud button').forEach(b => b.onclick = () => {
+  audience = b.dataset.aud;
+  document.querySelectorAll('#aud button').forEach(x => x.classList.toggle('on', x === b));
+  render();
+});
+$('add-photo').onclick = () => $('file').click();
+$('file').onchange = async () => {
+  for (const f of $('file').files) {
+    const fd = new FormData(); fd.append('file', f);
+    $('page-msg').textContent = '';
+    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); }
+    catch (e) { $('page-msg').textContent = `${f.name}: ${e.message}`; }
+  }
+  $('file').value = '';
+};
+function alertMsg(m) { $('make-msg').textContent = m; $('make-msg').className = 'msg bad'; $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.add('hidden'); }
+
+// ── Photo search (Unsplash) ─────────────────────────────────────────────────
+$('add-stock').onclick = () => { $('stock').showModal(); $('q').focus(); };
+$('q-close').onclick = () => $('stock').close();
+$('q').onkeydown = (e) => { if (e.key === 'Enter') $('q-go').click(); };
+$('q-go').onclick = async () => {
+  const q = $('q').value.trim(); if (q.length < 2) return;
+  $('q-msg').textContent = 'Searching…';
+  try {
+    const d = await (await call(`/api/colouring/${C}/stock?q=${encodeURIComponent(q)}`)).json();
+    $('results').innerHTML = d.results.map(r => `<figure><button type="button" data-id="${r.id}" title="${(r.alt || '').replace(/"/g, '&quot;')}"><img src="${r.thumb}" alt=""></button><figcaption><a href="${r.author_url}" target="_blank" rel="noopener">${r.author.replace(/</g, '&lt;')}</a> · <a href="${r.link}" target="_blank" rel="noopener">Unsplash</a></figcaption></figure>`).join('') || '<p>No photos found.</p>';
+    $('q-msg').textContent = 'Click a photo to add it as a page.';
+  } catch (e) { $('q-msg').textContent = e.message; }
+};
+$('results').onclick = async (e) => {
+  const b = e.target.closest('button[data-id]'); if (!b) return;
+  b.style.opacity = .4; $('q-msg').textContent = 'Adding…';
+  try {
+    const d = await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json();
+    pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); $('q-msg').textContent = 'Added. Pick another, or close.';
+  } catch (err) { $('q-msg').textContent = err.message; }
+  b.style.opacity = 1;
+};
+
+// ── Cover colours ───────────────────────────────────────────────────────────
+$('swatches').innerHTML = Object.entries(PAL).map(([k, [bg, fg]]) => `<button type="button" class="sw${k === colours ? ' on' : ''}" data-c="${k}" style="background:${bg}" aria-label="${k} cover"><i style="background:${fg}"></i></button>`).join('');
+$('swatches').onclick = (e) => { const b = e.target.closest('.sw'); if (!b) return; colours = b.dataset.c; document.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
+
+// ── Make ────────────────────────────────────────────────────────────────────
+$('make').onclick = async () => {
+  const body = {
+    title: $('title').value.trim(), subtitle: $('subtitle').value.trim(), author: $('author').value.trim(),
+    publisher: $('publisher').value.trim(), audience, trim: $('trim').value, one_sided: $('one-sided').checked,
+    colours, cover_page: coverPage, pages: pages.map(p => p.kind === 'photo' ? { kind: 'photo', photo: p.photo } : { kind: p.kind, seed: p.seed }),
+    rights_confirmed: $('rights').checked,
+  };
+  const msg = $('make-msg'); msg.className = 'msg';
+  if (!body.title || !body.author) return alertMsg('Please add a title and an author.');
+  if (!body.rights_confirmed) return alertMsg('Please tick the box to confirm you may use the photos.');
+  $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.remove('hidden');
+  $('done').classList.add('hidden'); $('make').disabled = true; msg.textContent = 'Starting…';
+  try {
+    await call(`/api/colouring/${C}/make`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let s;
+    for (;;) {
+      await new Promise(r => setTimeout(r, 2000));
+      s = await (await call(`/api/colouring/${C}`)).json();
+      msg.textContent = s.step || 'Working…';
+      if (s.state === 'done' || s.state === 'failed') break;
+    }
+    if (s.state === 'failed') throw new Error(s.error);
+    $('making').classList.add('hidden');
+    $('done-cover').src = `${API}/api/colouring/${C}/cover?v=${Date.now()}`;
+    $('done-sum').textContent = `${pages.length} drawings, ${s.pages} pages, ready for a printer and Amazon KDP.`;
+    $('dl').href = `${API}/api/colouring/${C}/download`;
+    $('done').classList.remove('hidden');
+  } catch (e) { alertMsg(e.message); }
+  $('make').disabled = false;
+};
+</script>
+</body>
+</html>
