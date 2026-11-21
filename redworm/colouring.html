@@ -170,7 +170,7 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
 
     <section class="step">
       <h2>Make it</h2>
-      <label class="check"><input type="checkbox" id="rights"><span>I have the right to use every photo in this book (pattern pages are original and need nothing).</span></label>
+      <label class="check"><input type="checkbox" id="rights"><span>I have the right to use every photo in this book. <span class="note">(Only needed if you added photos: patterns and AI pages are original.)</span></span></label>
       <p class="small soon note">Request to be featured on Red Panda Publications <span class="beta" style="background:var(--paper);color:var(--soft)">Coming soon</span></p>
       <button class="btn red" id="make">Make my colouring book</button>
       <div id="making" class="load hidden"><div class="track"><div class="ball"></div></div><p class="msg" id="make-msg"></p></div>
@@ -204,11 +204,23 @@ let pages = [];            // [{kind, seed, photo?}]
 let audience = 'adults', colours = 'ochre', coverPage = 0, minOne = 10, minTwo = 20, maxPhotos = 30;
 
 function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
-async function call(path, opts = {}) {
+async function call(path, opts = {}, retried = false) {
   if (PASS) opts.headers = Object.assign({ Authorization: 'Bearer ' + PASS }, opts.headers || {});
-  const r = await fetch(API + path, opts);
+  let r;
+  try { r = await fetch(API + path, opts); }
+  catch (e) { throw new Error('Redworm could not be reached. Check your connection and try again.'); }
   if (r.status === 401) { setPass(null); showGate(true); throw new Error('Please enter your access code.'); }
-  if (!r.ok) { let m = 'Something went wrong. Please try again.'; try { m = (await r.json()).detail || m; } catch (e) {} throw new Error(typeof m === 'string' ? m : 'Please check your details.'); }
+  if (!r.ok) {
+    let m = 'Something went wrong. Please try again.';
+    try { const d = (await r.json()).detail; m = typeof d === 'string' ? d : Array.isArray(d) && d[0] && d[0].msg ? 'Please check your details: ' + d[0].msg.replace(/^Value error, /, '') : m; } catch (e) {}
+    // The engine restarted (an update, or 30 idle minutes) and forgot this book: start a new
+    // session, send the photos and drawings again from this browser, then repeat the request.
+    if (r.status === 404 && /expired/i.test(m) && C && path.startsWith('/api/colouring/') && !retried) {
+      await recover();
+      return call(rewrite(path), opts, true);
+    }
+    throw new Error(m);
+  }
   return r;
 }
 function showGate(on) { $('waking').classList.add('hidden'); $('gate-step').classList.toggle('hidden', !on); $('gate').classList.toggle('hidden', !on); $('app').classList.toggle('hidden', on); }
@@ -223,12 +235,61 @@ async function begin() {
 }
 $('code-go').onclick = async () => {
   const code = $('code').value.trim().toUpperCase();
+  if (!code) { $('code-msg').textContent = 'Please type your access code (it looks like RP-XXXX-XXXX).'; $('code-msg').className = 'msg bad'; return; }
   try {
     const d = await (await call('/api/access/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })).json();
     setPass(d.pass); $('code-msg').textContent = ''; begin();
   } catch (e) { $('code-msg').textContent = e.message; $('code-msg').className = 'msg bad'; }
 };
 if (PASS) begin(); else showGate(true);
+
+// ── Keeping the book alive on the engine ─────────────────────────────────────
+const photoSrc = {}, drawBlob = {}, alias = {};   // what's needed to send photos again
+let recovering = null, oldC = {}, downloaded = false;
+const cur = (id) => { while (alias[id]) id = alias[id]; return id; };
+function rewrite(path) {
+  for (const [o, n] of Object.entries(oldC)) path = path.split(o).join(n);
+  return path.replace(/\b(ph|ai)[0-9a-f]{10}\b/g, (id) => cur(id));
+}
+function recover() {
+  if (recovering) return recovering;
+  recovering = (async () => {
+    const was = C;
+    const d = await (await call('/api/colouring', { method: 'POST' }, true)).json();
+    C = d.id; oldC[was] = C;
+    Object.keys(oldC).forEach(k => { if (oldC[k] === was) oldC[k] = C; });
+    const lostAi = pages.filter(p => p.kind === 'ai').length;
+    pages = pages.filter(p => p.kind !== 'ai');
+    for (const pid of [...new Set(pages.filter(p => p.kind === 'photo').map(p => p.photo))]) {
+      const src = photoSrc[pid];
+      let nid = null;
+      try {
+        if (src && src.file) { const fd = new FormData(); fd.append('file', src.file); nid = (await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd }, true)).json()).id; }
+        else if (src && src.stock) nid = (await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: src.stock }) }, true)).json()).id;
+      } catch (e) {}
+      if (!nid) { pages = pages.filter(p => p.photo !== pid); continue; }
+      alias[pid] = nid; photoSrc[nid] = src; drawn[nid] = {}; failed[nid] = {};
+      for (const [aud, blob] of Object.entries(drawBlob[pid] || {})) {
+        const fd = new FormData(); fd.append('file', blob, 'drawing.png');
+        try { await call(`/api/colouring/${C}/photos/${nid}/drawing?audience=${aud}`, { method: 'POST', body: fd }, true); drawn[nid][aud] = Date.now(); } catch (e) {}
+      }
+      drawBlob[nid] = drawBlob[pid] || {};
+      pages.forEach(p => { if (p.photo === pid) p.photo = nid; });
+      if (!drawn[nid][audience]) queueDraw(nid, audience);
+    }
+    if (coverPage >= pages.length) coverPage = 0;
+    $('done').classList.add('hidden');
+    $('page-msg').className = 'msg ok';
+    $('page-msg').textContent = 'Redworm restarted, so your pages were sent to it again.' + (lostAi ? ` ${lostAi} AI page${lostAi > 1 ? 's' : ''} could not be kept: please draw ${lostAi > 1 ? 'them' : 'it'} again.` : '');
+    render();
+  })().finally(() => { recovering = null; });
+  return recovering;
+}
+// A light check every 4 minutes while the page is open keeps the book (and the free server) awake.
+setInterval(() => { if (C && !document.hidden) call(`/api/colouring/${C}`).catch(() => {}); }, 240000);
+let imgCheck = 0;
+function imgErr() { if (Date.now() - imgCheck > 5000 && C) { imgCheck = Date.now(); call(`/api/colouring/${C}`).catch(() => {}); } }
+window.addEventListener('beforeunload', (e) => { if (pages.length && !downloaded) { e.preventDefault(); e.returnValue = ''; } });
 
 // ── Pages ───────────────────────────────────────────────────────────────────
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
@@ -245,7 +306,7 @@ function render() {
       ${i === coverPage ? '<span class="star">★ Cover</span>' : ''}
       <div class="art">${p.kind === 'photo' && !(drawn[p.photo] || {})[audience]
         ? `<p class="drawing">${(failed[p.photo] || {})[audience] ? `Couldn't draw this photo.<br><button class="btn ghost small" onclick="queueDraw('${p.photo}','${audience}')">Try again</button>` : 'Drawing this photo…'}</p>`
-        : `<img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}">`}</div>
+        : `<img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}" onerror="imgErr()">`}</div>
       <div class="bar"><span class="n">${i + 1}</span>
         <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" onclick="coverPage=${i};render()">★</button>
         ${p.kind !== 'photo' && p.kind !== 'ai' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
@@ -265,9 +326,11 @@ function removePage(i) {
   const [p] = pages.splice(i, 1);
   if (p.kind === 'photo' && !pages.some(q => q.photo === p.photo)) call(`/api/colouring/${C}/photos/${p.photo}`, { method: 'DELETE' }).catch(() => {});
   if (p.kind === 'ai') call(`/api/colouring/${C}/ai/${p.photo}`, { method: 'DELETE' }).catch(() => {});
+  if (i < coverPage) coverPage--;   // the cover stays on the same drawing
   if (coverPage >= pages.length) coverPage = Math.max(0, pages.length - 1); render();
 }
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
+  if (pages.length >= 60) { $('page-msg').className = 'msg bad'; $('page-msg').textContent = 'A book can have up to 60 drawings. Remove some to add others.'; return; }
   for (let k = 0; k < 5 && pages.length < 60; k++) pages.push({ kind: b.dataset.add, seed: newSeed() });
   render();
 });
@@ -283,7 +346,7 @@ $('file').onchange = async () => {
   for (const f of $('file').files) {
     const fd = new FormData(); fd.append('file', f);
     $('page-msg').textContent = '';
-    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); }
+    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); photoSrc[d.id] = { file: f }; pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); }
     catch (e) { $('page-msg').textContent = `${f.name}: ${e.message}`; }
   }
   $('file').value = '';
@@ -324,15 +387,17 @@ async function drawPhoto(pid, aud) {
   for (let i = 0; i < n; i++) { const v = Math.max(0, Math.min(255, Math.round(y[i] * 255))); img.data[4 * i] = img.data[4 * i + 1] = img.data[4 * i + 2] = v; img.data[4 * i + 3] = 255; }
   cx.putImageData(img, 0, 0);
   const png = await new Promise(r => cv.toBlob(r, 'image/png'));
+  (drawBlob[pid] = drawBlob[pid] || {})[aud] = png;
   const fd = new FormData(); fd.append('file', png, 'drawing.png');
   await call(`/api/colouring/${C}/photos/${pid}/drawing?audience=${aud}`, { method: 'POST', body: fd });
 }
 function queueDraw(pid, aud) {
   (failed[pid] = failed[pid] || {})[aud] = false; render();
   drawChain = drawChain.then(async () => {
+    pid = cur(pid);
     if (!pages.some(p => p.photo === pid)) return;   // removed meanwhile
-    try { await drawPhoto(pid, aud); (drawn[pid] = drawn[pid] || {})[aud] = Date.now(); }
-    catch (e) { failed[pid][aud] = true; $('page-msg').className = 'msg bad'; $('page-msg').textContent = e.message || 'A photo could not be drawn.'; }
+    try { await drawPhoto(pid, aud); pid = cur(pid); (drawn[pid] = drawn[pid] || {})[aud] = Date.now(); }
+    catch (e) { pid = cur(pid); (failed[pid] = failed[pid] || {})[aud] = true; $('page-msg').className = 'msg bad'; $('page-msg').textContent = e.message || 'A photo could not be drawn.'; }
     render();
   });
 }
@@ -360,23 +425,29 @@ $('topic').onkeydown = (e) => { if (e.key === 'Enter') document.querySelector('[
 $('add-stock').onclick = () => { $('stock').showModal(); $('q').focus(); };
 $('q-close').onclick = () => $('stock').close();
 $('q').onkeydown = (e) => { if (e.key === 'Enter') $('q-go').click(); };
+let searchNo = 0;
 $('q-go').onclick = async () => {
-  const q = $('q').value.trim(); if (q.length < 2) return;
-  $('q-msg').textContent = 'Searching…';
+  const q = $('q').value.trim();
+  if (q.length < 2) { $('q-msg').textContent = 'Type at least two letters to search.'; return; }
+  const mine = ++searchNo;
+  $('results').innerHTML = ''; $('q-msg').textContent = `Searching for "${q}"…`; $('q-go').disabled = true;
   try {
     const d = await (await call(`/api/colouring/${C}/stock?q=${encodeURIComponent(q)}`)).json();
+    if (mine !== searchNo) return;   // a newer search has started
     $('results').innerHTML = d.results.map(r => `<figure><button type="button" data-id="${r.id}" title="${(r.alt || '').replace(/"/g, '&quot;')}"><img src="${r.thumb}" alt=""></button><figcaption><a href="${r.author_url}" target="_blank" rel="noopener">${r.author.replace(/</g, '&lt;')}</a> · <a href="${r.link}" target="_blank" rel="noopener">Unsplash</a></figcaption></figure>`).join('') || '<p>No photos found.</p>';
     $('q-msg').textContent = 'Click a photo to add it as a page.';
-  } catch (e) { $('q-msg').textContent = e.message; }
+  } catch (e) { if (mine === searchNo) { $('results').innerHTML = ''; $('q-msg').textContent = e.message; } }
+  finally { if (mine === searchNo) $('q-go').disabled = false; }
 };
 $('results').onclick = async (e) => {
-  const b = e.target.closest('button[data-id]'); if (!b) return;
-  b.style.opacity = .4; $('q-msg').textContent = 'Adding…';
+  const b = e.target.closest('button[data-id]'); if (!b || b.disabled) return;
+  b.disabled = true; b.style.opacity = .4; $('q-msg').textContent = 'Adding…';
   try {
     const d = await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json();
+    photoSrc[d.id] = { stock: b.dataset.id };
     pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); $('q-msg').textContent = 'Added. Pick another, or close.';
-  } catch (err) { $('q-msg').textContent = err.message; }
-  b.style.opacity = 1;
+    b.title = 'Added to your book';
+  } catch (err) { $('q-msg').textContent = err.message; b.disabled = false; b.style.opacity = 1; }
 };
 
 // ── Cover colours ───────────────────────────────────────────────────────────
@@ -393,7 +464,7 @@ $('make').onclick = async () => {
   };
   const msg = $('make-msg'); msg.className = 'msg';
   if (!body.title || !body.author) return alertMsg('Please add a title and an author.');
-  if (!body.rights_confirmed) return alertMsg('Please tick the box to confirm you may use the photos.');
+  if (pages.some(p => p.kind === 'photo') && !body.rights_confirmed) return alertMsg('Please tick the box to confirm you may use the photos.');
   if (pages.some(p => p.kind === 'photo' && !(drawn[p.photo] || {})[audience])) return alertMsg('Some photos are still being drawn. Please wait a moment.');
   $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.remove('hidden');
   $('done').classList.add('hidden'); $('make').disabled = true; msg.textContent = 'Starting…';
@@ -407,10 +478,12 @@ $('make').onclick = async () => {
       if (s.state === 'done' || s.state === 'failed') break;
     }
     if (s.state === 'failed') throw new Error(s.error);
+    if (s.state === 'ready') throw new Error('Redworm restarted while making your book. Your pages are safe: please press Make again.');
     $('making').classList.add('hidden');
     $('done-cover').src = `${API}/api/colouring/${C}/cover?v=${Date.now()}`;
     $('done-sum').textContent = `${pages.length} drawings, ${s.pages} pages, ready for a printer and Amazon KDP.`;
     $('dl').href = `${API}/api/colouring/${C}/download`;
+    $('dl').onclick = () => { downloaded = true; };
     $('done').classList.remove('hidden');
   } catch (e) { alertMsg(e.message); }
   $('make').disabled = false;
