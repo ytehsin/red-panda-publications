@@ -55,6 +55,31 @@ main { max-width: 980px; margin: 0 auto; padding: 4px 24px 90px; }
 .msg.ok { color: var(--soft); font-weight: 400; }
 .pg .drawing { color: var(--soft); font-size: 13px; text-align: center; margin: 0; }
 .pg .drawing .btn { margin-top: 8px; }
+.pg { cursor: grab; transition: box-shadow .15s, transform .15s; }
+.pg:hover { box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+.pg.dragging { opacity: .35; }
+.pg.over { outline: 2px dashed var(--red); outline-offset: 3px; }
+.pg .art { cursor: zoom-in; }
+.pages.drop { outline: 2px dashed var(--red); outline-offset: 8px; border-radius: 12px; background: var(--red-tint); }
+.results button { position: relative; }
+.results button.on { outline: 3px solid var(--red); outline-offset: -3px; }
+.results button.on::after { content: "✓"; position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--red); color: #fff; font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+.results button.busy img { opacity: .4; }
+.results button.busy::after { content: "…"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; font-weight: 700; }
+.more { grid-column: 1 / -1; justify-self: center; }
+.dlg-f .right { display: flex; align-items: center; gap: 10px; }
+#view { width: min(860px, 96vw); }
+#view .vbody { display: grid; place-items: center; padding: 14px; background: var(--paper); }
+#view .vbody img { max-width: 100%; max-height: 72vh; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.1); }
+#view .vbar { display: flex; gap: 8px; align-items: center; padding: 12px 16px; flex-wrap: wrap; }
+#view .vbar .n { margin-right: auto; font-weight: 600; }
+.toast { position: fixed; left: 50%; bottom: 86px; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 999px; padding: 10px 12px 10px 18px; display: flex; gap: 12px; align-items: center; font-size: 14px; z-index: 20; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.toast button { background: #fff; color: var(--ink); border: 0; border-radius: 999px; padding: 6px 12px; font-weight: 600; cursor: pointer; }
+.sumbar { position: sticky; bottom: 0; z-index: 10; background: rgba(255,255,255,.96); backdrop-filter: blur(6px); border-top: 1px solid var(--line); padding: 10px 24px; display: flex; align-items: center; gap: 14px; justify-content: center; }
+.sumbar .s { font-size: 14px; color: var(--soft); }
+.sumbar .s b { color: var(--ink); }
+.sumbar .ready { color: var(--green); font-weight: 600; }
+.sumbar .short { color: var(--red); font-weight: 600; }
 .empty { border: 1px dashed #CDD2DA; border-radius: 12px; padding: 30px; text-align: center; color: var(--soft); }
 .note { font-size: 13.5px; color: var(--soft); margin: 12px 0 0; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -146,6 +171,7 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
         <span class="count" id="count"></span>
       </div>
       <p class="msg bad" id="page-msg" role="alert"></p>
+      <p class="note" style="margin:0 0 10px">Tap a page to see it large. Drag pages to change their order, or drop photos here to add them.</p>
       <div class="pages" id="pages"><div class="empty">Add mandalas, patterns or photos to begin.</div></div>
       <p class="note">Photos are drawn by a line-art model right here in your browser (the first photo takes a little longer while the 30 MB drawing tool loads). A clear subject on a plain background gives the cleanest page.</p>
       <label class="check"><input type="checkbox" id="one-sided" checked><span><b>Print each drawing on its own sheet</b> (recommended). The back of every drawing becomes a "test your colours" page, so markers never spoil the next drawing.</span></label>
@@ -186,11 +212,25 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
     </section>
   </div>
 </main>
+<div class="sumbar hidden" id="sumbar"><span class="s" id="sum"></span><button class="btn red small" id="sum-go">Make my colouring book</button></div>
+
+<dialog id="view" aria-label="Page preview">
+  <div class="vbody"><img id="v-img" alt=""></div>
+  <div class="vbar"><span class="n" id="v-n"></span>
+    <button class="btn ghost small" id="v-prev" aria-label="Previous page">←</button>
+    <button class="btn ghost small" id="v-next" aria-label="Next page">→</button>
+    <button class="btn ghost small" id="v-cover">★ Use on cover</button>
+    <button class="btn ghost small" id="v-new">↻ Different drawing</button>
+    <button class="btn ghost small" id="v-del">Remove</button>
+    <button class="btn small" id="v-close">Close</button>
+  </div>
+</dialog>
+<div class="toast hidden" id="toast" role="status"><span id="toast-t"></span><button id="toast-undo">Undo</button></div>
 
 <dialog id="stock">
   <div class="dlg-h"><input id="q" placeholder="Search free photos: elephant, temple, flowers…" aria-label="Search photos"><button class="btn small" id="q-go">Search</button><button class="btn ghost small" id="q-close">Close</button></div>
   <div class="results" id="results"></div>
-  <div class="dlg-f"><span>Photos from Unsplash: free to use and change, no credit needed in the book.</span><span id="q-msg"></span></div>
+  <div class="dlg-f"><span>Photos from Unsplash: free to use and change, no credit needed in the book. Tap a photo to add it, tap again to remove it.</span><span class="right"><span id="q-msg"></span><button class="btn red small" id="q-done">Done</button></span></div>
 </dialog>
 
 <script src="config.js"></script>
@@ -201,7 +241,7 @@ const PAL = { ochre:['#F1B42F','#1C1C1C'], sage:['#C8D9C9','#1E3A2A'], blush:['#
 let PASS = null; try { PASS = localStorage.getItem('rw_pass'); } catch (e) {}
 let C = null;              // the colouring session from the engine
 let pages = [];            // [{kind, seed, photo?}]
-let audience = 'adults', colours = 'ochre', coverPage = 0, minOne = 10, minTwo = 20, maxPhotos = 30;
+let audience = 'adults', colours = 'ochre', coverUid = null, uidNo = 0, minOne = 10, minTwo = 20, maxPhotos = 30;
 
 function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
 async function call(path, opts = {}, retried = false) {
@@ -230,6 +270,8 @@ async function begin() {
     C = d.id; minOne = d.min_drawings.one_sided; minTwo = d.min_drawings.two_sided; maxPhotos = d.max_photos;
     if (!d.ai_pages) { $('ai-row').classList.add('off'); $('ai-soon').classList.remove('hidden'); $('topic').disabled = true; document.querySelectorAll('[data-draw]').forEach(b => b.disabled = true); }
     if (!d.stock_photos) { $('add-stock').disabled = true; $('add-stock').title = 'Photo search is not switched on yet'; }
+    restore();
+    document.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x.dataset.c === colours));
     showGate(false); render();
   } catch (e) { if (PASS) { $('waking').querySelector('.msg').textContent = e.message; } }
 }
@@ -258,6 +300,7 @@ function recover() {
     const d = await (await call('/api/colouring', { method: 'POST' }, true)).json();
     C = d.id; oldC[was] = C;
     Object.keys(oldC).forEach(k => { if (oldC[k] === was) oldC[k] = C; });
+    Object.keys(picked).forEach(k => delete picked[k]);
     const lostAi = pages.filter(p => p.kind === 'ai').length;
     pages = pages.filter(p => p.kind !== 'ai');
     for (const pid of [...new Set(pages.filter(p => p.kind === 'photo').map(p => p.photo))]) {
@@ -277,7 +320,6 @@ function recover() {
       pages.forEach(p => { if (p.photo === pid) p.photo = nid; });
       if (!drawn[nid][audience]) queueDraw(nid, audience);
     }
-    if (coverPage >= pages.length) coverPage = 0;
     $('done').classList.add('hidden');
     $('page-msg').className = 'msg ok';
     $('page-msg').textContent = 'Redworm restarted, so your pages were sent to it again.' + (lostAi ? ` ${lostAi} AI page${lostAi > 1 ? 's' : ''} could not be kept: please draw ${lostAi > 1 ? 'them' : 'it'} again.` : '');
@@ -293,45 +335,127 @@ window.addEventListener('beforeunload', (e) => { if (pages.length && !downloaded
 
 // ── Pages ───────────────────────────────────────────────────────────────────
 const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+const mk = (o) => Object.assign({ uid: ++uidNo }, o);   // every page gets a lasting id
+const coverIndex = () => Math.max(0, pages.findIndex(p => p.uid === coverUid));
 const imgFor = (p) => p.kind === 'ai' ? `${API}/api/colouring/${C}/ai/${p.photo}`
   : p.kind === 'photo'
   ? `${API}/api/colouring/${C}/photos/${p.photo}?audience=${audience}&v=${(drawn[p.photo] || {})[audience] || 0}`
   : `${API}/api/colouring/${C}/pattern?kind=${p.kind}&seed=${p.seed}&audience=${audience}`;
 function render() {
   const box = $('pages');
+  if (!pages.some(p => p.uid === coverUid)) coverUid = pages.length ? pages[0].uid : null;
   const nPhotos = new Set(pages.filter(p => p.kind === 'photo').map(p => p.photo)).size;
-  if (!pages.length) box.innerHTML = '<div class="empty">Add mandalas, patterns or photos to begin.</div>';
+  if (!pages.length) box.innerHTML = '<div class="empty">Add mandalas, patterns or photos to begin, or drop photos here.</div>';
   else box.innerHTML = pages.map((p, i) => `
-    <div class="pg">
-      ${i === coverPage ? '<span class="star">★ Cover</span>' : ''}
-      <div class="art">${p.kind === 'photo' && !(drawn[p.photo] || {})[audience]
-        ? `<p class="drawing">${(failed[p.photo] || {})[audience] ? `Couldn't draw this photo.<br><button class="btn ghost small" onclick="queueDraw('${p.photo}','${audience}')">Try again</button>` : 'Drawing this photo…'}</p>`
-        : `<img loading="lazy" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}" onerror="imgErr()">`}</div>
+    <div class="pg" draggable="true" data-i="${i}">
+      ${p.uid === coverUid ? '<span class="star">★ Cover</span>' : ''}
+      <div class="art" onclick="openView(${i})" title="See it large">${p.kind === 'photo' && !(drawn[p.photo] || {})[audience]
+        ? `<p class="drawing">${(failed[p.photo] || {})[audience] ? `Couldn't draw this photo.<br><button class="btn ghost small" onclick="event.stopPropagation();queueDraw('${p.photo}','${audience}')">Try again</button>` : 'Drawing this photo…'}</p>`
+        : `<img loading="lazy" draggable="false" src="${imgFor(p)}" alt="Page ${i + 1}: ${p.kind}" onerror="imgErr()">`}</div>
       <div class="bar"><span class="n">${i + 1}</span>
-        <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" onclick="coverPage=${i};render()">★</button>
+        <button title="Use on the cover" aria-label="Use page ${i + 1} on the cover" aria-pressed="${p.uid === coverUid}" onclick="coverUid=pages[${i}].uid;render()">★</button>
         ${p.kind !== 'photo' && p.kind !== 'ai' ? `<button title="A different drawing" aria-label="New drawing for page ${i + 1}" onclick="pages[${i}].seed=newSeed();render()">↻</button>` : ''}
-        <button title="Move earlier" aria-label="Move page ${i + 1} earlier" onclick="move(${i},-1)" ${i ? '' : 'disabled'}>←</button>
-        <button title="Move later" aria-label="Move page ${i + 1} later" onclick="move(${i},1)" ${i < pages.length - 1 ? '' : 'disabled'}>→</button>
+        <button title="Move earlier" aria-label="Move page ${i + 1} earlier" onclick="move(${i},${i - 1})" ${i ? '' : 'disabled'}>←</button>
+        <button title="Move later" aria-label="Move page ${i + 1} later" onclick="move(${i},${i + 1})" ${i < pages.length - 1 ? '' : 'disabled'}>→</button>
         <button title="Remove" aria-label="Remove page ${i + 1}" onclick="removePage(${i})">✕</button>
       </div>
     </div>`).join('');
   const one = $('one-sided').checked, min = one ? minOne : minTwo;
-  const total = 4 + pages.length * (one ? 2 : 1);
+  const total = 4 + pages.length * (one ? 2 : 1), printed = total + (total % 2);
   const c = $('count');
   c.className = 'count' + (pages.length < min ? ' short' : '');
-  c.innerHTML = `<b>${pages.length}</b> drawings · ${total + (total % 2)} pages` + (pages.length < min ? ` · Amazon needs at least ${min} drawings` : '') + (nPhotos ? ` · ${nPhotos}/${maxPhotos} photos` : '');
+  c.innerHTML = `<b>${pages.length}</b> drawings · ${printed} pages` + (pages.length < min ? ` · Amazon needs at least ${min} drawings` : '') + (nPhotos ? ` · ${nPhotos}/${maxPhotos} photos` : '');
+  const drawingNow = pages.filter(p => p.kind === 'photo' && !(drawn[p.photo] || {})[audience] && !(failed[p.photo] || {})[audience]).length;
+  $('sumbar').classList.toggle('hidden', !pages.length);
+  $('sum').innerHTML = `<b>${pages.length}</b> drawings · ${printed} pages · ` + (pages.length < min ? `<span class="short">add ${min - pages.length} more</span>`
+    : drawingNow ? `<span class="short">${drawingNow} photo${drawingNow > 1 ? 's' : ''} still drawing</span>` : '<span class="ready">ready to make</span>');
+  if (pickedOpen()) syncPicked();
+  save();
 }
-function move(i, d) { const [p] = pages.splice(i, 1); pages.splice(i + d, 0, p); if (coverPage === i) coverPage = i + d; else if (coverPage === i + d) coverPage = i; render(); }
-function removePage(i) {
-  const [p] = pages.splice(i, 1);
-  if (p.kind === 'photo' && !pages.some(q => q.photo === p.photo)) call(`/api/colouring/${C}/photos/${p.photo}`, { method: 'DELETE' }).catch(() => {});
+function move(from, to) {
+  if (to < 0 || to >= pages.length || from === to) return;
+  const [p] = pages.splice(from, 1); pages.splice(to, 0, p); render();
+}
+let undoTimer = null, undoItem = null;
+function forget(p) {   // tell the engine only when the page can no longer come back
+  if (p.kind === 'photo' && !pages.some(q => q.photo === p.photo)) { call(`/api/colouring/${C}/photos/${p.photo}`, { method: 'DELETE' }).catch(() => {}); Object.keys(picked).forEach(k => { if (picked[k] === p.photo) delete picked[k]; }); }
   if (p.kind === 'ai') call(`/api/colouring/${C}/ai/${p.photo}`, { method: 'DELETE' }).catch(() => {});
-  if (i < coverPage) coverPage--;   // the cover stays on the same drawing
-  if (coverPage >= pages.length) coverPage = Math.max(0, pages.length - 1); render();
 }
+function removePage(i, quiet) {
+  const [p] = pages.splice(i, 1);
+  if (undoItem) forget(undoItem.p);
+  undoItem = { p, i, cover: p.uid === coverUid };
+  clearTimeout(undoTimer);
+  if (!quiet) { $('toast-t').textContent = `Page ${i + 1} removed`; $('toast').classList.remove('hidden'); }
+  undoTimer = setTimeout(() => { $('toast').classList.add('hidden'); if (undoItem) forget(undoItem.p); undoItem = null; }, 7000);
+  render();
+}
+$('toast-undo').onclick = () => {
+  if (!undoItem) return;
+  pages.splice(Math.min(undoItem.i, pages.length), 0, undoItem.p);
+  if (undoItem.cover) coverUid = undoItem.p.uid;
+  undoItem = null; clearTimeout(undoTimer); $('toast').classList.add('hidden'); render();
+};
+
+// Drag pages to reorder; drop photo files to add them.
+let dragFrom = null;
+$('pages').addEventListener('dragstart', (e) => { const t = e.target.closest('.pg'); if (!t) return; dragFrom = +t.dataset.i; t.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(dragFrom)); });
+$('pages').addEventListener('dragend', () => { dragFrom = null; document.querySelectorAll('.pg').forEach(x => x.classList.remove('dragging', 'over')); });
+$('pages').addEventListener('dragover', (e) => {
+  e.preventDefault();
+  if (dragFrom === null) { $('pages').classList.add('drop'); return; }
+  document.querySelectorAll('.pg.over').forEach(x => x.classList.remove('over'));
+  const t = e.target.closest('.pg'); if (t) t.classList.add('over');
+});
+$('pages').addEventListener('dragleave', (e) => { if (!$('pages').contains(e.relatedTarget)) $('pages').classList.remove('drop'); });
+$('pages').addEventListener('drop', (e) => {
+  e.preventDefault(); $('pages').classList.remove('drop');
+  if (dragFrom === null) { const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/')); if (files.length) uploadFiles(files); return; }
+  const t = e.target.closest('.pg'); if (t) move(dragFrom, +t.dataset.i);
+});
+
+// Large preview, with arrow keys to step through the pages.
+let viewI = 0;
+function openView(i) { viewI = i; showView(); if (!$('view').open) $('view').showModal(); }
+function showView() {
+  const p = pages[viewI]; if (!p) { $('view').close(); return; }
+  const ready = !(p.kind === 'photo' && !(drawn[p.photo] || {})[audience]);
+  $('v-img').src = ready ? imgFor(p) : ''; $('v-img').alt = `Page ${viewI + 1}`;
+  $('v-n').textContent = `Page ${viewI + 1} of ${pages.length}` + (p.uid === coverUid ? ' · ★ cover' : '');
+  $('v-prev').disabled = viewI === 0; $('v-next').disabled = viewI === pages.length - 1;
+  $('v-new').classList.toggle('hidden', p.kind === 'photo' || p.kind === 'ai');
+}
+$('v-prev').onclick = () => { if (viewI > 0) { viewI--; showView(); } };
+$('v-next').onclick = () => { if (viewI < pages.length - 1) { viewI++; showView(); } };
+$('v-cover').onclick = () => { coverUid = pages[viewI].uid; render(); showView(); };
+$('v-new').onclick = () => { pages[viewI].seed = newSeed(); render(); showView(); };
+$('v-del').onclick = () => { removePage(viewI); if (!pages.length) return $('view').close(); viewI = Math.min(viewI, pages.length - 1); showView(); };
+$('v-close').onclick = () => $('view').close();
+$('view').addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') $('v-prev').click(); if (e.key === 'ArrowRight') $('v-next').click(); });
+$('view').addEventListener('click', (e) => { if (e.target === $('view')) $('view').close(); });
+
+// Work survives a reload: patterns, settings and details (photos must be added again).
+function save() {
+  try { localStorage.setItem('rw_colouring', JSON.stringify({ v: 1, audience, colours, coverUid, uidNo,
+    one: $('one-sided').checked, trim: $('trim').value, f: ['title', 'subtitle', 'author', 'publisher'].map(k => $(k).value),
+    pages: pages.filter(p => p.kind === 'mandala' || p.kind === 'geometric'), photos: pages.length - pages.filter(p => p.kind === 'mandala' || p.kind === 'geometric').length })); } catch (e) {}
+}
+function restore() {
+  let d = null; try { d = JSON.parse(localStorage.getItem('rw_colouring') || 'null'); } catch (e) {}
+  if (!d || d.v !== 1) return;
+  audience = d.audience || 'adults'; colours = d.colours || 'ochre'; uidNo = d.uidNo || 0; coverUid = d.coverUid;
+  pages = (d.pages || []).map(p => ({ uid: p.uid || ++uidNo, kind: p.kind, seed: p.seed }));
+  $('one-sided').checked = d.one !== false; $('trim').value = d.trim || '8.5x11';
+  ['title', 'subtitle', 'author', 'publisher'].forEach((k, i) => { $(k).value = (d.f || [])[i] || ''; });
+  document.querySelectorAll('#aud button').forEach(x => x.classList.toggle('on', x.dataset.aud === audience));
+  if (d.photos || pages.length) { $('page-msg').className = 'msg ok'; $('page-msg').textContent = 'Welcome back: your patterns and details are as you left them.' + (d.photos ? ` ${d.photos} photo or AI page${d.photos > 1 ? 's' : ''} need adding again.` : ''); }
+}
+['title', 'subtitle', 'author', 'publisher', 'trim'].forEach(k => $(k).addEventListener('input', save));
+$('sum-go').onclick = () => $('make').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
 document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => {
   if (pages.length >= 60) { $('page-msg').className = 'msg bad'; $('page-msg').textContent = 'A book can have up to 60 drawings. Remove some to add others.'; return; }
-  for (let k = 0; k < 5 && pages.length < 60; k++) pages.push({ kind: b.dataset.add, seed: newSeed() });
+  for (let k = 0; k < 5 && pages.length < 60; k++) pages.push(mk({ kind: b.dataset.add, seed: newSeed() }));
   render();
 });
 $('one-sided').onchange = render;
@@ -342,15 +466,16 @@ document.querySelectorAll('#aud button').forEach(b => b.onclick = () => {
   render();
 });
 $('add-photo').onclick = () => $('file').click();
-$('file').onchange = async () => {
-  for (const f of $('file').files) {
+async function uploadFiles(files) {
+  $('page-msg').textContent = '';
+  for (const f of files) {
+    if (pages.length >= 60) { $('page-msg').className = 'msg bad'; $('page-msg').textContent = 'A book can have up to 60 drawings.'; break; }
     const fd = new FormData(); fd.append('file', f);
-    $('page-msg').textContent = '';
-    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); photoSrc[d.id] = { file: f }; pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); }
-    catch (e) { $('page-msg').textContent = `${f.name}: ${e.message}`; }
+    try { const d = await (await call(`/api/colouring/${C}/photos`, { method: 'POST', body: fd })).json(); photoSrc[d.id] = { file: f }; pages.push(mk({ kind: 'photo', seed: 0, photo: d.id })); render(); queueDraw(d.id, audience); }
+    catch (e) { $('page-msg').className = 'msg bad'; $('page-msg').textContent = `${f.name}: ${e.message}`; }
   }
-  $('file').value = '';
-};
+}
+$('file').onchange = async () => { await uploadFiles([...$('file').files]); $('file').value = ''; };
 function alertMsg(m) { $('make-msg').textContent = m; $('make-msg').className = 'msg bad'; $('making').classList.remove('hidden'); $('making').querySelector('.track').classList.add('hidden'); }
 
 // ── Photos drawn by the line-art model, in this browser ───────────────────────
@@ -413,7 +538,7 @@ document.querySelectorAll('[data-draw]').forEach(b => b.onclick = async () => {
     for (let k = 1; k <= n; k++) {
       m.className = 'msg ok'; m.textContent = `Drawing page ${k} of ${n}… (about 10 seconds each)`;
       const d = await (await call(`/api/colouring/${C}/ai`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic, audience }) })).json();
-      pages.push({ kind: 'ai', seed: 0, photo: d.id, aud: audience }); render();
+      pages.push(mk({ kind: 'ai', seed: 0, photo: d.id, aud: audience })); render();
     }
     m.textContent = 'Done. AI pages keep the style (kids or adults) they were drawn in; draw again to change it.';
   } catch (e) { m.className = 'msg bad'; m.textContent = e.message; }
@@ -422,44 +547,72 @@ document.querySelectorAll('[data-draw]').forEach(b => b.onclick = async () => {
 $('topic').onkeydown = (e) => { if (e.key === 'Enter') document.querySelector('[data-draw="1"]').click(); };
 
 // ── Photo search (Unsplash) ─────────────────────────────────────────────────
-$('add-stock').onclick = () => { $('stock').showModal(); $('q').focus(); };
+const picked = {};   // Unsplash photo id → photo id in this book
+let searchNo = 0, searchQ = '', searchPage = 1;
+const pickedOpen = () => $('stock').open;
+function syncPicked() {
+  document.querySelectorAll('#results button[data-id]').forEach(b => {
+    const on = !!picked[b.dataset.id] && pages.some(p => p.photo === cur(picked[b.dataset.id]));
+    if (!on) delete picked[b.dataset.id];
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+  });
+  const n = Object.keys(picked).length;
+  $('q-done').textContent = n ? `Done · ${n} photo${n > 1 ? 's' : ''} added` : 'Done';
+}
+$('add-stock').onclick = () => { $('stock').showModal(); syncPicked(); $('q').focus(); $('q').select(); };
 $('q-close').onclick = () => $('stock').close();
+$('q-done').onclick = () => $('stock').close();
 $('q').onkeydown = (e) => { if (e.key === 'Enter') $('q-go').click(); };
-let searchNo = 0;
-$('q-go').onclick = async () => {
-  const q = $('q').value.trim();
+function tile(r) {
+  return `<figure><button type="button" data-id="${r.id}" aria-pressed="false" title="${(r.alt || '').replace(/"/g, '&quot;')}"><img src="${r.thumb}" alt="${(r.alt || '').replace(/"/g, '&quot;')}"></button><figcaption><a href="${r.author_url}" target="_blank" rel="noopener">${r.author.replace(/</g, '&lt;')}</a> · <a href="${r.link}" target="_blank" rel="noopener">Unsplash</a></figcaption></figure>`;
+}
+async function search(more) {
+  const q = more ? searchQ : $('q').value.trim();
   if (q.length < 2) { $('q-msg').textContent = 'Type at least two letters to search.'; return; }
   const mine = ++searchNo;
-  $('results').innerHTML = ''; $('q-msg').textContent = `Searching for "${q}"…`; $('q-go').disabled = true;
+  if (!more) { searchQ = q; searchPage = 1; $('results').innerHTML = ''; } else searchPage++;
+  document.querySelectorAll('#results .more').forEach(x => x.remove());
+  $('q-msg').textContent = `Searching for "${q}"…`; $('q-go').disabled = true;
   try {
-    const d = await (await call(`/api/colouring/${C}/stock?q=${encodeURIComponent(q)}`)).json();
+    const d = await (await call(`/api/colouring/${C}/stock?q=${encodeURIComponent(q)}&page=${searchPage}`)).json();
     if (mine !== searchNo) return;   // a newer search has started
-    $('results').innerHTML = d.results.map(r => `<figure><button type="button" data-id="${r.id}" title="${(r.alt || '').replace(/"/g, '&quot;')}"><img src="${r.thumb}" alt=""></button><figcaption><a href="${r.author_url}" target="_blank" rel="noopener">${r.author.replace(/</g, '&lt;')}</a> · <a href="${r.link}" target="_blank" rel="noopener">Unsplash</a></figcaption></figure>`).join('') || '<p>No photos found.</p>';
-    $('q-msg').textContent = 'Click a photo to add it as a page.';
-  } catch (e) { if (mine === searchNo) { $('results').innerHTML = ''; $('q-msg').textContent = e.message; } }
+    if (!d.results.length && !more) { $('results').innerHTML = '<p>No photos found. Try another word.</p>'; $('q-msg').textContent = ''; return; }
+    $('results').insertAdjacentHTML('beforeend', d.results.map(tile).join(''));
+    if (d.results.length >= 20 && searchPage < 10) $('results').insertAdjacentHTML('beforeend', '<button type="button" class="btn ghost small more" onclick="search(true)">Show more photos</button>');
+    $('q-msg').textContent = ''; syncPicked();
+  } catch (e) { if (mine === searchNo) { if (!more) $('results').innerHTML = ''; $('q-msg').textContent = e.message; } }
   finally { if (mine === searchNo) $('q-go').disabled = false; }
-};
+}
+$('q-go').onclick = () => search(false);
 $('results').onclick = async (e) => {
-  const b = e.target.closest('button[data-id]'); if (!b || b.disabled) return;
-  b.disabled = true; b.style.opacity = .4; $('q-msg').textContent = 'Adding…';
+  const b = e.target.closest('button[data-id]'); if (!b || b.classList.contains('busy')) return;
+  const sid = b.dataset.id;
+  if (picked[sid]) {   // tapped again: take it out of the book
+    const pid = cur(picked[sid]);
+    for (let i = pages.length - 1; i >= 0; i--) if (pages[i].photo === pid) removePage(i, true);
+    delete picked[sid]; syncPicked(); $('q-msg').textContent = 'Removed.'; return;
+  }
+  if (pages.length >= 60) { $('q-msg').textContent = 'A book can have up to 60 drawings.'; return; }
+  b.classList.add('busy'); $('q-msg').textContent = 'Adding…';
   try {
-    const d = await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json();
-    photoSrc[d.id] = { stock: b.dataset.id };
-    pages.push({ kind: 'photo', seed: 0, photo: d.id }); render(); queueDraw(d.id, audience); $('q-msg').textContent = 'Added. Pick another, or close.';
-    b.title = 'Added to your book';
-  } catch (err) { $('q-msg').textContent = err.message; b.disabled = false; b.style.opacity = 1; }
+    const d = await (await call(`/api/colouring/${C}/photos/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sid }) })).json();
+    photoSrc[d.id] = { stock: sid }; picked[sid] = d.id;
+    pages.push(mk({ kind: 'photo', seed: 0, photo: d.id })); render(); queueDraw(d.id, audience);
+    $('q-msg').textContent = 'Added. Tap again to remove.';
+  } catch (err) { $('q-msg').textContent = err.message; }
+  b.classList.remove('busy'); syncPicked();
 };
 
 // ── Cover colours ───────────────────────────────────────────────────────────
 $('swatches').innerHTML = Object.entries(PAL).map(([k, [bg, fg]]) => `<button type="button" class="sw${k === colours ? ' on' : ''}" data-c="${k}" style="background:${bg}" aria-label="${k} cover"><i style="background:${fg}"></i></button>`).join('');
-$('swatches').onclick = (e) => { const b = e.target.closest('.sw'); if (!b) return; colours = b.dataset.c; document.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); };
+$('swatches').onclick = (e) => { const b = e.target.closest('.sw'); if (!b) return; colours = b.dataset.c; document.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); save(); };
 
 // ── Make ────────────────────────────────────────────────────────────────────
 $('make').onclick = async () => {
   const body = {
     title: $('title').value.trim(), subtitle: $('subtitle').value.trim(), author: $('author').value.trim(),
     publisher: $('publisher').value.trim(), audience, trim: $('trim').value, one_sided: $('one-sided').checked,
-    colours, cover_page: coverPage, pages: pages.map(p => (p.kind === 'photo' || p.kind === 'ai') ? { kind: p.kind, photo: p.photo } : { kind: p.kind, seed: p.seed }),
+    colours, cover_page: coverIndex(), pages: pages.map(p => (p.kind === 'photo' || p.kind === 'ai') ? { kind: p.kind, photo: p.photo } : { kind: p.kind, seed: p.seed }),
     rights_confirmed: $('rights').checked,
   };
   const msg = $('make-msg'); msg.className = 'msg';

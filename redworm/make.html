@@ -704,12 +704,64 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 function setPass(p) { PASS = p; try { p ? localStorage.setItem('rw_pass', p) : localStorage.removeItem('rw_pass'); } catch (e) {} }
 function showGate(on) { $('gate').classList.toggle('hidden', !on); $('drop').classList.toggle('hidden', on); }
-async function call(path, opts = {}) {
+async function call(path, opts = {}, retried = false) {
   if (PASS) opts.headers = Object.assign({ Authorization: 'Bearer ' + PASS }, opts.headers || {});
-  const r = await fetch(API + path, opts);
+  let r;
+  try { r = await fetch(API + path, opts); }
+  catch (e) { throw new Error('Redworm could not be reached. Check your connection and try again.'); }
   if (r.status === 401) { setPass(null); showGate(true); }
-  if (!r.ok) { let m = 'Something went wrong. Please try again.'; try { const d = (await r.json()).detail; if (typeof d === 'string') m = d; } catch (e) {} throw new Error(m); }
+  if (!r.ok) {
+    let m = 'Something went wrong. Please try again.'; try { const d = (await r.json()).detail; if (typeof d === 'string') m = d; } catch (e) {}
+    // The engine restarted (an update, or idle time) and forgot this book: send the manuscript,
+    // cover picture and pictures again from this browser, then repeat the request.
+    if (r.status === 404 && /session has ended/i.test(m) && S && MS.file && path.startsWith('/api/sessions/') && !retried) {
+      const was = S.id;
+      await recoverBook();
+      const fix = (t) => t.replace(/\bpic[0-9a-f]{10}\b/g, (id) => picAlias[id] || id);
+      if (typeof opts.body === 'string') opts.body = fix(opts.body);
+      return call(fix(path.split(was).join(S.id)), opts, true);
+    }
+    throw new Error(m);
+  }
   return r;
+}
+// What the page needs to rebuild the book on the engine after a restart.
+const MS = { file: null, art: null };   // manuscript File; cover picture { file } | { stock } | { ai }
+const picSrc = {}, picAlias = {};       // picture id → { file } | { stock }; old id → new id
+let recovering = null;
+function recoverBook() {
+  if (recovering) return recovering;
+  recovering = (async () => {
+    const fd = new FormData(); fd.append('file', MS.file);
+    const fresh = await (await call('/api/sessions', { method: 'POST', body: fd }, true)).json();
+    S.id = fresh.id;   // same manuscript, so chapters, paragraphs and suggestions keep their ids
+    clearInterval(beat);
+    beat = setInterval(() => call(`/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
+    let lost = '';
+    if (MS.art && MS.art.file) { const f = new FormData(); f.append('file', MS.art.file); await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: f }, true).catch(() => { lost = 'cover picture'; }); }
+    else if (MS.art && MS.art.stock) await call(`/api/sessions/${S.id}/stock-pick`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: MS.art.stock }) }, true).catch(() => { lost = 'cover picture'; });
+    else if (MS.art && MS.art.ai) lost = 'AI cover picture';
+    for (const p of pics) {
+      const src = picSrc[p.id]; let nid = null;
+      try {
+        if (src && src.file) { const f = new FormData(); f.append('file', src.file); nid = (await (await call(`/api/sessions/${S.id}/pictures`, { method: 'POST', body: f }, true)).json()).id; }
+        else if (src && src.stock) nid = (await (await call(`/api/sessions/${S.id}/pictures/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: src.stock }) }, true)).json()).id;
+      } catch (e) {}
+      if (nid) { picAlias[p.id] = nid; picSrc[nid] = src; p.id = nid; } else { p.lost = true; lost = lost ? lost + ' and some pictures' : 'some pictures'; }
+    }
+    for (let i = pics.length - 1; i >= 0; i--) if (pics[i].lost) pics.splice(i, 1);
+    artVersion++;
+    try { preview(); } catch (e) {}
+    try { if (typeof renderSheet === 'function') renderSheet(); } catch (e) {}
+    $('done').classList.add('hidden');
+    note(`Redworm restarted, so your manuscript was sent to it again. Your proofreading choices and edits are kept.` + (lost ? ` Please add the ${lost} again.` : ''));
+  })().finally(() => { recovering = null; });
+  return recovering;
+}
+function note(t) {
+  let n = $('rw-note');
+  if (!n) { n = document.createElement('div'); n.id = 'rw-note'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);max-width:min(560px,92vw);background:#1C1F24;color:#fff;border-radius:14px;padding:12px 16px;font-size:14px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.2)'; document.body.appendChild(n); }
+  n.textContent = t; n.hidden = false; clearTimeout(n._t); n._t = setTimeout(() => { n.hidden = true; }, 9000);
 }
 
 function Term(el) {  // a red worm crawls while the engine works; one line says what it's doing
@@ -750,11 +802,11 @@ async function upload(file) {
   const tm = Term($('upload-msg'), 'Redworm — import').cmd(`Import-Manuscript "${file.name}"`)
     .plan([`Reading ${Math.max(1, Math.round(file.size / 1024))} KB…`, 'Detecting format, encoding and script…', 'Finding the title, author and chapters…', 'Checking the 50,000-word limit…', 'Proofreading: rules · dictionary · names · dashes…', 'Preparing the reading view…'], 1300);
   const fd = new FormData(); fd.append('file', file);
-  try { S = await (await call('/api/sessions', { method: 'POST', body: fd })).json(); }
+  try { S = await (await call('/api/sessions', { method: 'POST', body: fd })).json(); MS.file = file; MS.art = null; }
   catch (e) { tm.fail('✗ ' + e.message); return; }
   tm.ok(`✓ ${S.words.toLocaleString()} words · ${S.chapters.length} ${S.form === 'poetry' ? 'poems' : 'chapters'} · ${S.proofreading.items.length} things to look at`);
   clearInterval(beat);
-  beat = setInterval(() => fetch(`${API}/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
+  beat = setInterval(() => call(`/api/sessions/${S.id}/heartbeat`, { method: 'POST' }).catch(() => {}), S.heartbeat_s * 1000);
   $('found').classList.remove('hidden');
   $('title').value = S.title; $('author').value = (S.authors || []).join(', '); $('subtitle').value = S.subtitle || '';
   const lang = S.language === 'hi' ? 'Hindi' : 'English';
@@ -966,14 +1018,14 @@ $('pd-grid').onclick = async (e) => {
   const b = e.target.closest('.sp'); if (!b) return;
   document.querySelectorAll('#pd-grid .sp').forEach(x => x.classList.toggle('on', x === b));
   $('pd-sharp').innerHTML = '<span class="spinner"></span> Getting the full-size photo…'; $('pd-chosen').classList.remove('hidden');
-  try { pd.picked = await (await call(`/api/sessions/${S.id}/pictures/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json(); pdShow(); }
+  try { pd.picked = await (await call(`/api/sessions/${S.id}/pictures/stock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json(); picSrc[pd.picked.id] = { stock: b.dataset.id }; pdShow(); }
   catch (err) { $('pd-sharp').innerHTML = `<span class="err">${esc(err.message)}</span>`; }
 };
 $('pd-file').onchange = async () => {
   const f = $('pd-file').files[0]; if (!f) return;
   const fd = new FormData(); fd.append('file', f);
   $('pd-sharp').innerHTML = '<span class="spinner"></span> Adding your picture…'; $('pd-chosen').classList.remove('hidden');
-  try { pd.picked = await (await call(`/api/sessions/${S.id}/pictures`, { method: 'POST', body: fd })).json(); pdShow(); }
+  try { pd.picked = await (await call(`/api/sessions/${S.id}/pictures`, { method: 'POST', body: fd })).json(); picSrc[pd.picked.id] = { file: f }; pdShow(); }
   catch (err) { $('pd-sharp').innerHTML = `<span class="err">${esc(err.message)}</span>`; }
   $('pd-file').value = '';
 };
@@ -1112,7 +1164,7 @@ document.addEventListener('click', (e) => {
 $('use-cover').onclick = () => { if (!layout || !colour) return; chosen = `${layout}/${colour}`; $('use-cover').classList.add('hidden'); $('cover-chosen').classList.remove('hidden'); $('make').disabled = false; done('cover'); $('make-msg').textContent = ''; renderSteps(); };
 $('pic-make').onclick = async () => {
   $('pic-make').disabled = true; $('pic-msg').innerHTML = '<span class="spinner"></span> Drawing your picture (about 10 seconds)…';
-  try { const r = await (await call(`/api/sessions/${S.id}/art`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: $('pic-prompt').value }) })).json();
+  try { MS.art = { ai: true }; const r = await (await call(`/api/sessions/${S.id}/art`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: $('pic-prompt').value }) })).json();
         artVersion++; $('pic-msg').textContent = `✓ Done. ${r.left} more tries left for this book.`; chosen = null; preview(); }
   catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
   $('pic-make').disabled = false;
@@ -1142,7 +1194,7 @@ $('stock-grid').onclick = async (e) => {
   const b = e.target.closest('.sp'); if (!b) return;
   document.querySelectorAll('.sp').forEach(x => x.classList.toggle('on', x === b));
   $('pic-msg').innerHTML = '<span class="spinner"></span> Getting the full-size photo…';
-  try { const r = await (await call(`/api/sessions/${S.id}/stock-pick`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json(); artVersion++; sharpness(r.dpi, '✓ Photo chosen.'); chosen = null; preview(); }
+  try { const r = await (await call(`/api/sessions/${S.id}/stock-pick`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.dataset.id }) })).json(); MS.art = { stock: b.dataset.id }; artVersion++; sharpness(r.dpi, '✓ Photo chosen.'); chosen = null; preview(); }
   catch (err) { $('pic-msg').innerHTML = `<span class="err">${esc(err.message)}</span>`; }
 };
 let IS_OWNER = false;
@@ -1162,7 +1214,7 @@ $('pub-go').onclick = async () => {
 $('pic-file').onchange = async () => {
   const f = $('pic-file').files[0]; if (!f) return; const fd = new FormData(); fd.append('file', f);
   $('pic-msg').textContent = 'Uploading…';
-  try { const r = await (await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: fd })).json(); artVersion++; sharpness(r.dpi, '✓ Picture added.'); chosen = null; preview(); }
+  try { const r = await (await call(`/api/sessions/${S.id}/art-upload`, { method: 'POST', body: fd })).json(); MS.art = { file: f }; artVersion++; sharpness(r.dpi, '✓ Picture added.'); chosen = null; preview(); }
   catch (e) { $('pic-msg').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
 };
 
@@ -1214,7 +1266,8 @@ $('make').onclick = async () => {
         $('done-line').textContent = `${s.pages} pages · spine ${s.spine_mm} mm · ${s.cover}` + (s.index && s.index.entries ? ` · index of ${s.index.entries}` : '') + (s.interior_ready_for_print && s.cover_ready_for_print ? ' · ✓ ready for the printer' : ' · ⚠ not yet ready for the printer: see “Read me first” in the download (often a character the fonts can’t print — check step 2)');
         $('download').href = `${API}/api/sessions/${S.id}/download`; $('done').classList.remove('hidden'); done('make');
         if (IS_OWNER && H.publishing) { $('soon').classList.add('hidden'); $('pubpanel').classList.remove('hidden'); if (!$('pub-syn').value) $('pub-syn').value = $('blurb').value.trim(); }
-      } else { mk.fail('✗ ' + (st.error || 'Something went wrong.')); }
+      } else if (st.state === 'ready') { mk.fail('✗ Redworm restarted while making your book. Your work is safe: please press Make again.'); }
+      else { mk.fail('✗ ' + (st.error || 'Something went wrong.')); }
     } catch (e) { clearInterval(poll); $('make').disabled = false; mk.fail('✗ ' + e.message); }
   }, 3000);
 };
