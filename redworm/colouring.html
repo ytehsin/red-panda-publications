@@ -497,19 +497,111 @@ function loadModel() {
   }).catch(e => { ortSession = null; throw e; });
   return ortSession;
 }
-async function drawPhoto(pid, aud) {
-  const blob = await (await call(`/api/colouring/${C}/photos/${pid}/original`)).blob();
-  const bmp = await createImageBitmap(blob);
-  const L = aud === 'kids' ? 512 : 1024, k = L / Math.max(bmp.width, bmp.height);
-  const W = Math.max(8, Math.round(bmp.width * k / 8) * 8), H = Math.max(8, Math.round(bmp.height * k / 8) * 8);
+// ── Making a clean page from the model's drawing (all in this browser) ───────
+// 1. Draw the whole photo small and find where the ink is densest: that is the subject.
+// 2. If the subject is small in the photo, cut the photo to it and draw again, so it fills the
+//    page and gets its detail. 3. Remove small marks that sit alone in empty space (grass, ground
+//    texture) but keep small marks inside the subject (eyes, buttons). 4. Trim the empty border.
+async function runModel(bmp, sx, sy, sw, sh, L) {
+  const k = L / Math.max(sw, sh);
+  const W = Math.max(8, Math.round(sw * k / 8) * 8), H = Math.max(8, Math.round(sh * k / 8) * 8);
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const cx = cv.getContext('2d'); cx.drawImage(bmp, 0, 0, W, H);
+  const cx = cv.getContext('2d'); cx.drawImage(bmp, sx, sy, sw, sh, 0, 0, W, H);
   const px = cx.getImageData(0, 0, W, H).data, n = W * H, input = new Float32Array(3 * n);
   for (let i = 0; i < n; i++) { input[i] = px[4 * i] / 255; input[n + i] = px[4 * i + 1] / 255; input[2 * n + i] = px[4 * i + 2] / 255; }
   const session = await loadModel();
   const out = await session.run({ [session.inputNames[0]]: new ort.Tensor('float32', input, [1, 3, H, W]) });
-  const y = out[session.outputNames[0]].data, img = cx.createImageData(W, H);
-  for (let i = 0; i < n; i++) { const v = Math.max(0, Math.min(255, Math.round(y[i] * 255))); img.data[4 * i] = img.data[4 * i + 1] = img.data[4 * i + 2] = v; img.data[4 * i + 3] = 255; }
+  const y = new Float32Array(out[session.outputNames[0]].data);
+  for (let i = 0; i < n; i++) y[i] = Math.min(1, Math.max(0, y[i]));
+  return { y, W, H };
+}
+function boxMean(a, W, H, r) {   // mean of a over a (2r+1)² square, via an integral image
+  const I = new Float64Array((W + 1) * (H + 1)), o = new Float32Array(W * H);
+  for (let y = 0; y < H; y++) { let row = 0; for (let x = 0; x < W; x++) { row += a[y * W + x]; I[(y + 1) * (W + 1) + x + 1] = I[y * (W + 1) + x + 1] + row; } }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const x0 = Math.max(0, x - r), x1 = Math.min(W, x + r + 1), y0 = Math.max(0, y - r), y1 = Math.min(H, y + r + 1);
+    o[y * W + x] = (I[y1 * (W + 1) + x1] - I[y0 * (W + 1) + x1] - I[y1 * (W + 1) + x0] + I[y0 * (W + 1) + x0]) / ((x1 - x0) * (y1 - y0));
+  }
+  return o;
+}
+function label(mask, W, H) {     // connected areas (4 neighbours: corner-touching marks stay apart)
+  const lab = new Int32Array(W * H), stack = new Int32Array(W * H); let n = 0;
+  for (let i = 0; i < W * H; i++) {
+    if (!mask[i] || lab[i]) continue;
+    lab[i] = ++n; let sp = 0; stack[sp++] = i;
+    while (sp) {
+      const j = stack[--sp], x = j % W, y = (j / W) | 0;
+      if (x > 0 && mask[j - 1] && !lab[j - 1]) { lab[j - 1] = n; stack[sp++] = j - 1; }
+      if (x < W - 1 && mask[j + 1] && !lab[j + 1]) { lab[j + 1] = n; stack[sp++] = j + 1; }
+      if (y > 0 && mask[j - W] && !lab[j - W]) { lab[j - W] = n; stack[sp++] = j - W; }
+      if (y < H - 1 && mask[j + W] && !lab[j + W]) { lab[j + W] = n; stack[sp++] = j + W; }
+    }
+  }
+  return { lab, n };
+}
+function subjectBox(d) {
+  const { y, W, H } = d, n = W * H, ink = new Float32Array(n);
+  for (let i = 0; i < n; i++) ink[i] = 1 - y[i];
+  const r = Math.max(3, Math.floor(Math.min(W, H) * 0.06)), m = boxMean(ink, W, H, r);
+  let top = 0, at = 0; for (let i = 0; i < n; i++) if (m[i] > top) { top = m[i]; at = i; }
+  if (top <= 0) return null;
+  const core = label(m.map(v => v >= 0.45 * top ? 1 : 0), W, H), cid = core.lab[at];
+  const wide = label(m.map(v => v >= 0.15 * top ? 1 : 0), W, H), take = new Uint8Array(wide.n + 1);
+  for (let i = 0; i < n; i++) if (core.lab[i] === cid) take[wide.lab[i]] = 1;
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let i = 0; i < n; i++) if (take[wide.lab[i]]) { const x = i % W, yy = (i / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+  return { x0: Math.max(0, x0 - 2 * r), y0: Math.max(0, y0 - 2 * r), x1: Math.min(W, x1 + 2 * r), y1: Math.min(H, y1 + 2 * r) };
+}
+function despeck(d) {
+  const { y, W, H } = d, n = W * H;
+  let m = new Uint8Array(n); for (let i = 0; i < n; i++) m[i] = y[i] < 0.75 ? 1 : 0;
+  let g = m;
+  for (let it = 0; it < 2; it++) {   // grow lines by 2 px so broken strokes count as one
+    const o = new Uint8Array(n);
+    for (let yy = 0; yy < H; yy++) for (let x = 0; x < W; x++) {
+      const j = yy * W + x;   // grow by one pixel up, down, left and right
+      o[j] = g[j] || (x > 0 && g[j - 1]) || (x < W - 1 && g[j + 1]) || (yy > 0 && g[j - W]) || (yy < H - 1 && g[j + W]) ? 1 : 0;
+    }
+    g = o;
+  }
+  const { lab, n: k } = label(g, W, H);
+  const ink = new Float32Array(n); for (let i = 0; i < n; i++) ink[i] = 1 - y[i];
+  const dens = boxMean(ink, W, H, Math.max(3, Math.floor(Math.min(W, H) * 0.05)));
+  let top = 0; for (let i = 0; i < n; i++) if (dens[i] > top) top = dens[i];
+  const area = new Float64Array(k + 1), sum = new Float64Array(k + 1);
+  for (let i = 0; i < n; i++) if (lab[i]) { area[lab[i]]++; sum[lab[i]] += dens[i]; }
+  for (let i = 0; i < n; i++) { const c = lab[i]; if (m[i] && c && area[c] < 0.0015 * n && sum[c] / area[c] < 0.25 * top) y[i] = 1; }
+  return d;
+}
+function trim(d) {
+  const { y, W, H } = d; let x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (let i = 0; i < W * H; i++) if (y[i] < 0.75) { const x = i % W, yy = (i / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+  if (x1 < 0) return d;
+  const p = Math.floor(Math.max(W, H) * 0.03);
+  x0 = Math.max(0, x0 - p); y0 = Math.max(0, y0 - p); x1 = Math.min(W - 1, x1 + p); y1 = Math.min(H - 1, y1 + p);
+  const w = x1 - x0 + 1, h = y1 - y0 + 1;
+  if (Math.max(w, h) < 256 || Math.min(w, h) < 128) return d;   // too small to be worth cutting
+  const o = new Float32Array(w * h);
+  for (let yy = 0; yy < h; yy++) o.set(y.subarray((y0 + yy) * W + x0, (y0 + yy) * W + x0 + w), yy * w);
+  return { y: o, W: w, H: h };
+}
+async function drawPhoto(pid, aud) {
+  const blob = await (await call(`/api/colouring/${C}/photos/${pid}/original`)).blob();
+  const bmp = await createImageBitmap(blob);
+  const L = aud === 'kids' ? 512 : 1024;
+  const first = await runModel(bmp, 0, 0, bmp.width, bmp.height, 512);
+  const box = subjectBox(first);
+  let d = first;
+  if (box) {
+    const sc = bmp.width / first.W, sx = box.x0 * sc, sy = box.y0 * sc, sw = (box.x1 - box.x0) * sc, sh = (box.y1 - box.y0) * sc;
+    const small = sw * sh < 0.6 * bmp.width * bmp.height && sw > 64 && sh > 64;
+    if (small) d = await runModel(bmp, sx, sy, sw, sh, L);            // the subject, drawn large
+    else if (L !== 512) d = await runModel(bmp, 0, 0, bmp.width, bmp.height, L);
+  } else if (L !== 512) d = await runModel(bmp, 0, 0, bmp.width, bmp.height, L);
+  d = trim(despeck(d));
+  const cv = document.createElement('canvas'); cv.width = d.W; cv.height = d.H;
+  const cx = cv.getContext('2d'), img = cx.createImageData(d.W, d.H);
+  for (let i = 0; i < d.W * d.H; i++) { const v = Math.round(d.y[i] * 255); img.data[4 * i] = img.data[4 * i + 1] = img.data[4 * i + 2] = v; img.data[4 * i + 3] = 255; }
   cx.putImageData(img, 0, 0);
   const png = await new Promise(r => cv.toBlob(r, 'image/png'));
   (drawBlob[pid] = drawBlob[pid] || {})[aud] = png;
