@@ -149,7 +149,16 @@ body.studio-open { overflow: hidden; }
 .st-sheet p.verse { text-align: left; text-indent: 0; white-space: pre-line; margin: 0 0 .8em; }
 .st-sheet p:hover { background: #F7F8FA; }
 .st-sheet p:focus { background: #FFFBEA; box-shadow: -12px 0 0 #FFFBEA, 12px 0 0 #FFFBEA; cursor: text; }
-.st-sheet p.edited { box-shadow: -4px 0 0 #2E7D4F; }
+.st-sheet p.edited { box-shadow: -4px 0 0 #2E7D4F; white-space: pre-line; }
+.st-sheet p.deleted { color: #8A919C; font-size: 13px; font-style: italic; text-indent: 0; box-shadow: -4px 0 0 #C9CDD3; }
+.st-sheet h3.newch { color: #2E7D4F; }
+.st-sheet h3.newch button { font: 12px Inter, sans-serif; color: #2E7D4F; border: 0; background: none; cursor: pointer; margin-left: 8px; }
+.st-menu { position: relative; }
+.st-menu-list { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; width: 290px; background: #fff; border: 1px solid #E6E8EC; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.12); padding: 6px; }
+.st-menu-list button { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 8px; cursor: pointer; font: 14px Inter, sans-serif; }
+.st-menu-list button:hover { background: #F4F5F7; }
+.st-menu-h { margin: 6px 10px 2px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #8A919C; }
+.st-menu-tip { margin: 6px 10px 4px; font-size: 12px; color: #646B76; }
 .st-sheet p .undo-ed { position: absolute; left: -46px; top: 2px; border: 0; background: none; color: #2E7D4F; font-size: 13px; cursor: pointer; padding: 0; user-select: none; }
 .sg { cursor: pointer; border-radius: 2px; transition: background .2s ease; }
 .sg.open { text-decoration: underline wavy #D24A3A; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
@@ -381,7 +390,7 @@ body.guided #use-cover, body.guided #cover-chosen { display: none !important; }
     <h2 class="makes-h">What are you making?</h2>
     <div class="makes-row">
       <button type="button" class="make-opt on" aria-pressed="true"><b>A book</b><span>From your Word file, text or ebook</span></button>
-      <a class="make-opt" href="/redworm/colouring.html" style="text-decoration:none;color:inherit"><b>A colouring book <span class="chip">New</span></b><span>Mandalas, patterns and your photos as outlines</span></a>
+      <button type="button" class="make-opt soon-opt" id="colour-opt" disabled><b>A colouring book <span class="chip">Coming soon</span></b><span>Mandalas, patterns and your photos as outlines</span></button>
       <button type="button" class="make-opt soon-opt" disabled><b>A sketchbook <span class="chip">Coming soon</span></b><span>Blank, dotted or framed pages to draw in</span></button>
     </div>
   </section>
@@ -482,6 +491,17 @@ body.guided #use-cover, body.guided #cover-chosen { display: none !important; }
         <label class="field"><span>Paperback ISBN (optional — adds a barcode)</span><input type="text" id="isbn"></label>
         <label class="field"><span>Ebook ISBN (optional)</span><input type="text" id="eisbn"></label>
       </div>
+      <details class="imprint" open><summary>Copyright page details (printed at the start of the book, as Indian publishers do)</summary>
+        <div class="grid2" style="margin-top:10px">
+          <label class="field"><span>Edition</span><input type="text" id="edition" value="First edition" maxlength="60"></label>
+          <label class="field"><span>Price in ₹ (optional, printed as MRP)</span><input type="number" id="price" min="1" max="100000" placeholder="e.g. 299"></label>
+        </div>
+        <label class="field"><span>Publisher's full address (optional; the city is used if empty)</span><input type="text" id="pubaddr" maxlength="200" placeholder="e.g. A-12, Connaught Place, New Delhi 110001, India"></label>
+        <label class="field"><span>Printed by (optional: printer's name and place)</span><input type="text" id="printer" maxlength="160" placeholder="e.g. Thomson Press, Faridabad. Leave empty if Amazon prints it."></label>
+        <label class="field"><span>Email for permission requests (optional)</span><input type="email" id="pemail" maxlength="120" placeholder="e.g. rights@yourpublisher.com"></label>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="fiction"> This is a work of fiction (adds the usual “any resemblance … is coincidental” note)</label>
+        <p class="note small" style="margin:6px 0 0">Also printed automatically: © year and author, “All rights reserved” with the Copyright Act wording, the author's moral right, the resale condition, both ISBNs and “All disputes subject to the courts at <i>your city</i> only”.</p>
+      </details>
       <label class="field"><span>Classic book? Year first published (optional)</span><input type="number" id="pd" min="1400" max="2100" placeholder="e.g. 1886 — leave empty for your own work"></label>
       <label class="field"><span>In the printed book, chapters start on</span><select id="chstart">
         <option value="any">The next page (fewest blank pages)</option>
@@ -569,6 +589,19 @@ body.guided #use-cover, body.guided #cover-chosen { display: none !important; }
     <b class="st-title">Proofreading</b><span id="st-count" class="st-count"></span>
     <div class="st-tools">
       <button class="btn ghost" id="st-addpic" type="button">+ Picture</button>
+      <div class="st-menu" id="st-fmt">
+        <button class="btn ghost" type="button" id="st-fmt-btn" aria-haspopup="true" aria-expanded="false">Reformat ▾</button>
+        <div class="st-menu-list hidden" id="st-fmt-list" role="menu">
+          <p class="st-menu-h">This paragraph (click one in the book first)</p>
+          <button type="button" role="menuitem" data-fmt="delete">Delete paragraph</button>
+          <button type="button" role="menuitem" data-fmt="join">Join with the next paragraph</button>
+          <button type="button" role="menuitem" data-fmt="sentence">Sentence case (for ALL-CAPS lines)</button>
+          <button type="button" role="menuitem" data-fmt="chapter">Start a new chapter here…</button>
+          <p class="st-menu-h">Whole book</p>
+          <button type="button" role="menuitem" data-fmt="joinall">Join broken lines</button>
+          <p class="st-menu-tip">Tip: press Enter to split a paragraph. Pasted text keeps its paragraphs.</p>
+        </div>
+      </div>
       <button class="btn ghost st-undo hidden" id="st-undo">↺ Undo</button>
       <label class="small st-spell">Spelling <select id="spell"><option value="auto">Follow my book</option><option value="uk">UK (colour)</option><option value="us">US (color)</option></select></label>
       <button class="btn red" id="st-done">Done</button>
@@ -816,7 +849,7 @@ async function upload(file) {
   setForm(S.form);
   if (S.found_isbn) { $('isbn-found').classList.remove('hidden'); $('isbn-found').innerHTML = `Your file mentions ISBN <b>${esc(S.found_isbn)}</b>. <button class="btn ghost" style="padding:5px 10px" id="use-isbn">Use it</button>`; $('use-isbn').onclick = () => { $('isbn').value = S.found_isbn; $('isbn-found').classList.add('hidden'); }; }
   if (S.found_publisher && S.found_publisher !== 'Red Panda Publications') $('pub').placeholder = S.found_publisher;
-  BOOK = null; edits = {}; editing = null; cur = null; filter = 'all'; undoStack = []; pics = []; renderProof(); loadText().catch(() => {}); renderCovers(); renderIndex();
+  BOOK = null; edits = {}; breaks = {}; editing = null; cur = null; filter = 'all'; undoStack = []; pics = []; renderProof(); loadText().catch(() => {}); renderCovers(); renderIndex();
   ['c-proof', 'c-cover', 'c-details', 'c-make'].forEach(unlock);
   done('upload'); done('proof'); done('details');
   reached = Math.max(reached, 1); go(1);
@@ -831,7 +864,7 @@ async function upload(file) {
 function setForm(f) { form = f; document.querySelectorAll('#form button').forEach(b => b.classList.toggle('on', b.dataset.f === f)); $('form-hint').textContent = f === 'poetry' ? '— line breaks kept, each poem on its own page' : ''; }
 $('form').onclick = (e) => { const b = e.target.closest('button'); if (b) setForm(b.dataset.f); };
 
-let aiItems = [], BOOK = null, edits = {}, editing = null, cur = null, filter = 'all', undoStack = [], pics = [];
+let aiItems = [], BOOK = null, edits = {}, breaks = {}, editing = null, cur = null, filter = 'all', undoStack = [], pics = [];
 const decided = (id, ai) => (ai ? aiChoices : choices)[id];
 const setChoice = (it, v) => { (it.ai ? aiChoices : choices)[it.id] = v; };
 function allItems() {
@@ -906,7 +939,9 @@ function renderSheet() {
   if (!BOOK) { $('book').innerHTML = '<p class="muted"><span class="spinner"></span> Laying out your text…</p>'; return; }
   const by = byBlock(allItems());
   $('book').innerHTML = BOOK.sections.map(sec => (sec.title ? `<h3>${esc(sec.title)}</h3>` : '') + figsAfter(sec.id) + slot(sec.id) + sec.paras.map((p, k) =>
-    `<p data-p="${p.id}" lang="${p.lang}" contenteditable="plaintext-only" spellcheck="true" class="${p.verse ? 'verse' : ''}${k === 0 ? ' first' : ''}${edits[p.id] !== undefined ? ' edited' : ''}">${paraHtml(p, by[p.id] || [])}${edits[p.id] !== undefined ? `<button class="undo-ed" contenteditable="false" data-undo="${p.id}" title="Undo my edit">↺ undo</button>` : ''}</p>` + figsAfter(p.id) + slot(p.id)).join('')).join('');
+    (breaks[p.id] !== undefined ? `<h3 class="newch" contenteditable="false">${esc(breaks[p.id] || 'New chapter')}<button data-unch="${p.id}" title="Undo the new chapter">↺ undo</button></h3>` : '') +
+    (edits[p.id] === '' ? `<p class="deleted" data-p="${p.id}" contenteditable="false">Paragraph deleted. <button class="undo-ed" style="position:static" data-undo="${p.id}">↺ undo</button></p>`
+    : `<p data-p="${p.id}" lang="${p.lang}" contenteditable="plaintext-only" spellcheck="true" class="${p.verse ? 'verse' : ''}${k === 0 ? ' first' : ''}${edits[p.id] !== undefined ? ' edited' : ''}">${paraHtml(p, by[p.id] || [])}${edits[p.id] !== undefined ? `<button class="undo-ed" contenteditable="false" data-undo="${p.id}" title="Undo my edit">↺ undo</button>` : ''}</p>`) + figsAfter(p.id) + slot(p.id)).join('')).join('');
 }
 const FRAME_NAMES = { inline: 'In the text', half: 'Half width', top: 'Top of a page', full: 'Full page', full_rotated: 'Full page, turned' };
 const slot = (after) => `<div class="slot" contenteditable="false"><button type="button" data-addpic="${esc(after)}">+ Picture</button></div>`;
@@ -959,7 +994,7 @@ function step(dir) {
 function act(ids, v) {  // accept or ignore, remember it for Undo, then move on
   const all = allItems(), next = visibleOpen().find(i => !ids.includes(i.id) && i.id !== cur) || null;
   const items = ids.map(id => all.find(x => x.id === id)).filter(Boolean);
-  undoStack.push({ choices: items.map(it => [it, decided(it.id, it.ai)]), edits: { ...edits } });
+  undoStack.push({ choices: items.map(it => [it, decided(it.id, it.ai)]), edits: { ...edits }, breaks: { ...breaks } });
   // In a paragraph the author rewrote, an accepted fix changes their text directly (last first).
   const inEdited = items.filter(it => v === 'change' && it.replacement !== null && edits[it.block_id] !== undefined);
   const groups = byBlock(inEdited);
@@ -1049,6 +1084,7 @@ $('st-undo').onclick = () => {
   const last = undoStack.pop(); if (!last) return;
   last.choices.forEach(([it, v]) => { if (v) setChoice(it, v); else delete (it.ai ? aiChoices : choices)[it.id]; });
   Object.keys(edits).forEach(k => delete edits[k]); Object.assign(edits, last.edits);
+  if (last.breaks) { Object.keys(breaks).forEach(k => delete breaks[k]); Object.assign(breaks, last.breaks); }
   renderProof(); if (last.choices[0]) select(last.choices[0][0].id);
 };
 $('st-filters').onclick = (e) => { const b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; renderSide(); const f = visibleOpen()[0]; if (f) select(f.id); };
@@ -1058,9 +1094,62 @@ $('st-cards').onclick = (e) => {
   const a = e.target.closest('[data-act]'); if (a) { act([c.dataset.c], a.dataset.act); return; }
   select(c.dataset.c, 'card');
 };
+// ── Reformat: delete, join, sentence case, new chapters, join broken lines ──────
+function snapshot() { undoStack.push({ choices: [], edits: { ...edits }, breaks: { ...breaks } }); }
+const allParas = () => BOOK ? BOOK.sections.flatMap(x => x.paras) : [];
+const textOf = (p) => currentText(p, allItems().filter(i => i.block_id === p.id));
+function nextPara(id) {   // the next paragraph in the same chapter that hasn't been deleted
+  for (const sec of BOOK.sections) { const i = sec.paras.findIndex(x => x.id === id); if (i < 0) continue;
+    for (let j = i + 1; j < sec.paras.length; j++) if (edits[sec.paras[j].id] !== '') return sec.paras[j];
+    return null; }
+  return null;
+}
+function sentenceCase(t) {
+  return t.toLowerCase().replace(/(^\s*\p{L})|([.!?।]\s+\p{L})/gu, (m) => m.toUpperCase()).replace(/\bi\b/g, 'I');
+}
+function fmtNote(t) { if (typeof note === 'function') note(t); }
+$('st-fmt-btn').onclick = (e) => { e.stopPropagation(); const l = $('st-fmt-list'); l.classList.toggle('hidden'); $('st-fmt-btn').setAttribute('aria-expanded', String(!l.classList.contains('hidden'))); };
+document.addEventListener('click', (e) => { if (!e.target.closest('#st-fmt')) $('st-fmt-list').classList.add('hidden'); });
+$('st-fmt-list').onclick = (e) => {
+  const b = e.target.closest('[data-fmt]'); if (!b || !BOOK) return;
+  $('st-fmt-list').classList.add('hidden');
+  const act2 = b.dataset.fmt;
+  if (act2 === 'joinall') {
+    snapshot(); let n = 0;
+    for (const sec of BOOK.sections) {
+      let prev = null;
+      for (const p of sec.paras) {
+        if (edits[p.id] === '' || p.verse) { prev = null; continue; }
+        const t = textOf(p);
+        if (prev && !/[.!?।"”’'…:;)\]—–-]\s*$/.test(edits[prev.id] ?? textOf(prev)) && /^\s*[a-z]/.test(t)) {
+          edits[prev.id] = (edits[prev.id] ?? textOf(prev)).trimEnd() + ' ' + t.trim(); edits[p.id] = ''; n++;
+        } else prev = p;
+      }
+    }
+    if (!n) undoStack.pop();
+    renderProof(); fmtNote(n ? `Joined ${n} broken line${n > 1 ? 's' : ''}. Use Undo to put them back.` : 'No broken lines found.');
+    return;
+  }
+  const p = allParas().find(x => x.id === lastPara);
+  if (!p) { fmtNote('Click a paragraph in the book first, then choose this again.'); return; }
+  if (act2 === 'delete') { snapshot(); edits[p.id] = ''; }
+  else if (act2 === 'join') {
+    const n = nextPara(p.id); if (!n) { fmtNote('This is the last paragraph of its chapter.'); return; }
+    snapshot(); edits[p.id] = textOf(p).trimEnd() + ' ' + textOf(n).trim(); edits[n.id] = '';
+  } else if (act2 === 'sentence') { snapshot(); edits[p.id] = sentenceCase(textOf(p)); }
+  else if (act2 === 'chapter') {
+    const t = textOf(p).trim(), guess = t.length <= 60 ? t : '';
+    const title = window.prompt('Title of the new chapter (it starts at this paragraph). If this paragraph is the title, it becomes the heading.', guess);
+    if (title === null) return;
+    snapshot(); breaks[p.id] = title.trim();
+  }
+  renderProof();
+};
+
 // Typing straight into the book: a paragraph you change becomes your own text.
 $('proof').addEventListener('click', (e) => {
   const u = e.target.closest('[data-undo]'); if (u) { e.preventDefault(); delete edits[u.dataset.undo]; renderProof(); return; }
+  const uc = e.target.closest('[data-unch]'); if (uc) { e.preventDefault(); delete breaks[uc.dataset.unch]; renderProof(); return; }
   const ap = e.target.closest('[data-addpic]'); if (ap) { openPicDlg({ after: ap.dataset.addpic }); return; }
   const ep = e.target.closest('[data-editpic]'); if (ep) { openPicDlg({ edit: ep.dataset.editpic }); return; }
   const dp = e.target.closest('[data-delpic]'); if (dp) { pics = pics.filter(x => x.id !== dp.dataset.delpic); renderProof(); return; }
@@ -1068,20 +1157,29 @@ $('proof').addEventListener('click', (e) => {
 });
 $('proof').addEventListener('keydown', (e) => {
   const p = e.target.closest('p[data-p]'); if (!p) return;
-  if (e.key === 'Enter' && !p.classList.contains('verse')) e.preventDefault();  // one paragraph stays one paragraph
+  // Enter starts a new paragraph (the break is kept and becomes two paragraphs in the book).
   if (e.key === 'Escape') { e.preventDefault(); p.blur(); }
 });
 $('proof').addEventListener('paste', (e) => {  // paste plain text only
   if (!e.target.closest('p[data-p]')) return;
-  e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\s*\n\s*/g, ' '));
+  e.preventDefault();
+  const t = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\r/g, '');
+  // Blank lines separate paragraphs; if there are none, each line is a paragraph.
+  const paras = (/\n\s*\n/.test(t) ? t.split(/\n\s*\n/) : t.split('\n')).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  document.execCommand('insertText', false, paras.join('\n'));
 });
 $('proof').addEventListener('input', (e) => { const p = e.target.closest('p[data-p]'); if (p) p.dataset.dirty = '1'; });
 $('proof').addEventListener('focusout', (e) => {
   const el = e.target.closest('p[data-p]'); if (!el || !el.dataset.dirty) return;
   const p = BOOK.sections.flatMap(x => x.paras).find(x => x.id === el.dataset.p), items = allItems().filter(i => i.block_id === p.id);
   const clone = el.cloneNode(true); clone.querySelectorAll('[data-undo]').forEach(b => b.remove());
-  const text = clone.textContent.replace(/ /g, ' ').replace(p.verse ? /[ \t]+/g : /\s+/g, ' ').trim();
-  if (text && text !== currentText(p, items)) edits[p.id] = text;
+  // Line breaks the browser stored as <br> or <div> (Enter, pasting) count as paragraph breaks.
+  clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+  clone.querySelectorAll('div').forEach(d => d.prepend('\n'));
+  const raw = clone.textContent.replace(/\u00a0/g, ' ');
+  const text = p.verse ? raw.replace(/[ \t]+/g, ' ').trim()
+    : raw.split('\n').map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).join('\n');
+  if (text !== currentText(p, items)) { snapshot(); edits[p.id] = text; }   // empty = deleted
   renderProof();
 });
 document.addEventListener('keydown', (e) => {
@@ -1198,7 +1296,13 @@ $('stock-grid').onclick = async (e) => {
   catch (err) { $('pic-msg').innerHTML = `<span class="err">${esc(err.message)}</span>`; }
 };
 let IS_OWNER = false;
-if (PASS) call('/api/access/check').then(r => r.json()).then(d => { IS_OWNER = d.kind === 'admin'; }).catch(() => {});
+if (PASS) call('/api/access/check').then(r => r.json()).then(d => {
+  IS_OWNER = d.kind === 'admin';
+  if (IS_OWNER) {   // the colouring maker is still in testing: only the owner can open it
+    const o = $('colour-opt');
+    if (o) o.outerHTML = '<a class="make-opt" href="/redworm/colouring.html" style="text-decoration:none;color:inherit"><b>A colouring book <span class="chip">Owner preview</span></b><span>Mandalas, patterns and your photos as outlines</span></a>';
+  }
+}).catch(() => {});
 $('pub-go').onclick = async () => {
   const body = { genre: $('pub-genre').value, synopsis: $('pub-syn').value.trim(), homepage: $('pub-home').checked,
     price_paperback: $('pub-pb').value ? +$('pub-pb').value : null, price_ebook: $('pub-eb').value ? +$('pub-eb').value : null };
@@ -1229,6 +1333,7 @@ $('pubmode').onchange = () => {
   if (m === 'rp') { $('pub').value = 'Red Panda Publications'; if (!$('pubcity').value) $('pubcity').value = 'New Delhi'; }
   if (m === 'own' && $('pub').value === 'Red Panda Publications') { $('pub').value = S && S.found_publisher && S.found_publisher !== 'Red Panda Publications' ? S.found_publisher : ''; $('pub').focus(); }
   ['pub-wrap', 'pubcity-wrap', 'pubpage-wrap'].forEach(id => $(id).classList.toggle('hidden', self));
+  $('pubaddr').closest('label').classList.toggle('hidden', self);
   $('pubabout-wrap').classList.toggle('hidden', self || !$('pubpage').checked);
 };
 
@@ -1244,7 +1349,10 @@ $('make').onclick = async () => {
     publisher: $('pubmode').value === 'self' ? '' : ($('pub').value.trim() || 'Red Panda Publications'),
     publisher_city: $('pubmode').value === 'self' ? '' : $('pubcity').value.trim(),
     publisher_page: $('pubmode').value !== 'self' && $('pubpage').checked, publisher_about: $('pubabout').value.trim() || null,
-    proof_choices: choices, ai_choices: aiChoices, text_edits: edits,
+    edition: $('edition').value.trim() || 'First edition', publisher_address: $('pubmode').value === 'self' ? null : ($('pubaddr').value.trim() || null),
+    printer: $('printer').value.trim() || null, price_inr: $('price').value ? Math.round(+$('price').value) : null,
+    contact_email: $('pemail').value.trim() || null, fiction: $('fiction').checked,
+    proof_choices: choices, ai_choices: aiChoices, text_edits: edits, chapter_breaks: breaks,
     pictures: pics.map(({ id, after, frame, caption }) => ({ id, after, frame, caption })),
     chapter_start: $('chstart').value, spelling: $('spell').value, rights_confirmed: $('rights').checked,
     index: picked.size ? { entries: [...picked].map(i => ({ heading: S.index_suggestions[i].heading, match: S.index_suggestions[i].match })) } : null,

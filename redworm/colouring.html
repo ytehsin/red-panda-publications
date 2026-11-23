@@ -143,6 +143,11 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
     <div id="waking" class="load"><div class="track"><div class="ball"></div></div><p class="msg">Waking Redworm up (up to a minute the first time)…</p></div>
   </section>
 
+  <section class="step hidden" id="soon-page">
+    <h2>Coming soon</h2>
+    <p class="sub">The colouring-book maker is being tested and will open to everyone soon. Meanwhile you can <a href="/redworm/make.html">make a book</a>.</p>
+  </section>
+
   <div id="app" class="hidden">
     <section class="step">
       <h2>Who is it for?</h2>
@@ -266,6 +271,9 @@ async function call(path, opts = {}, retried = false) {
 function showGate(on) { $('waking').classList.add('hidden'); $('gate-step').classList.toggle('hidden', !on); $('gate').classList.toggle('hidden', !on); $('app').classList.toggle('hidden', on); }
 async function begin() {
   try {
+    // Still in testing: only the owner (admin sign-in) can use it; visitors see "Coming soon".
+    const who = await (await call('/api/access/check')).json();
+    if (who.kind !== 'admin') { showGate(false); $('app').classList.add('hidden'); $('soon-page').classList.remove('hidden'); return; }
     const d = await (await call('/api/colouring', { method: 'POST' })).json();
     C = d.id; minOne = d.min_drawings.one_sided; minTwo = d.min_drawings.two_sided; maxPhotos = d.max_photos;
     if (!d.ai_pages) { $('ai-row').classList.add('off'); $('ai-soon').classList.remove('hidden'); $('topic').disabled = true; document.querySelectorAll('[data-draw]').forEach(b => b.disabled = true); }
