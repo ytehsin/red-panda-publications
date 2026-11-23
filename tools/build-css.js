@@ -9,13 +9,13 @@ const tailwind = require('tailwindcss');
 const ROOT = path.join(__dirname, '..');
 const PAGES = {
   'index.html': 'css/home.css',
-  'redworm/index.html': 'css/redworm-home.css',
-  'redworm/cover-picker.html': 'css/cover-picker.css',
-  'redworm/index-maker.html': 'css/index-maker.css',
-  'redworm/proofread.html': 'css/proofread.css',
+  'studio/index.html': 'css/studio-home.css',
+  'studio/cover-picker.html': 'css/cover-picker.css',
+  'studio/index-maker.html': 'css/index-maker.css',
+  'studio/proofread.html': 'css/proofread.css',
 };
 // Classes also come from scripts (book cards, showroom panels), so those are scanned too.
-const SCRIPTS = ['showroom.js', 'showroom-data.js', 'redworm/*.js', 'redworm/books/**/*.js'];
+const SCRIPTS = ['showroom.js', 'showroom-data.js', 'studio/*.js', 'studio/books/**/*.js'];
 
 (async () => {
   for (const [page, out] of Object.entries(PAGES)) {

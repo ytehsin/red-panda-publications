@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redworm Beta — Red Panda Publications</title>
+  <title>Red Panda Studio Beta — Red Panda Publications</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
     details[open] .chev { transform: rotate(90deg); }
   </style>
   <!-- After the page's own styles, as Tailwind's script used to place it. -->
-  <link rel="stylesheet" href="../css/redworm-home.css">
+  <link rel="stylesheet" href="../css/studio-home.css">
 </head>
 <body class="bg-pureWhite text-ink font-sans">
 
@@ -22,7 +22,7 @@
     <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <span class="w-2 h-2 rounded-full bg-claret"></span>
-        <span class="font-bold tracking-tight">Redworm</span>
+        <span class="font-bold tracking-tight">Red Panda Studio</span>
       </div>
       <a href="../index.html" class="text-sm text-slateMuted hover:text-ink">← Red Panda Publications</a>
     </div>
@@ -36,10 +36,10 @@
         <span class="font-extrabold tracking-[-0.04em]">Your manuscript,</span><br>
         <em class="font-fraunces italic font-light text-claret">ready for the printer.</em>
       </h1>
-      <p class="text-lg text-slateMuted max-w-xl leading-relaxed">Upload a Word file in English or Hindi. Redworm lays out the pages, builds the cover and gives you files a printer can use.</p>
+      <p class="text-lg text-slateMuted max-w-xl leading-relaxed">Upload a Word file in English or Hindi. Red Panda Studio lays out the pages, builds the cover and gives you files a printer can use.</p>
       <div class="flex flex-wrap items-center gap-4">
         <a href="make.html" class="px-5 py-2.5 rounded-lg bg-ink hover:bg-inkHover text-pureWhite text-sm font-semibold">Make your book →</a>
-        <span class="text-sm text-slateMuted"><b class="text-claret">Private beta</b> — you need an access code (each one works for a day). Below is a real book Redworm made.</span>
+        <span class="text-sm text-slateMuted"><b class="text-claret">Private beta</b> — you need an access code (each one works for a day). Below is a real book Red Panda Studio made.</span>
       </div>
     </section>
 
@@ -58,12 +58,12 @@
       </p>
     </section>
 
-    <!-- 3. A real book, made by Redworm -->
+    <!-- 3. A real book, made by Red Panda Studio -->
     <section class="pb-16 space-y-6">
       <div class="flex flex-col sm:flex-row gap-6 sm:items-center">
         <img src="books/jekyll-and-hyde/jekyll-and-hyde-cover.jpg" alt="Cover of The Strange Case of Dr. Jekyll and Mr. Hyde" class="w-28 rounded shadow-md">
         <div class="space-y-1.5">
-          <p class="text-xs uppercase tracking-wider text-slateMuted">Made with Redworm</p>
+          <p class="text-xs uppercase tracking-wider text-slateMuted">Made with Red Panda Studio</p>
           <h2 class="text-2xl font-bold tracking-tight">The Strange Case of Dr. Jekyll and Mr. Hyde</h2>
           <p class="text-slateMuted">Robert Louis Stevenson · 98 pages · paperback and ebook</p>
         </div>
@@ -87,7 +87,7 @@
       </div>
 
       <div data-panel="proof" class="tool-panel hidden space-y-4">
-        <p class="text-lg"><strong>2 things to check.</strong> Nothing was changed. Redworm never rewrites your words by itself.</p>
+        <p class="text-lg"><strong>2 things to check.</strong> Nothing was changed. Red Panda Studio never rewrites your words by itself.</p>
         <div class="space-y-3 text-sm">
           <div class="rounded-xl border border-borderCrisp p-4"><p class="text-xs text-slateMuted mb-1">Remarkable Incident of Dr. Lanyon · “that” twice in a row</p><p>…Now <mark class="bg-claret/10 text-claret px-0.5 rounded">that that</mark> evil influence had been withdrawn…</p></div>
           <div class="rounded-xl border border-borderCrisp p-4"><p class="text-xs text-slateMuted mb-1">Henry Jekyll’s Full Statement · “that” twice in a row</p><p>…And this again, <mark class="bg-claret/10 text-claret px-0.5 rounded">that that</mark> insurgent horror was knit to him…</p></div>
@@ -106,7 +106,7 @@
         <img id="spread-img" src="books/jekyll-and-hyde/spread-opening.jpg" alt="Two facing pages from the book" class="w-full rounded-lg border border-hairline shadow-sm">
         <p class="text-sm"><span class="font-semibold">✓ Ready for the printer</span> <span class="text-slateMuted">· 5.5 × 8.5 inch · contents with page numbers · chapters start on a right-hand page</span></p>
         <div class="rounded-xl bg-subtleSurface p-4 flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm"><span class="font-semibold">Index (optional)</span> <span class="text-slateMuted">· pick names and terms; Redworm finds every page.</span></p>
+          <p class="text-sm"><span class="font-semibold">Index (optional)</span> <span class="text-slateMuted">· pick names and terms; Red Panda Studio finds every page.</span></p>
           <a href="index-maker.html" class="px-4 py-2 rounded-lg border border-borderCrisp hover:border-ink text-sm font-semibold">Make an index →</a>
         </div>
       </div>
@@ -195,7 +195,7 @@
   <script src="paper-stocks.js"></script>
   <script>
     const el = (id) => document.getElementById(id);
-    const P = window.REDWORM_PAPERS;
+    const P = window.RP_PAPERS;
     const MIN = 5.0;
     const GROUPS = { thin: 'Thin', uncoated: 'Everyday (maplitho)', book: 'Book paper', premium: 'Premium', coated: 'Glossy / art paper' };
     let allowance = 0.5;

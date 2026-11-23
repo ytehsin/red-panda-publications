@@ -1,5 +1,5 @@
-/* Generated from the Redworm engine's paper catalogue (redworm.cover.geometry). */
-window.REDWORM_PAPERS = [
+/* Generated from the Red Panda Studio engine's paper catalogue (redworm.cover.geometry). */
+window.RP_PAPERS = [
  {
   "id": "bible_40",
   "label": "40 GSM Bible / India Paper",

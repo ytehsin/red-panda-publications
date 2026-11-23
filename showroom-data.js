@@ -40,7 +40,7 @@ window.SHOWROOM_CONFIG = {
     "page_turn": true
   },
   "include_redworm_books": true,
-  "redworm_section_title": "Made with Redworm",
+  "redworm_section_title": "Made with Red Panda Studio",
   "default_redworm_look": {
     "binding": "cloth",
     "texture": "buckram",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Make a colouring book — Redworm</title>
+<title>Make a colouring book — Red Panda Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
@@ -125,8 +125,8 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="/redworm/"><span class="dot"></span>Redworm <span class="beta">Beta</span></a>
-  <a class="back" href="/redworm/make.html">← Make a book instead</a>
+  <a class="brand" href="/studio/"><span class="dot"></span>Red Panda Studio <span class="beta">Beta</span></a>
+  <a class="back" href="/studio/make.html">← Make a book instead</a>
 </header>
 <main>
   <section class="hero">
@@ -136,16 +136,16 @@ dialog::backdrop { background: rgba(20,22,26,.4); }
 
   <section class="step" id="gate-step">
     <div id="gate" class="hidden">
-      <p>Redworm is in private beta. Enter your access code — <b>each code works for one day</b> from the moment you first use it.</p>
+      <p>Red Panda Studio is in private beta. Enter your access code — <b>each code works for one day</b> from the moment you first use it.</p>
       <div class="row"><input id="code" placeholder="RP-XXXX-XXXX" autocomplete="off" aria-label="Access code"><button class="btn red" id="code-go">Enter</button></div>
       <p class="msg" id="code-msg"></p>
     </div>
-    <div id="waking" class="load"><div class="track"><div class="ball"></div></div><p class="msg">Waking Redworm up (up to a minute the first time)…</p></div>
+    <div id="waking" class="load"><div class="track"><div class="ball"></div></div><p class="msg">Waking Red Panda Studio up (up to a minute the first time)…</p></div>
   </section>
 
   <section class="step hidden" id="soon-page">
     <h2>Coming soon</h2>
-    <p class="sub">The colouring-book maker is being tested and will open to everyone soon. Meanwhile you can <a href="/redworm/make.html">make a book</a>.</p>
+    <p class="sub">The colouring-book maker is being tested and will open to everyone soon. Meanwhile you can <a href="/studio/make.html">make a book</a>.</p>
   </section>
 
   <div id="app" class="hidden">
@@ -253,7 +253,7 @@ async function call(path, opts = {}, retried = false) {
   if (PASS) opts.headers = Object.assign({ Authorization: 'Bearer ' + PASS }, opts.headers || {});
   let r;
   try { r = await fetch(API + path, opts); }
-  catch (e) { throw new Error('Redworm could not be reached. Check your connection and try again.'); }
+  catch (e) { throw new Error('Red Panda Studio could not be reached. Check your connection and try again.'); }
   if (r.status === 401) { setPass(null); showGate(true); throw new Error('Please enter your access code.'); }
   if (!r.ok) {
     let m = 'Something went wrong. Please try again.';
@@ -330,7 +330,7 @@ function recover() {
     }
     $('done').classList.add('hidden');
     $('page-msg').className = 'msg ok';
-    $('page-msg').textContent = 'Redworm restarted, so your pages were sent to it again.' + (lostAi ? ` ${lostAi} AI page${lostAi > 1 ? 's' : ''} could not be kept: please draw ${lostAi > 1 ? 'them' : 'it'} again.` : '');
+    $('page-msg').textContent = 'Red Panda Studio restarted, so your pages were sent to it again.' + (lostAi ? ` ${lostAi} AI page${lostAi > 1 ? 's' : ''} could not be kept: please draw ${lostAi > 1 ? 'them' : 'it'} again.` : '');
     render();
   })().finally(() => { recovering = null; });
   return recovering;
@@ -494,11 +494,11 @@ let ortSession = null, drawChain = Promise.resolve();
 function loadModel() {
   if (!ortSession) ortSession = new Promise((res, rej) => {
     const sc = document.createElement('script');
-    sc.src = '/redworm/vendor/ort/ort.wasm.min.js';
+    sc.src = '/studio/vendor/ort/ort.wasm.min.js';
     sc.onload = () => {
-      ort.env.wasm.wasmPaths = '/redworm/vendor/ort/';
+      ort.env.wasm.wasmPaths = '/studio/vendor/ort/';
       ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
-      ort.InferenceSession.create('/redworm/models/line-art.onnx', { executionProviders: ['wasm'] }).then(res, rej);
+      ort.InferenceSession.create('/studio/models/line-art.onnx', { executionProviders: ['wasm'] }).then(res, rej);
     };
     sc.onerror = () => rej(new Error('The drawing tool could not load.'));
     document.head.appendChild(sc);
@@ -731,7 +731,7 @@ $('make').onclick = async () => {
       if (s.state === 'done' || s.state === 'failed') break;
     }
     if (s.state === 'failed') throw new Error(s.error);
-    if (s.state === 'ready') throw new Error('Redworm restarted while making your book. Your pages are safe: please press Make again.');
+    if (s.state === 'ready') throw new Error('Red Panda Studio restarted while making your book. Your pages are safe: please press Make again.');
     $('making').classList.add('hidden');
     $('done-cover').src = `${API}/api/colouring/${C}/cover?v=${Date.now()}`;
     $('done-sum').textContent = `${pages.length} drawings, ${s.pages} pages, ready for a printer and Amazon KDP.`;

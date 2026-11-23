@@ -206,7 +206,7 @@
     const tilt = motion().cursor_tilt ? 'onmousemove="tiltBookOnHover(event, this)" onmouseleave="resetBookTilt(this)"' : '';
     const pr = price(listing, 'hardcover') != null ? `Hardcover · ₹${price(listing, 'hardcover')}` : (price(listing, 'paperback') != null ? `Paperback · ₹${price(listing, 'paperback')}` : '');
     const badge = L.show_origin_badge && listing.origin === 'redworm'
-      ? `<p class="font-mono text-[10px] uppercase tracking-wider text-claret pt-1">Made with Redworm</p>` : '';
+      ? `<p class="font-mono text-[10px] uppercase tracking-wider text-claret pt-1">Made with Red Panda Studio</p>` : '';
     return `
       <div id="book-card-${esc(listing.slug)}" onclick="openMonograph('${esc(listing.slug)}', '3d')" class="book-card-wrap group cursor-pointer flex flex-col items-center text-center">
         <div class="w-full py-6 flex items-center justify-center">
@@ -445,14 +445,14 @@
         row('Books on homepage', num('config.layout.items_per_page', L.items_per_page, 3, 60)) +
         head('Order') +
         row('Sort', sel('config.layout.sort', L.sort, [['manual', 'Manual'], ['newest', 'Newest'], ['title', 'Title'], ['author', 'Author'], ['price_low', 'Price ↑'], ['price_high', 'Price ↓']])) +
-        row('Group by', sel('config.layout.group_by', L.group_by, [['none', 'None'], ['genre', 'Genre'], ['origin', 'House / Redworm']])) +
+        row('Group by', sel('config.layout.group_by', L.group_by, [['none', 'None'], ['genre', 'Genre'], ['origin', 'House / Red Panda Studio']])) +
         row('Hero book', sel('config.layout.featured_slug', L.featured_slug ?? '', [['', 'First featured'], ...state.books.map((b) => [b.slug, b.title])])) +
         head('Show') +
         row('Prices', chk('config.layout.show_prices', L.show_prices)) +
         row('Author names', chk('config.layout.show_author', L.show_author)) +
         row('Genre filter', chk('config.layout.show_genre_filter', L.show_genre_filter)) +
-        row('"Made with Redworm" badge', chk('config.layout.show_origin_badge', L.show_origin_badge)) +
-        row('Include Redworm books', chk('config.include_redworm_books', C.include_redworm_books)) +
+        row('"Made with Red Panda Studio" badge', chk('config.layout.show_origin_badge', L.show_origin_badge)) +
+        row('Include Red Panda Studio books', chk('config.include_redworm_books', C.include_redworm_books)) +
         row('Showroom title', `<input type="text" data-path="config.title" value="${esc(C.title)}">`) +
         head('Motion') +
         row('Cursor tilt', chk('config.motion.cursor_tilt', M.cursor_tilt)) +
