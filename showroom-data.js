@@ -26,7 +26,7 @@ window.SHOWROOM_CONFIG = {
     "book_size": "medium",
     "sort": "manual",
     "group_by": "none",
-    "featured_slug": null,
+    "featured_slug": "the-star",
     "items_per_page": 12,
     "show_prices": true,
     "show_author": true,
@@ -644,6 +644,77 @@ window.SHOWROOM_BOOKS = [
         ]
       }
     ]
+  },
+  {
+    "slug": "the-star",
+    "title": "The Star",
+    "subtitle": null,
+    "credits": [
+      {
+        "name": "H. G. Wells",
+        "slug": "h-g-wells",
+        "role": "author"
+      }
+    ],
+    "genre": "Fiction",
+    "languages": [
+      "en"
+    ],
+    "synopsis": "This book is for demo and test purposes only",
+    "isbn13": "9780306406157",
+    "pages": 20,
+    "trim": "demy_5_5x8_5",
+    "paper": "cream_bookwove_80",
+    "editions": [
+      {
+        "format": "paperback",
+        "price_inr": 229,
+        "available": true
+      },
+      {
+        "format": "ebook",
+        "price_inr": 1,
+        "available": true
+      }
+    ],
+    "published_on": "2026-11-23",
+    "origin": "house",
+    "status": "published",
+    "featured": true,
+    "sort_weight": 220,
+    "look": {
+      "binding": "paperback",
+      "texture": "matte",
+      "cloth": "#3F1562",
+      "spine_cloth": "#341150",
+      "ink": "#FFE673",
+      "foil": "#F0C2FF",
+      "foil_finish": "gold",
+      "headband": null,
+      "page_edge": "white",
+      "sprayed_edge": null,
+      "motif": "rule",
+      "title_style": "classic_serif",
+      "cover_image": "covers/the-star.jpg"
+    },
+    "excerpt": [
+      {
+        "left": [
+          "Author of “The War of the Worlds”, “The Time Machine”, Etc."
+        ],
+        "right": [
+          "It was on the first day of the new year that the announcement was made, almost simultaneously from three observatories, that the motion of the planet Neptune, the outermost of all the planets that wheeled about the sun, had become erratic. Ogilvy had already called attention to a suspected retardation in its velocity in December. Such a piece of news was scarcely calculated to interest the world the greater portion of whose inhabitants were unaware of the existence of the planet Neptune, nor outside the astronomical profession did the subsequent discovery of a faint remote speck of light…"
+        ]
+      },
+      {
+        "left": [
+          "Scientific people, however, found the intelligence remarkable enough, even before it became known that the new body was rapidly growing larger and brighter, that its motion was quite different from the orderly progress of the planets, and that the deflection of Neptune and its satellite was becoming now of an unprecedented kind."
+        ],
+        "right": [
+          "Few people without training in science can realize the huge isolation of the solar system. The sun with its specks of planets, its dust of planetoids, and its impalpable comets swims in vacant immensity that almost defeats the imagination. Beyond the orbit of Neptune there is space, vacant so far as human observation has penetrated, without warmth or light or sound, blank emptiness, for twenty billion times a million miles. That is the smallest estimate of the distance to be traversed before the nearest of the stars is attained. And, saving a few comets, more unsubstantial than the…"
+        ]
+      }
+    ]
   }
 ];
 window.SHOWROOM_AUTHORS = [
@@ -710,6 +781,14 @@ window.SHOWROOM_AUTHORS = [
     "bio": "",
     "note": "",
     "book": "the-salt-roads"
+  },
+  {
+    "name": "H. G. Wells",
+    "slug": "h-g-wells",
+    "city": "",
+    "bio": "",
+    "note": "",
+    "book": "the-star"
   }
 ];
 window.PAPER_STOCKS = {
